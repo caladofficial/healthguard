@@ -1,10 +1,14 @@
 /* ============================================================================
-   HealthGuard — MOTION PRIMITIVES (12-component animation system)
+   HealthGuard — MOTION PRIMITIVES v2 "VITALITY ENGINE"
    EVOLVEX IT SOLUTIONS PVT. LTD.
 
-   Dependency-free re-implementations of the best React-Bits / Aceternity ideas,
-   tuned to the matte clinical language (research log D.2/D.3). Every primitive
-   respects prefers-reduced-motion and degrades to a static state.
+   v2 additions on top of the 12 v1 primitives:
+     · Shockwave FX — every tap/click emits double energy rings (and CTAs pulse)
+     · 3D hero stage — pointer-parallax on the art frame + floating glass chips
+     · Glare tracking on cards (radial highlight follows the pointer)
+     · Stronger damped 3D tilt (±7°) with translateZ depth on card icons
+     · Cursor energy glow (fine pointers only)
+   Everything respects prefers-reduced-motion and degrades to static states.
    ============================================================================ */
 (function () {
   'use strict';
@@ -41,7 +45,7 @@
     a.addEventListener('click', function () { setDrawer(false); });
   });
 
-  /* 3 — Desktop nav dropdown families (click on touch, hover-intent on fine) */
+  /* 3 — Desktop nav dropdown families */
   document.querySelectorAll('[data-nav-family]').forEach(function (fam) {
     var trig = fam.querySelector('.nav-trigger');
     if (!trig) return;
@@ -80,7 +84,7 @@
     }
   });
 
-  /* 4 — SplitText reveal (React-Bits style word lift) */
+  /* 4 — SplitText reveal */
   document.querySelectorAll('[data-split]').forEach(function (el) {
     var words = String(el.textContent).trim().split(/\s+/);
     el.textContent = '';
@@ -98,7 +102,7 @@
     });
   });
 
-  /* 5 — Stagger reveal on scroll (IntersectionObserver) */
+  /* 5 — Stagger reveal on scroll */
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (en) {
       if (!en.isIntersecting) return;
@@ -112,16 +116,15 @@
         el.classList.add('in');
         el.querySelectorAll && el.querySelectorAll('[data-bar]').forEach(function (bar) { bar.classList.add('on'); });
         if (el.hasAttribute('data-bar')) el.classList.add('on');
+        if (el.hasAttribute('data-shock-auto') && !reduced) shockAt(el.getBoundingClientRect().left + el.offsetWidth / 2, el.getBoundingClientRect().top + el.offsetHeight / 2);
       }
       io.unobserve(el);
     });
   }, { threshold: 0.14, rootMargin: '0px 0px -4% 0px' });
   document.querySelectorAll('[data-reveal], [data-stagger]').forEach(function (el) { io.observe(el); });
-
-  /* 6 — Confidence bars fill when seen */
   document.querySelectorAll('[data-bar]').forEach(function (bar) { io.observe(bar); });
 
-  /* 7 — CountUp stats (ease-out) */
+  /* 6 — CountUp stats */
   var ioCount = new IntersectionObserver(function (entries) {
     entries.forEach(function (en) {
       if (!en.isIntersecting) return;
@@ -130,8 +133,7 @@
       var t0 = performance.now(), dur = 1400;
       (function tick(now) {
         var p = Math.min(1, (now - t0) / dur);
-        var eased = 1 - Math.pow(1 - p, 3);
-        el.textContent = String(Math.round(target * eased));
+        el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
         if (p < 1) requestAnimationFrame(tick);
       })(t0);
       ioCount.unobserve(el);
@@ -139,13 +141,43 @@
   }, { threshold: 0.4 });
   document.querySelectorAll('[data-count]').forEach(function (el) { ioCount.observe(el); });
 
-  /* 8 — TiltCard (Aceternity 3D card, damped to 3°) */
-  if (!reduced && !coarse) {
+  /* 7 — SHOCKWAVE FX: double energy rings at the pointer */
+  function shockAt(x, y) {
+    if (reduced) return;
+    for (var i = 0; i < 2; i++) {
+      var ring = document.createElement('span');
+      ring.className = 'shock-ring' + (i ? ' s2' : '');
+      ring.style.left = x + 'px';
+      ring.style.top = y + 'px';
+      document.body.appendChild(ring);
+      (function (r) { setTimeout(function () { r.remove(); }, 1000); })(ring);
+    }
+  }
+  document.addEventListener('pointerdown', function (e) {
+    var t = e.target;
+    var hit = t.closest && t.closest('.btn, .card, .bento-cell, .rail-card, .chip, .pill, .nav-card, .acc-item summary');
+    if (hit || (t === document.body)) shockAt(e.clientX, e.clientY);
+  }, { passive: true });
+
+  /* Auto shockwave heartbeat on hero CTAs (screen "heartbeat") */
+  if (!reduced) {
+    var beaters = document.querySelectorAll('.btn-primary');
+    var bi = 0;
+    setInterval(function () {
+      if (document.hidden || !beaters.length) return;
+      var el = beaters[bi % beaters.length]; bi++;
+      var r = el.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < innerHeight) shockAt(r.left + r.width / 2, r.top + r.height / 2);
+    }, 2500); // matches the canvas heartbeat cadence family
+  }
+
+  /* 8 — TiltCard + glare (±7° damped) */
+  if (!reduced) {
     document.querySelectorAll('[data-tilt]').forEach(function (card) {
       var rx = 0, ry = 0, tx = 0, ty = 0, raf = 0;
       function animate() {
         rx += (tx - rx) * 0.12; ry += (ty - ry) * 0.12;
-        card.style.transform = 'perspective(700px) rotateX(' + rx.toFixed(3) + 'deg) rotateY(' + ry.toFixed(3) + 'deg)';
+        card.style.transform = 'perspective(750px) rotateX(' + rx.toFixed(3) + 'deg) rotateY(' + ry.toFixed(3) + 'deg) translateZ(0)';
         if (Math.abs(tx - rx) > 0.01 || Math.abs(ty - ry) > 0.01) raf = requestAnimationFrame(animate);
         else raf = 0;
       }
@@ -153,7 +185,10 @@
         var r = card.getBoundingClientRect();
         var px = (e.clientX - r.left) / r.width - 0.5;
         var py = (e.clientY - r.top) / r.height - 0.5;
-        ty = px * 6; tx = -py * 6;      // max ±3°
+        card.style.setProperty('--gx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+        card.style.setProperty('--gy', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+        if (coarse) return;
+        ty = px * 14; tx = -py * 14;
         if (!raf) raf = requestAnimationFrame(animate);
       });
       card.addEventListener('pointerleave', function () {
@@ -163,20 +198,54 @@
     });
   }
 
-  /* 9 — Spotlight breath (Aceternity spotlight, matte) */
-  document.querySelectorAll('[data-spotlight]').forEach(function (hero) {
+  /* 9 — 3D hero stage parallax (art frame + floating chips) */
+  var heroArt = document.querySelector('.hero-art');
+  if (heroArt && !reduced && !coarse) {
+    var frame = heroArt.querySelector('.hero-art-frame');
+    var chips = heroArt.querySelectorAll('.float-chip');
+    heroArt.closest('.hero').addEventListener('pointermove', function (e) {
+      var r = heroArt.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width - 0.5;
+      var py = (e.clientY - r.top) / r.height - 0.5;
+      if (frame) {
+        frame.style.setProperty('--ry', (px * 9).toFixed(2) + 'deg');
+        frame.style.setProperty('--rx', (-py * 8).toFixed(2) + 'deg');
+      }
+      chips.forEach(function (chip, i) {
+        var depth = (i + 1) * 7;
+        chip.style.marginLeft = (px * depth).toFixed(1) + 'px';
+        chip.style.marginTop = (py * depth).toFixed(1) + 'px';
+      });
+    });
+  }
+
+  /* 10 — Spotlight breath */
+  document.querySelectorAll('[data-spotlight]').forEach(function (heroSpot) {
     if (reduced) return;
     var last = 0;
-    hero.addEventListener('pointermove', function (e) {
+    heroSpot.addEventListener('pointermove', function (e) {
       var now = performance.now();
-      if (now - last < 33) return; last = now;   // ~30fps cap: battery/GPU friendly
-      var r = hero.getBoundingClientRect();
-      hero.style.setProperty('--spot-x', (((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
-      hero.style.setProperty('--spot-y', (((e.clientY - r.top) / r.height) * 100).toFixed(1) + '%');
+      if (now - last < 33) return; last = now;
+      var r = heroSpot.getBoundingClientRect();
+      heroSpot.style.setProperty('--spot-x', (((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
+      heroSpot.style.setProperty('--spot-y', (((e.clientY - r.top) / r.height) * 100).toFixed(1) + '%');
     });
   });
 
-  /* 10 — Pipeline path draw */
+  /* 11 — Cursor energy glow (fine pointers) */
+  var glow = document.querySelector('.cursor-glow');
+  if (glow && !coarse && !reduced) {
+    document.body.classList.add('has-cursor');
+    var gx = innerWidth / 2, gy = innerHeight / 2, cx = gx, cy = gy, gr = 0;
+    document.addEventListener('pointermove', function (e) { gx = e.clientX; gy = e.clientY; }, { passive: true });
+    (function lerp() {
+      cx += (gx - cx) * 0.12; cy += (gy - cy) * 0.12;
+      glow.style.transform = 'translate3d(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px,0)';
+      gr = requestAnimationFrame(lerp);
+    })();
+  }
+
+  /* 12 — Pipeline path draw */
   var ioDraw = new IntersectionObserver(function (entries) {
     entries.forEach(function (en) {
       if (!en.isIntersecting) return;
@@ -189,13 +258,13 @@
           p.style.transition = 'stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1)';
           p.style.strokeDashoffset = 0;
         });
-      } catch (e) { /* non-rendered path */ }
+      } catch (err) { }
       ioDraw.unobserve(p);
     });
   }, { threshold: 0.3 });
   document.querySelectorAll('[data-draw]').forEach(function (p) { ioDraw.observe(p); });
 
-  /* 11 — Queue ticker rotation (token-queue live demo) */
+  /* 13 — Queue ticker rotation */
   document.querySelectorAll('[data-queue]').forEach(function (q) {
     if (reduced) return;
     var list = q.querySelector('.queue-list');
@@ -218,7 +287,7 @@
     }, 3200);
   });
 
-  /* 12 — Footer year + subtle header shadow state */
+  /* 14 — Footer year */
   document.querySelectorAll('[data-year]').forEach(function (el) {
     el.textContent = String(new Date().getFullYear());
   });

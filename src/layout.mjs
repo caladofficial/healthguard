@@ -70,26 +70,44 @@ export const NAV = [
 ];
 
 /* --------------------------------- LOGOS --------------------------------- */
-// HealthGuard mark: guardian shield + living pulse + evolve leaf.
-// Animated via CSS stroke-draw on load (see main.css .logo-draw). SVG so it is
-// razor-crisp at every size — the client forbade cut/blurry content at any zoom.
+// HealthGuard mark: guardian shield + living pulse + evolve leaf — gradient-lit
+// and stroke-drawn on load. SVG so it stays razor-crisp at every size.
+let LOGO_UID = 0; // unique gradient ids per inline instance (valid HTML)
 export function logoGuardian({ animated = true } = {}) {
   const cls = animated ? 'logo-draw' : '';
+  const g1 = `hg-${++LOGO_UID}`, g2 = `hp-${LOGO_UID}`;
   return `<svg class="logo-mark ${cls}" viewBox="0 0 48 48" role="img" aria-label="HealthGuard logo" fill="none">
-    <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/>
-    <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="var(--sage-deep)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-    <path class="ld ld-3" d="M30.2 12.6c2.9-.5 5.2.4 6.5 2.5-2.7 1.2-5 .8-6.5-2.5Z" fill="var(--sage)" stroke="none" opacity=".9"/>
+    <defs>
+      <linearGradient id="${g1}" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#22d3ee"/><stop offset="0.55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#e879f9"/>
+      </linearGradient>
+      <linearGradient id="${g2}" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#34d399"/><stop offset="1" stop-color="#22d3ee"/>
+      </linearGradient>
+    </defs>
+    <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#${g1})" stroke-width="2.2" stroke-linejoin="round"/>
+    <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#${g2})" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-3" d="M30.2 12.6c2.9-.5 5.2.4 6.5 2.5-2.7 1.2-5 .8-6.5-2.5Z" fill="#fbbf24" stroke="none" opacity=".95"/>
   </svg>`;
 }
 
 // EVOLVEX mark: two rising evolve-chevrons fused into an X — growth meeting engineering.
 export function logoEvolvex({ animated = true } = {}) {
   const cls = animated ? 'logo-draw' : '';
+  const g1 = `evx-${++LOGO_UID}`, g2 = `evy-${LOGO_UID}`;
   return `<svg class="logo-mark logo-mark--evx ${cls}" viewBox="0 0 48 48" role="img" aria-label="EVOLVEX logo" fill="none">
-    <path class="ld ld-1" d="M8 38 20 10l8 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-    <path class="ld ld-2" d="M40 38 28 10l-8 18" stroke="var(--bluegray-deep)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-    <path class="ld ld-3" d="M14 31h20" stroke="var(--sage-deep)" stroke-width="2.2" stroke-linecap="round"/>
-    <circle class="ld ld-4" cx="24" cy="7" r="2.4" fill="var(--amber)"/>
+    <defs>
+      <linearGradient id="${g1}" x1="8" y1="38" x2="28" y2="10" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/>
+      </linearGradient>
+      <linearGradient id="${g2}" x1="40" y1="38" x2="20" y2="10" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#e879f9"/><stop offset="1" stop-color="#60a5fa"/>
+      </linearGradient>
+    </defs>
+    <path class="ld ld-1" d="M8 38 20 10l8 18" stroke="url(#${g1})" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-2" d="M40 38 28 10l-8 18" stroke="url(#${g2})" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-3" d="M14 31h20" stroke="#34d399" stroke-width="2.2" stroke-linecap="round"/>
+    <circle class="ld ld-4" cx="24" cy="7" r="2.4" fill="#fbbf24"/>
   </svg>`;
 }
 
@@ -222,7 +240,7 @@ export function page({ slug, title, desc, family, body }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<meta name="theme-color" content="#F7F4EE">
+<meta name="theme-color" content="#070b18">
 <meta name="description" content="${desc.replace(/"/g, '&quot;')}">
 <meta property="og:title" content="${fullTitle.replace(/"/g, '&quot;')}">
 <meta property="og:description" content="${desc.replace(/"/g, '&quot;')}">
@@ -235,6 +253,8 @@ export function page({ slug, title, desc, family, body }) {
 <body data-family="${family || ''}" data-slug="${slug}">
 <canvas id="livingCanvas" aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
+<div class="aurora" aria-hidden="true"><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span></div>
+<div class="cursor-glow" aria-hidden="true"></div>
 ${header()}
 <main id="main">
 ${body}

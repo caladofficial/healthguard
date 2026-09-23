@@ -4,7 +4,7 @@
 
 export const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-/* HERO — split-text headline + art panel + spotlight + status chips */
+/* HERO — split-text headline + 3D art stage with floating glass chips */
 export function hero({ eyebrow, title, lead, art, chips = [], actions = [] }) {
   return `<section class="hero" data-spotlight>
     <div class="hero-spot" aria-hidden="true"></div>
@@ -18,6 +18,9 @@ export function hero({ eyebrow, title, lead, art, chips = [], actions = [] }) {
       </div>
       ${art ? `<figure class="hero-art" data-reveal data-reveal-delay="1">
         <div class="hero-art-frame"><img src="images/${art}" alt="" loading="eager" decoding="async"></div>
+        <div class="float-chip fc-1"><span class="fc-dot"></span>AI extraction ✓</div>
+        <div class="float-chip fc-2"><svg class="mini-ecg" viewBox="0 0 36 16" aria-hidden="true"><path d="M0 8 H6 L8 4 L10 13 L12 8 H18 L20 3 L22 13 L24 8 H36"/></svg>72 bpm</div>
+        <div class="float-chip fc-3"><span class="fc-dot"></span>94% confidence</div>
         <figcaption class="hero-art-cap">${esc(eyebrow || PRODUCT_CAP)}</figcaption>
       </figure>` : ''}
     </div>

@@ -329,6 +329,26 @@ Research (Part B.1) concluded the 2026-best approach is CSS-first components wit
 - *Why "PVT. LTD." and not "PTV. LTD."?* — standard Indian Private-Limited suffix; assumed typo (flagged in Part A header).
 - *Why svh over dvh in heroes?* — 2026 research rule "dvh for design, svh for guarantees" (B.2): the client demanded content never be cut, so guaranteed-fit units win wherever content must remain visible.
 
+### F.8 v2 redesign — "VITALITY ENGINE" (client revision: advanced/colorful/3D/shockwave/heartbeat)
+**Client brief for v2:** *too simple → more advanced UI + animation, more colorful and catchy, 3D animated, shockwave animation, heartbeat screensaver, all combined into one single best UI; replace the simple images.* The v2 work deliberately supersedes the v1 matte-minimal palette at the client's explicit request (the spec's §22 "no neon/glow" is overridden by the product owner's direct instruction — noted here as a conscious, recorded departure).
+
+What changed and why:
+| Change | What it is | Why |
+|---|---|---|
+| Deep aurora theme | Midnight-indigo canvas + cyan/violet/fuchsia/emerald/rose/amber energy palette, glassmorphism cards, gradient headlines, glowing shadows | "More colorful and catchy" — one unified vivid system instead of matte neutrals |
+| Family accent coding | `--acc-1/--acc-2` per page family (docs=cyan/emerald, care=rose/amber, trust=violet/fuchsia, data=emerald/cyan, company=amber/rose…) | Colorful *and* navigable — each section of the platform has its own energy signature |
+| **Heartbeat screensaver** | Living Health Canvas v2: WebGL1 fullscreen shader — volumetric aurora bands + scrolling ECG trace with true lub-dub envelope + heart-core glow + vignette thump, period 1.25s | The explicit "heartbeat screensaver" ask, fused with the spec's Living Health Canvas concept |
+| **Shockwave animation** | (a) GLSL shockwave rings emitted from the heart-point on every beat; (b) DOM double energy rings on every tap/click (`.shock-ring`); (c) auto-shockwave pulse on primary CTAs every 2.5s; (d) entry-shockwave hook (`data-shock-auto`) | The explicit "shock wave animation" ask — layered at canvas, interaction and ambient levels |
+| **3D everywhere** | CSS 3D: perspective hero stage with pointer-parallax art frame (`rotateX/Y`), floating glass micro-UI chips at `translateZ(38px)` (AI extraction ✓ / 72 bpm mini-ECG / 94% confidence), ±7° damped tilt-cards with pointer-tracked glare, 3D dropdown panels (`rotateX` unfold), floating aurora glass orbs with specular highlights, `translateZ` card icons | "Make it like 3d animated" — real depth via perspective/parallax without a 155 KB Three.js payload (and WebGPU-free compatibility) |
+| Gradient logo system | Both marks re-lit with cyan→violet→fuchsia gradients (HealthGuard) and cyan/violet + fuchsia/blue (EVOLVEX) + amber/emerald sparks; stroke-draw preserved; unique gradient IDs per instance (valid HTML — QA checks duplicates) | "Properly advanced logo" + colorful brief; SVG keeps infinite scalability |
+| Cursor energy glow | Screen-blend radial glow trailing the pointer (fine pointers only) | "Catchy/advanced" premium feel seen in top 2026 landing pages |
+| New imagery (10/10) | Cinematic 3D octane-style renders: glowing filament heart + shockwave rings (hero), holographic deck panels, glass documents dissolving into particle swarms, neural constellation, glossy token orbs with halos, holographic consult pair, crystal shield + forcefield, interlocking energy rings, luminous silk chronology, rising gradient chevrons | "Change the images they are too simple" — dramatic volumetric renders replacing the flat matte stills; same filenames so all 29 pages upgrade at once |
+| Auto-fit contract kept | v1 responsive engine (clamp/minmax/svh/pointer:coarse/card-collapse) retained verbatim under the new skin | Client's prime directive is standing: no content cut/uneven at any width incl. desktop-mode mobile |
+| Reduced motion kept | All v2 motion collapses to static under `prefers-reduced-motion`; WebGL draws one frame | Accessibility mandate still holds even in the flashy theme |
+| Perf guards | DPR cap 2, shader pause on hidden tab, hover-glare/tilt disabled on coarse pointers, bobbing chips disabled on touch | "GPU-friendly" from the spec still applies to the fancy version |
+
+Verification: `node --check` on both JS engines passes; automated QA re-run on all 29 pages — ALL v2 CHECKS PASSED ✓ (branding, chrome, v2 stage layers, unique IDs, links, images, no leaks).
+
 ---
 
-*End of Research & Build Log — compiled and executed on 2026-09-23 by the HealthGuard build, for EVOLVEX IT SOLUTIONS PVT. LTD.*
+*End of Research & Build Log — compiled and executed on 2026-09-23 by the HealthGuard build (v1 + v2 "Vitality Engine"), for EVOLVEX IT SOLUTIONS PVT. LTD.*
