@@ -1,0 +1,9 @@
+# Secrets never enter git (client tokens live in .env only)
+.env
+.env.local
+*.pem
+node_modules/
+
+# OS noise
+.DS_Store
+Thumbs.db
