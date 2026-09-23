@@ -86,13 +86,13 @@
   }
 
   function tone(a, light) {
-    // rose #fb7185 → fuchsia #e879f9 → cyan #22d3ee
+    // classy trio: dusty rose #c88c78 → champagne #d8b980 → pearl #ebe4d7
     if (a < 0.5) {
       var u = a * 2;
-      return 'rgba(' + Math.round(251 + (232 - 251) * u) + ',' + Math.round(113 + (121 - 113) * u) + ',' + Math.round(133 + (249 - 133) * u) + ',' + (light ? 0.75 : 0.85) + ')';
+      return 'rgba(' + Math.round(200 + (216 - 200) * u) + ',' + Math.round(140 + (185 - 140) * u) + ',' + Math.round(120 + (128 - 120) * u) + ',' + (light ? 0.7 : 0.8) + ')';
     }
     var v = (a - 0.5) * 2;
-    return 'rgba(' + Math.round(232 + (34 - 232) * v) + ',' + Math.round(121 + (211 - 121) * v) + ',' + Math.round(249 + (238 - 249) * v) + ',' + (light ? 0.75 : 0.85) + ')';
+    return 'rgba(' + Math.round(216 + (235 - 216) * v) + ',' + Math.round(185 + (228 - 185) * v) + ',' + Math.round(128 + (215 - 128) * v) + ',' + (light ? 0.7 : 0.8) + ')';
   }
 
   function frame(now) {
@@ -132,7 +132,7 @@
         if (a === 0) c.moveTo(pr.sx, pr.sy); else c.lineTo(pr.sx, pr.sy);
       }
       c.closePath();
-      c.strokeStyle = light ? 'rgba(14,116,144,0.22)' : 'rgba(34,211,238,0.16)';
+      c.strokeStyle = light ? 'rgba(122,95,35,0.20)' : 'rgba(216,185,128,0.15)';
       c.lineWidth = 1;
       c.stroke();
     }
@@ -155,12 +155,12 @@
       sh.r += 4.2; sh.a *= 0.945;
       if (sh.a < 0.03) { shocks.splice(s, 1); continue; }
       c.beginPath(); c.arc(sh.x, sh.y, sh.r, 0, Math.PI * 2);
-      c.strokeStyle = 'rgba(232,121,249,' + sh.a.toFixed(3) + ')';
-      c.lineWidth = 1.6;
+      c.strokeStyle = 'rgba(216,185,128,' + sh.a.toFixed(3) + ')';
+      c.lineWidth = 1.4;
       c.stroke();
       c.beginPath(); c.arc(sh.x, sh.y, sh.r * 0.7, 0, Math.PI * 2);
-      c.strokeStyle = 'rgba(34,211,238,' + (sh.a * 0.7).toFixed(3) + ')';
-      c.lineWidth = 1.2;
+      c.strokeStyle = 'rgba(201,138,138,' + (sh.a * 0.6).toFixed(3) + ')';
+      c.lineWidth = 1;
       c.stroke();
     }
 

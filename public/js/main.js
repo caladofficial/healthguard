@@ -64,8 +64,12 @@
       document.body.classList.add('nav-out');
       shockAt(x, y);
       setTimeout(function () { location.href = a.href; }, 300);
+      // hard cleanup if navigation is blocked — nothing may linger on screen
+      setTimeout(function () {
+        if (fx.parentNode) fx.parentNode.removeChild(fx);
+        document.body.classList.remove('nav-out');
+      }, 1100);
     });
-    requestAnimationFrame(function () { document.body.classList.add('nav-in'); });
     window.addEventListener('pageshow', function (e) {
       if (e.persisted) document.body.classList.remove('nav-out');
     });

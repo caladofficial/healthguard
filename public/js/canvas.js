@@ -39,26 +39,26 @@
     '  float period = 1.25;',
     '  float ph = fract(t / period);',
     '  float hb = beat(ph);',
-    // base: deep indigo (dark) → luminous pearl (light)
-    '  vec3 baseD = mix(vec3(0.024, 0.035, 0.09), vec3(0.05, 0.06, 0.16), uv.y);',
-    '  vec3 baseL = mix(vec3(0.93, 0.94, 0.985), vec3(0.88, 0.91, 0.97), uv.y);',
+    // base: warm charcoal (dark) → soft cream (light) — classy palettes
+    '  vec3 baseD = mix(vec3(0.055, 0.052, 0.048), vec3(0.095, 0.088, 0.08), uv.y);',
+    '  vec3 baseL = mix(vec3(0.955, 0.94, 0.90), vec3(0.915, 0.895, 0.85), uv.y);',
     '  vec3 col = mix(baseD, baseL, u_theme);',
-    // aurora bands
+    // slow satin bands: champagne + dusty sage
     '  float a1 = sin(uv.x * 3.0 + t * 0.11 + sin(uv.y * 2.0 + t * 0.07));',
     '  float a2 = sin(uv.x * 5.0 - t * 0.08 + cos(uv.y * 3.0 - t * 0.05));',
     '  float band1 = smoothstep(0.55, 0.0, abs(uv.y - 0.42 - a1 * 0.05));',
     '  float band2 = smoothstep(0.6, 0.0, abs(uv.y - 0.6 - a2 * 0.045));',
-    '  float ai = mix(1.0, 0.55, u_theme);', // gentler on light
-    '  col += vec3(0.10, 0.55, 0.75) * band1 * 0.045 * (0.85 + 0.3 * hb) * ai;',
-    '  col += vec3(0.45, 0.22, 0.85) * band2 * 0.05 * (0.85 + 0.3 * hb) * ai;',
-    // ECG
+    '  float ai = mix(1.0, 0.5, u_theme);',
+    '  col += vec3(0.72, 0.58, 0.30) * band1 * 0.035 * (0.85 + 0.3 * hb) * ai;',
+    '  col += vec3(0.45, 0.50, 0.42) * band2 * 0.04 * (0.85 + 0.3 * hb) * ai;',
+    // ECG — warm gold thread
     '  float ephase = fract(uv.x * 1.6 - t * 0.12);',
     '  float ey = ecg(ephase);',
     '  float dy = abs(uv.y - 0.32 - ey * 0.055);',
     '  float line = 0.0032 / (dy + 0.0016);',
-    '  vec3 lineC = mix(vec3(0.13, 0.85, 0.65), vec3(0.02, 0.55, 0.42), u_theme);',
+    '  vec3 lineC = mix(vec3(0.78, 0.63, 0.33), vec3(0.55, 0.44, 0.18), u_theme);',
     '  col += lineC * line * (0.05 + 0.045 * hb) * ai;',
-    // shockwave rings
+    // shockwave rings — champagne / ivory / dusty rose
     '  vec2 hp = vec2(0.5, 0.45);',
     '  float d = distance(uv * asp, hp * asp);',
     '  for (int i = 0; i < 3; i++) {',
@@ -67,21 +67,20 @@
     '    float r = rp * 0.75;',
     '    float ring = 0.0042 / (abs(d - r) + 0.004);',
     '    float fade = (1.0 - rp) * (1.0 - rp);',
-    '    vec3 rc = (i == 0) ? vec3(0.13, 0.83, 0.93) : ((i == 1) ? vec3(0.55, 0.36, 0.96) : vec3(0.2, 0.82, 0.6));',
+    '    vec3 rc = (i == 0) ? vec3(0.82, 0.66, 0.35) : ((i == 1) ? vec3(0.82, 0.76, 0.62) : vec3(0.65, 0.4, 0.35));',
     '    rc = mix(rc, rc * 0.55, u_theme);',
-    '    col += rc * ring * fade * 0.03 * ai;',
+    '    col += rc * ring * fade * 0.028 * ai;',
     '  }',
-    // heart core
+    // heart core — dusty garnet
     '  float core = 0.012 / (d + 0.02);',
-    '  col += mix(vec3(0.9, 0.35, 0.55), vec3(0.8, 0.1, 0.3), u_theme) * core * (0.02 + 0.03 * hb) * ai;',
-    // motes
+    '  col += mix(vec3(0.6, 0.28, 0.26), vec3(0.5, 0.12, 0.12), u_theme) * core * (0.02 + 0.03 * hb) * ai;',
+    // motes — warm ivory dust
     '  for (int i = 0; i < 8; i++) {',
     '    float fi = float(i);',
     '    vec2 mp = vec2(fract(fi * 0.173 + t * 0.004 * (0.4 + fi * 0.05)), fract(fi * 0.291 + t * 0.006));',
     '    float md = distance(uv * asp, mp * asp);',
-    '    col += mix(vec3(0.4, 0.6, 0.9), vec3(0.2, 0.3, 0.55), u_theme) * 0.0012 / (md + 0.01) * ai;',
+    '    col += mix(vec3(0.75, 0.68, 0.52), vec3(0.45, 0.4, 0.3), u_theme) * 0.0012 / (md + 0.01) * ai;',
     '  }',
-    // vignette (inverted feel on light)
     '  float vig = smoothstep(1.25, 0.35, distance(uv, vec2(0.5)));',
     '  col *= mix(0.75 + 0.25 * vig, 1.03 - 0.05 * (1.0 - vig), u_theme);',
     '  col *= 0.96 + 0.04 * hb;',

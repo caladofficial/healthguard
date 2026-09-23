@@ -360,6 +360,33 @@ Client instruction: *"Do all"* — accepting every proposed enhancement in one p
 
 Verification: `node --check` passes on all three JS engines; automated QA re-run — **ALL v3 CHECKS PASSED ✓** on 29 pages (company branding, chrome, v2 stage layers, v3 features [heart.js / theme-toggle / hg-theme], unique IDs, links, images, zero leaks).
 
+### F.10 v4 "GALLERY" — classy re-skin + screenshot bug fixes (client report with screenshot)
+**Client brief:** *"Change the colour theme of the UI as well as the generated images, make it more classy but not like this… remove that circle why is it there in between… many texts are not visible or overlapped, many more issues — refining everything."*
+
+Root-cause analysis of the screenshot:
+1. **Invisible H1** ("Your Health. Clearly Organized." rendered as empty space) — the v2 gradient headline used `background-clip: text`, which breaks when the SplitText engine wraps words in *transformed* child spans (each `.sp` becomes its own paint layer and the parent gradient never reaches the glyphs). **Fix: all headings are SOLID colors now** — classier and immune to the bug.
+2. **Stuck circle mid-screen** — `body.nav-in::after` (the entrance-ripple ring at `top:42%`) ran `animation … backwards` **without `forwards`**, so after 0.8s it reverted to its resting state: a permanent 24px ring floating over the text (plus its `::before` wash stuck at full opacity). **Fix: entrance FX removed entirely**; page-transition rings now use `animation-fill-mode: both` and the `.page-fx` node is force-removed at 1.1s even if navigation is blocked; `nav-out` is force-cleared too.
+3. **Low-contrast / visually tangled text** over the busy neon field — **fix: hero-copy radial scrim behind text, `text-shadow` lift on dark, calmer background stage (lower band/mote intensity), grain opacity 0.3**.
+4. **Float-chips overlapping hero art on phones** (as seen in screenshot) — at ≤42rem the three glass chips now flow as a clean row **below** the image instead of floating over it.
+5. **"Too neon, not classy"** — full re-skin (below) + **all 10 images regenerated** as elegant editorial still-life photography.
+
+v4 "Gallery" design language:
+| Element | v3 (neon) | v4 (classy) |
+|---|---|---|
+| Base | midnight indigo, neon cyan/violet aurora | **warm charcoal (#0f1116) with champagne/gold satin bands** |
+| Accents | cyan, fuchsia, emerald, rose neons | **champagne gold, gold, garnet, deep teal, dusty sage, sapphire, amethyst** (muted jewel family coding) |
+| Headlines | rainbow gradient clip | **solid warm ivory serif with soft depth shadow** |
+| Buttons | neon gradient glow | **champagne→gold fill with deep-ink label, restrained shine** |
+| Images | octane neon cyber renders | **fine-art still lifes: frosted glass + brushed brass + charcoal silk, gallery light** (10/10 regenerated) |
+| Heart screen | cyan/fuchsia additive | **dusty rose → champagne → pearl** particles; gold/rose beat rings |
+| WebGL field | neon ECG + rings | **gold ECG thread, champagne/ivory/dusty-rose rings, garnet core** |
+| Light theme | electric daylight | **cream paper (#f7f4ec) + gold + ink — heritage-luxury daylight** |
+| FX intensity | heavy glows | hairlines, soft shadows, thin gold rings |
+
+Also: compact header under 30rem (brand-sub hidden there — full **EVOLVEX IT SOLUTIONS PVT. LTD.** remains in every footer, drawer and hero eyebrow), hero `min-height` relaxed to `min(78svh, 44rem)`, eyebrow letter-spacing tightened on phones.
+
+Verification: `node --check` ×3 pass; regression greps confirm **0 live `background-clip:text`** and **0 `nav-in` code** (documented in CSS comments only); automated QA — **ALL v4 CHECKS PASSED ✓** across 29 pages.
+
 ---
 
-*End of Research & Build Log — compiled and executed on 2026-09-23 by the HealthGuard build (v1 + v2 "Vitality Engine" + v3 "Do All"), for EVOLVEX IT SOLUTIONS PVT. LTD.*
+*End of Research & Build Log — compiled and executed on 2026-09-23/24 by the HealthGuard build (v1 → v2 "Vitality Engine" → v3 "Do All" → v4 "Gallery"), for EVOLVEX IT SOLUTIONS PVT. LTD.*
