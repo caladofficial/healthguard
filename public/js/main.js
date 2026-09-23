@@ -15,6 +15,62 @@
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var coarse = window.matchMedia('(pointer: coarse)').matches;
 
+  /* 0a — THEME TOGGLE (dark ⇄ light "Luminous Daylight", persisted + system-aware) */
+  (function themeInit() {
+    var root = document.documentElement;
+    var meta = document.querySelector('meta[name="theme-color"]');
+    function syncMeta(t) { if (meta) meta.setAttribute('content', t === 'light' ? '#eef1f8' : '#070b18'); }
+    function apply(t) {
+      root.setAttribute('data-theme', t);
+      try { localStorage.setItem('hg-theme', t); } catch (e) { }
+      syncMeta(t);
+      window.dispatchEvent(new CustomEvent('hg:theme', { detail: { theme: t } }));
+    }
+    var init = root.getAttribute('data-theme');
+    if (!init) {
+      try { init = localStorage.getItem('hg-theme'); } catch (e) { }
+      init = init || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      root.setAttribute('data-theme', init);
+    }
+    syncMeta(init);
+    document.querySelectorAll('.theme-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        apply(next);
+        if (typeof shockAt === 'function') shockAt(innerWidth - 56, 42); // shock burst from the toggle
+      });
+    });
+  })();
+
+  /* 0b — PAGE-TRANSITION SHOCKWAVES (exit rings at click point → navigate; entrance ripple) */
+  (function transitions() {
+    if (reduced) return;
+    document.addEventListener('click', function (e) {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var a = e.target.closest && e.target.closest('a[href]');
+      if (!a || a.target === '_blank') return;
+      var href = a.getAttribute('href') || '';
+      if (!/\.html(\?|#|$)/.test(href)) return;         // internal pages only
+      if (/^https?:\/\//i.test(href) && href.indexOf(location.host) === -1) return; // external: let go
+      e.preventDefault();
+      var x = e.clientX, y = e.clientY;
+      var fx = document.createElement('div');
+      fx.className = 'page-fx';
+      fx.innerHTML = '<div class="pf-wash" style="--px:' + x + 'px;--py:' + y + 'px"></div>'
+        + '<span class="pf-ring" style="left:' + x + 'px;top:' + y + 'px"></span>'
+        + '<span class="pf-ring p2" style="left:' + x + 'px;top:' + y + 'px"></span>'
+        + '<span class="pf-ring p3" style="left:' + x + 'px;top:' + y + 'px"></span>';
+      document.body.appendChild(fx);
+      document.body.classList.add('nav-out');
+      shockAt(x, y);
+      setTimeout(function () { location.href = a.href; }, 300);
+    });
+    requestAnimationFrame(function () { document.body.classList.add('nav-in'); });
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) document.body.classList.remove('nav-out');
+    });
+  })();
+
   /* 1 — Header condense on scroll */
   var header = document.getElementById('siteHeader');
   function onScroll() {

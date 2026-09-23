@@ -159,6 +159,15 @@ export function header() {
       ${navMarkup()}
     </nav>
     <div class="header-actions">
+      <button class="theme-toggle" type="button" aria-label="Toggle color theme (dark / light)">
+        <svg class="tt-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/>
+        </svg>
+        <svg class="tt-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/>
+        </svg>
+      </button>
       <a class="btn btn-primary btn-sm" href="contact.html">Get Started</a>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -247,6 +256,7 @@ export function page({ slug, title, desc, family, body }) {
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${PRODUCT} — ${COMPANY}">
 <title>${fullTitle.replace(/"/g, '&quot;')}</title>
+<script>try{var _t=localStorage.getItem('hg-theme');if(!_t)_t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',_t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z' fill='%235F7A63'/%3E%3Cpath d='M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9' stroke='%23F7F4EE' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/main.css">
 </head>
@@ -261,6 +271,7 @@ ${body}
 </main>
 ${footer()}
 <script src="js/canvas.js" defer></script>
+<script src="js/heart.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>
 </html>`;

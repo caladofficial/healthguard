@@ -349,6 +349,17 @@ What changed and why:
 
 Verification: `node --check` on both JS engines passes; automated QA re-run on all 29 pages — ALL v2 CHECKS PASSED ✓ (branding, chrome, v2 stage layers, unique IDs, links, images, no leaks).
 
+### F.9 v3 — "DO ALL" pass: 3D particle heart + page-transition shockwaves + theme toggle
+Client instruction: *"Do all"* — accepting every proposed enhancement in one pass.
+
+| Feature | Implementation | Notes / why |
+|---|---|---|
+| **3D particle heart that follows the cursor** | `public/js/heart.js` — ~400-point 3D heart cloud (cardioid curve extruded into z-slices + shell-biased scatter) with true perspective projection `f/(f+z)`, slow rotY/rotX, **lerped drift toward the pointer** (ambient drift on touch), scale-thump on the shared 1.25s lub-dub envelope, and **mini shockwave rings emitted at each beat peak**. Additive-blended rose→fuchsia→cyan depth-toned particles + 2 orbit rings. DPR ≤1.5, pauses when hidden, static frame for reduced-motion. | The heart *lives* behind the content (z0 under main z1) so it never blocks reading — it peeks through the glass cards. Beat period matches the WebGL screensaver exactly → one organism. |
+| **Page-transition shockwaves** | `main.js` 0b + `.page-fx` CSS — plain left-clicks on internal `.html` links are intercepted: 3 expanding energy rings + a radial color wash fire from the exact click point, page fades to 35% and navigates at 300ms. Modifier-keys/middle-click/new-tab/external links bypass the FX. Every page load plays a center entrance ripple (`body.nav-in`). `pageshow` restores state on bfcache. | Real "next-gen" navigation feel while staying accessible: keyboard Enter on links navigates instantly, reduced-motion skips all FX. |
+| **Dark ⇄ Light theme toggle** | Sun/moon morph button in the header (visible at every width), persisted in `localStorage('hg-theme')`, initialized from `prefers-color-scheme`, no-flash inline `<head>` script paints the right theme before first frame. Light theme = **"Luminous Daylight"**: pearl aurora background, ink-anchored gradient headlines, white-glass cards, family accents swapped to AA-safe deep variants (e.g. care rose→`#be123c`), multiply-blend cursor glow. The WebGL field is **theme-aware** via a `u_theme` uniform (pearl base, gentler aurora, deeper ECG); the 2D fallback reads `data-theme` per frame. Clicking the toggle fires a shock burst. | One click flips the entire 29-page experience. Both themes are colorful; light keeps the energy with readable contrast (AA text targets). `meta[name=theme-color]` follows the theme. |
+
+Verification: `node --check` passes on all three JS engines; automated QA re-run — **ALL v3 CHECKS PASSED ✓** on 29 pages (company branding, chrome, v2 stage layers, v3 features [heart.js / theme-toggle / hg-theme], unique IDs, links, images, zero leaks).
+
 ---
 
-*End of Research & Build Log — compiled and executed on 2026-09-23 by the HealthGuard build (v1 + v2 "Vitality Engine"), for EVOLVEX IT SOLUTIONS PVT. LTD.*
+*End of Research & Build Log — compiled and executed on 2026-09-23 by the HealthGuard build (v1 + v2 "Vitality Engine" + v3 "Do All"), for EVOLVEX IT SOLUTIONS PVT. LTD.*
