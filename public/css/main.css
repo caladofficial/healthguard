@@ -433,7 +433,7 @@ code, pre { font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consol
 .pipe-line { stroke-linecap: round; stroke-dasharray: 3 3; animation: pipe-flow 2.6s linear infinite; }
 @keyframes pipe-flow { to { stroke-dashoffset: -12; } }
 [data-draw] { stroke-dashoffset: 0; }
-.pipe-nodes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), minmax(0, 1fr))); display: flex; flex-wrap: wrap; gap: 0.5rem 0.4rem; }
+.pipe-nodes { display: flex; flex-wrap: wrap; gap: 0.5rem 0.4rem; }
 .pipe-nodes li {
   display: inline-flex; align-items: center; gap: 0.4rem;
   font-size: var(--fs-small); font-weight: 600; color: var(--text-soft);
