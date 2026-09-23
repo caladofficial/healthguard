@@ -389,4 +389,67 @@ Verification: `node --check` ×3 pass; regression greps confirm **0 live `backgr
 
 ---
 
-*End of Research & Build Log — compiled and executed on 2026-09-23/24 by the HealthGuard build (v1 → v2 "Vitality Engine" → v3 "Do All" → v4 "Gallery"), for EVOLVEX IT SOLUTIONS PVT. LTD.*
+### PART G — ML TRIAGE RISK ENGINE (HealthGuard Model) — 2026-09-24
+
+> Brief (user): *"make and train a model with clustering, de-clustering, k-means or neuro or xgboost or skill-like grouping but make a high artillery model to be perfect for checking the risk ratio and then give the triage with perfection… take your time in training but I need perfection anyhow."* Deliverable: trained risk-ratio + T0–T4 triage engine, rigorously evaluated, self-collected data.
+
+#### G.1 Data Collection & Provenance Decision
+- **Kaggle credential issue:** `uploads/kaggle.json` contains only `{"username": "KGA…"}` — **no API key** → Kaggle CLI auth impossible. Mitigation: collected from **UCI ML Repository + OpenML** (license-permissive, no auth). Flagged to user with optional enhancement path (full Kaggle key).
+- Per spec §13, every dataset has license + provenance recorded in `healthguard-ml/data/raw/MANIFEST.json`.
+- **Dataset roster (spec §11 families):** family A public-repo clinical = 6 real sets; family E synthetic = sepsis + triage cohort (marked `synthetic: true` in manifest + model card).
+
+| Set | Source | Task | Size |
+|---|---|---|---|
+| cad | UCI 4 cohorts (Cleveland/Hungarian/Switzerland/VA heart-disease) | binary CAD | 920×13, 411/509 |
+| cad_aux | UCI 45 heart-statlog (extra CAD views) | binary | 270×13 |
+| diabetes | Pima Indians (OpenML 37; UCI 34 tar.Z legacy unusable) | binary | 768×8 |
+| fetal_risk | UCI 193 Cardiotocography (`Raw Data` sheet, NSP 1/2/3) | 3-class | 2,126×37 |
+| maternal_risk | UCI 863 Maternal Health Risk | 3-class | 1,014×6 |
+| liver | UCI 225 ILPD | binary | 583×10 |
+| sepsis | synthetic family-E (qSOFA-structured physiologic generator) | binary | 12,000×7 |
+| triage cohort | synthetic family-E, 45k ED cases, deterministic ESI/ATS protocol labels + reason codes + 5% inter-rater noise | T0–T4 | 45,000×47 |
+
+#### G.2 Architecture Decision ("high artillery") — and reasons
+
+| Stage | Choice | Reason |
+|---|---|---|
+| Phenotyping | KMeans (silhouette-chosen k) + GaussianMixture + DBSCAN | user demanded clustering + k-means; GMM soft posteriors feed gating; DBSCAN audits density/noise |
+| De-clustering | MoE: per-cluster calibrated XGB experts + GMM-posterior gating (0.45 global / 0.55 gated-expert blend) | user demanded "de clustering" — decomposing the mix into cluster-specialized experts and recomposing by gating is the literal request; tiny/missing-class clusters get remapped-label experts or fall back to the global model |
+| Grouping | StackingClassifier (XGB+LGBM+RF+Neuro MLP(64,32)) + soft-vote candidate | user demanded "skill-like grouping", neuro and xgboost — heterogeneous stack is the strongest sklearn grouping |
+| Calibration | CalibratedClassifierCV (isotonic) | a risk **ratio** is meaningless on uncalibrated scores |
+| Risk ratio | p ÷ holdout baseline prevalence, tiered <1.2 / <2 / <3.5 / ≥3.5 | interpretable relative-risk flag; tiering avoids false precision (spec §2) |
+| Triage fusion | 0.4·XGB-tuned + 0.3·Stack + 0.3·MoE over expert-labeled cohort | "fusion of model outputs with expert rules + human override" (spec §5) |
+| Safety layer | red-flag rules ALWAYS escalate upward + probability floors (P(T0)+P(T1)≥0.30→≤T1; ≥0.14→≤T2) + model/rules disagreement → `requires_human_review` + confidence halved | under-triage is the costly error; rules give a safety floor the model cannot breach |
+| Evaluation | 20% stratified golden holdout (SEED=42) + ROC/PR-AUC, Brier, ECE(10-bin), sens@95spec, **under-triage T0 / T0-T1**, over-triage | "perfection" = calibrated + safety-audited, not just accuracy |
+
+Clustering report highlights (`reports/cluster_report.json`): fetal_risk k=8 with pure risk-tier phenotypes (purity 0.9–1.0); maternal_risk k=6 with severity-mixed phenotypes; liver k=2 (silhouette 0.46); GMM↔KMeans agreement 0.82–0.97 on the well-separated sets.
+
+#### G.3 Training Record (golden 20% holdout, stratified, SEED=42 — `reports/metrics.json` authoritative)
+
+| Head | Winner | Key metrics (holdout) |
+|---|---|---|
+| cad (4 UCI cohorts) | **MoE de-clustered** | ROC-AUC **0.919** / PR-AUC 0.924 / Brier 0.112 / ECE 0.058 / sens@95spec 0.696 |
+| diabetes (Pima) | stack group | 0.820 / 0.730 / 0.162 / ECE 0.059 |
+| fetal_risk (CTG NSP) | xgb tuned | **OVR-AUC 0.9977** |
+| maternal_risk | stack group | **OVR-AUC 0.9486** |
+| liver (ILPD) | stack group | 0.821 / PR 0.919 |
+| sepsis (synthetic E) | stack group | 0.633 — *noise-limited by construction* (5% label noise + overlapping qSOFA strata) |
+| cad_aux (heart-statlog) | xgb tuned | 0.903 / 0.828 |
+| **Triage T0–T4 fusion** | 0.4·XGB + 0.3·Stack + 0.3·MoE + rule override | per-class recall **T0 0.911 / T1 0.974 / T2 0.910 / T3 0.960 / T4 0.899**; ECE(T1) 0.008 |
+
+Safety audit (9,000-case golden set):
+- **Deep T0 under-triage (T0→T2-or-later): 0.00%** ← the safety-critical error, zero occurrences (rules + floors guarantee).
+- T0 down-triage: 8.92% — **all of it adjacent T0→T1** (patient still flagged "very urgent"; never routine).
+- T0/T1 under-triage beyond adjacent band: **1.15%**. Over-triage (T3/T4→T1/T0): **0.24%**.
+- `requires_human_review` flag rate 0.47%; every response carries reason codes + confidence + disclaimer.
+
+Inference smoke (case_example.json — septic shock: age 62, SBP 88, qSOFA 2): → **T0 emergency escalation**, reasons `SHOCK_HYPOTENSION;SEPSIS_QSOFA`, confidence 0.974, risk ratios (CAD 1.67 moderate, sepsis 1.06, diabetes 0.36 low…). Ensemble votes unanimous (XGB 0.98 / Stack 0.97 / MoE 0.97).
+
+Training cost: ~35 min wall (7 specialist heads + 45k triage fusion; XGB randomized search 14×4-fold per head; isotonic calibration 3-fold throughout).
+
+#### G.4 Interpretation & Guardrails
+- AI assistive only — never a diagnosis; T0–T4 = workflow urgency. T4 = follow-up, never "you are fine". All inference responses carry the disclaimer + `requires_human_review`. (Spec §20–21, §28–30.)
+
+---
+
+*End of Research & Build Log — compiled and executed on 2026-09-23/24 by the HealthGuard build (v1 → v2 "Vitality Engine" → v3 "Do All" → v4 "Gallery" → G ML Triage Risk Engine), for EVOLVEX IT SOLUTIONS PVT. LTD.*
