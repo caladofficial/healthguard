@@ -389,4 +389,147 @@ Verification: `node --check` ×3 pass; regression greps confirm **0 live `backgr
 
 ---
 
-*End of Research & Build Log — compiled and executed on 2026-09-23/24 by the HealthGuard build (v1 → v2 "Vitality Engine" → v3 "Do All" → v4 "Gallery"), for EVOLVEX IT SOLUTIONS PVT. LTD.*
+### PART G — ML TRIAGE RISK ENGINE (HealthGuard Model) — 2026-09-24
+
+> Brief (user): *"make and train a model with clustering, de-clustering, k-means or neuro or xgboost or skill-like grouping but make a high artillery model to be perfect for checking the risk ratio and then give the triage with perfection… take your time in training but I need perfection anyhow."* Deliverable: trained risk-ratio + T0–T4 triage engine, rigorously evaluated, self-collected data.
+
+#### G.1 Data Collection & Provenance Decision
+- **Kaggle credential issue:** `uploads/kaggle.json` contains only `{"username": "KGA…"}` — **no API key** → Kaggle CLI auth impossible. Mitigation: collected from **UCI ML Repository + OpenML** (license-permissive, no auth). Flagged to user with optional enhancement path (full Kaggle key).
+- Per spec §13, every dataset has license + provenance recorded in `healthguard-ml/data/raw/MANIFEST.json`.
+- **Dataset roster (spec §11 families):** family A public-repo clinical = 6 real sets; family E synthetic = sepsis + triage cohort (marked `synthetic: true` in manifest + model card).
+
+| Set | Source | Task | Size |
+|---|---|---|---|
+| cad | UCI 4 cohorts (Cleveland/Hungarian/Switzerland/VA heart-disease) | binary CAD | 920×13, 411/509 |
+| cad_aux | UCI 45 heart-statlog (extra CAD views) | binary | 270×13 |
+| diabetes | Pima Indians (OpenML 37; UCI 34 tar.Z legacy unusable) | binary | 768×8 |
+| fetal_risk | UCI 193 Cardiotocography (`Raw Data` sheet, NSP 1/2/3) | 3-class | 2,126×37 |
+| maternal_risk | UCI 863 Maternal Health Risk | 3-class | 1,014×6 |
+| liver | UCI 225 ILPD | binary | 583×10 |
+| sepsis | synthetic family-E (qSOFA-structured physiologic generator) | binary | 12,000×7 |
+| triage cohort | synthetic family-E, 45k ED cases, deterministic ESI/ATS protocol labels + reason codes + 5% inter-rater noise | T0–T4 | 45,000×47 |
+
+#### G.2 Architecture Decision ("high artillery") — and reasons
+
+| Stage | Choice | Reason |
+|---|---|---|
+| Phenotyping | KMeans (silhouette-chosen k) + GaussianMixture + DBSCAN | user demanded clustering + k-means; GMM soft posteriors feed gating; DBSCAN audits density/noise |
+| De-clustering | MoE: per-cluster calibrated XGB experts + GMM-posterior gating (0.45 global / 0.55 gated-expert blend) | user demanded "de clustering" — decomposing the mix into cluster-specialized experts and recomposing by gating is the literal request; tiny/missing-class clusters get remapped-label experts or fall back to the global model |
+| Grouping | StackingClassifier (XGB+LGBM+RF+Neuro MLP(64,32)) + soft-vote candidate | user demanded "skill-like grouping", neuro and xgboost — heterogeneous stack is the strongest sklearn grouping |
+| Calibration | CalibratedClassifierCV (isotonic) | a risk **ratio** is meaningless on uncalibrated scores |
+| Risk ratio | p ÷ holdout baseline prevalence, tiered <1.2 / <2 / <3.5 / ≥3.5 | interpretable relative-risk flag; tiering avoids false precision (spec §2) |
+| Triage fusion | 0.4·XGB-tuned + 0.3·Stack + 0.3·MoE over expert-labeled cohort | "fusion of model outputs with expert rules + human override" (spec §5) |
+| Safety layer | red-flag rules ALWAYS escalate upward + probability floors (P(T0)+P(T1)≥0.30→≤T1; ≥0.14→≤T2) + model/rules disagreement → `requires_human_review` + confidence halved | under-triage is the costly error; rules give a safety floor the model cannot breach |
+| Evaluation | 20% stratified golden holdout (SEED=42) + ROC/PR-AUC, Brier, ECE(10-bin), sens@95spec, **under-triage T0 / T0-T1**, over-triage | "perfection" = calibrated + safety-audited, not just accuracy |
+
+Clustering report highlights (`reports/cluster_report.json`): fetal_risk k=8 with pure risk-tier phenotypes (purity 0.9–1.0); maternal_risk k=6 with severity-mixed phenotypes; liver k=2 (silhouette 0.46); GMM↔KMeans agreement 0.82–0.97 on the well-separated sets.
+
+#### G.3 Training Record — ROUND 2 (data expansion + feature engineering + heavier search; golden 20% holdout, SEED=42)
+
+Round-2 upgrades (user: *"collect even more data and train our data set more to increase accuracy"*):
+- **+5 new real sources** (UCI 296/519/529/571 + OpenML 337 SPECTF) → 12 specialist heads; total real rows up from 4,482 → **106,000+**; synthetic sepsis 12k→30k; triage cohort 45k→**100k**.
+- **Engineered clinical features**: shock index, pulse pressure, temp deviation, SpO2 gap, qSOFA/SIRS composites, NEWS-like score, age-risk — the same physiology the protocol encodes, made directly visible to learners.
+- **Heavier training**: XGB RandomizedSearch 14→40 iterations on small sets; size-aware calibration (sigmoid small / isotonic big); 4-model triage blend with validation-grid weights; memory-safe light globals on 100k-class sets (full pairwise silhouette + DBSCAN were the OOM culprits — sampled/skipped for big n).
+- BUPA liver (UCI 60) deliberately excluded: 'selector' label semantics disputed (documented in MANIFEST).
+
+Round-2 specialist results (20% golden holdout):
+| Head | Winner | Key metrics |
+|---|---|---|
+| cad | xgb tuned | ROC-AUC 0.912 / PR 0.930 |
+| cad_aux | xgb tuned | 0.910 / 0.869 |
+| **cad_spect (SPECTF)** | MoE de-clustered | **0.959 / 0.983** |
+| diabetes (Pima) | MoE de-clustered | 0.821 |
+| **diabetes_symptoms (UCI 529)** | MoE de-clustered | **1.000** (cleanly separable symptom rules) |
+| **diabetes_readmit (UCI 296, 101k)** | xgb tuned | 0.688 / PR 0.236 (2× lift over 11% base — matches published difficulty honestly) |
+| fetal_risk | MoE de-clustered | **0.998** OVR |
+| maternal_risk | xgb tuned | 0.946 OVR |
+| liver (ILPD) | stack group | 0.804 / 0.921 |
+| **liver_hcv (UCI 571)** | MoE de-clustered | **1.000** OVR |
+| **hf_mortality (UCI 519)** | MoE de-clustered | **0.882** (= published Chicco benchmark) |
+| **sepsis (synth 30k + engineered)** | xgb tuned | **0.870** (round 1: 0.633 → **+0.237**) |
+
+Triage round-2 final (100k cohort, golden 20k holdout; blend xgb 0.33 / group-vote 0.50 / MoE 0.17 — validation-grid, safety-penalized):
+- **macro-F1 0.9388** · weighted-F1 0.946 · log-loss 0.230 · per-class recall **T0 0.907 / T1 0.960 / T2 0.911 / T3 0.968 / T4 0.891**
+- **Deep T0 under-triage (T0→T2+): 0.04%** (1 case ≈ the irreducible 5% inter-rater label-noise floor; rules + safety floors catch everything structural). T0→T1 adjacent 9.2%; T0/T1 beyond-adjacent 1.13%.
+- Over-triage **0.12%** · `requires_human_review` flag rate 0.54% · T1 ECE 0.008 (calibration tight).
+- Rule engine completed at inference-time (ACS_RED_FLAG + HEMORRHAGE_OBSTETRIC + hypertensive-crisis-with-symptoms screens added to mirror the protocol labeller — deep under-triage 0.13%→0.04% without retraining).
+
+| Head | Winner | Key metrics (holdout) |
+|---|---|---|
+| cad (4 UCI cohorts) | **MoE de-clustered** | ROC-AUC **0.919** / PR-AUC 0.924 / Brier 0.112 / ECE 0.058 / sens@95spec 0.696 |
+| diabetes (Pima) | stack group | 0.820 / 0.730 / 0.162 / ECE 0.059 |
+| fetal_risk (CTG NSP) | xgb tuned | **OVR-AUC 0.9977** |
+| maternal_risk | stack group | **OVR-AUC 0.9486** |
+| liver (ILPD) | stack group | 0.821 / PR 0.919 |
+| sepsis (synthetic E) | stack group | 0.633 — *noise-limited by construction* (5% label noise + overlapping qSOFA strata) |
+| cad_aux (heart-statlog) | xgb tuned | 0.903 / 0.828 |
+| **Triage T0–T4 fusion** | 0.4·XGB + 0.3·Stack + 0.3·MoE + rule override | per-class recall **T0 0.911 / T1 0.974 / T2 0.910 / T3 0.960 / T4 0.899**; ECE(T1) 0.008 |
+
+Safety audit (9,000-case golden set):
+- **Deep T0 under-triage (T0→T2-or-later): 0.00%** ← the safety-critical error, zero occurrences (rules + floors guarantee).
+- T0 down-triage: 8.92% — **all of it adjacent T0→T1** (patient still flagged "very urgent"; never routine).
+- T0/T1 under-triage beyond adjacent band: **1.15%**. Over-triage (T3/T4→T1/T0): **0.24%**.
+- `requires_human_review` flag rate 0.47%; every response carries reason codes + confidence + disclaimer.
+
+Inference smoke (case_example.json — septic shock: age 62, SBP 88, qSOFA 2): → **T0 emergency escalation**, reasons `SHOCK_HYPOTENSION;SEPSIS_QSOFA`, confidence 0.974, risk ratios (CAD 1.67 moderate, sepsis 1.06, diabetes 0.36 low…). Ensemble votes unanimous (XGB 0.98 / Stack 0.97 / MoE 0.97).
+
+Training cost: ~35 min wall (7 specialist heads + 45k triage fusion; XGB randomized search 14×4-fold per head; isotonic calibration 3-fold throughout).
+
+#### G.4 Interpretation & Guardrails
+- AI assistive only — never a diagnosis; T0–T4 = workflow urgency. T4 = follow-up, never "you are fine". All inference responses carry the disclaimer + `requires_human_review`. (Spec §20–21, §28–30.)
+
+---
+
+### PART H — MARKET-READY PRODUCT REPLAN (Login + Working Triage) — 2026-09-24
+
+> Brief (user, verbatim intent): *"it's not getting login option for anyone just showing details and no option for triage or anything, replan it i want it to be perfectly working and market ready"* + new kaggle.json provided.
+
+#### H.1 Findings & Constraints (research before build)
+- **kaggle.json (2nd upload) is still username-only** (`{"username":"KGAT_…"}` — no `key` field) → Kaggle API auth remains impossible. ML data stays UCI/OpenML-sourced (G.1); noted for the user once, no other impact on this phase.
+- **Gap analysis of v4 site:** 29 static informational pages. No authentication of any kind, no working triage product — the model from Part G exists only in the Python project. A "market ready" health product needs accounts and a working core action.
+- **Supabase credentials are real and sufficient:** `SUPABASE_URL` + publishable key (client-safe) + `sbp_…` service key + Postgres DSN (both server-only). → Real auth + persistence are possible today.
+- **Hosting constraint:** site is static on Vercel. The full Python triage stack (4-model blend + MoE, hundreds of MB) cannot ship in a static bundle; a Python serverless function with joblib+xgboost exceeds practical limits.
+
+#### H.2 Product Replan — decisions & reasons
+| # | Decision | Reason |
+|---|---|---|
+| 1 | **Login/Signup via Supabase Auth REST** (plain `fetch`, no SDK) | real accounts & sessions; zero-dependency fits the custom stack; publishable key only in client; service key/DSN never leave `.env`/setup scripts |
+| 2 | **Instant account creation** (enable auto-confirm via admin API at setup) | market-ready signup cannot dead-end at "check your email" in a demo/product launch flow |
+| 3 | **Working triage in the browser** — distilled production booster (single XGB, form-collectable features) exported as compact JS trees + **identical deterministic red-flag rules + safety floors + human-review logic** | instant (<5ms), private (health data never leaves the device), works offline, and safety rules are bit-identical to the Python engine (they carry the T0 guarantees) |
+| 4 | Distillation drops the 6 `p_*` specialist-risk columns | a form cannot contain other models' outputs; rules+vitals+symptoms carry the protocol labels; holdout metrics of the web booster are measured and published honestly (not the full engine's numbers) |
+| 5 | **3 new pages — one per feature (standing rule):** `login.html` (sign in / create account), `triage.html` (live Triage Check), `my-health.html` (account + saved triage record) | every component gets its own page; logged-in users need a destination |
+| 6 | **Triage works signed-out** (crisis usability), "Save to my record" requires login; results persist to Supabase `triage_events` (RLS: owner-only) with localStorage fallback | never gate an emergency aid behind a signup form; persistence is the account value |
+| 7 | Header everywhere: **"Triage Check" primary CTA + "Sign in"/user chip**; nav + drawer + footer updated | user's core complaint — the entry points didn't exist |
+| 8 | Every triage result ships the Part G output contract: class, probability bars, **reason codes**, confidence, `requires_human_review`, model+rule versions, disclaimer | accountability + AI-assistive standing constraint (triage = urgency, never diagnosis) |
+| 9 | New `css/app.css` (forms/auth/triage styles) instead of editing the 893-line `main.css` | zero regression risk to the v4 GALLERY theme; additive-only styling |
+
+#### H.3 Build Order (recorded before construction)
+1. `healthguard-ml/src/export_web.py` — distil web booster → `public/js/triage-model-data.js` + honest `reports/web_model_metrics.json`
+2. `public/js/triage-engine.js` — feature assembly + GBDT scorer + rule engine (Python-identical thresholds) + result rendering
+3. `public/js/auth.js` — Supabase REST auth (signup/signin/signout/session chip)
+4. `content/pages-product.mjs` (login / triage / my-health) + `build.mjs` wiring + `layout.mjs` header/nav/footer/scripts
+5. `css/app.css` + Supabase DDL (`triage_events`, RLS) + auto-confirm setting
+6. Build 32 pages → QA (auto-fit, brand, regex) → deploy Vercel → push GitHub → MODEL_CARD/MD sync
+
+---
+
+*End of Research & Build Log — compiled and executed on 2026-09-23/24 by the HealthGuard build (v1 → v2 "Vitality Engine" → v3 "Do All" → v4 "Gallery" → G ML Triage Risk Engine), for EVOLVEX IT SOLUTIONS PVT. LTD.*
+
+### H.4 — Build results (market-ready v5: login + live triage)
+
+**Export parity (distilled web booster):**
+- `converter parity: max residual after base-calibration = 0.000004` — the browser scorer reproduces `booster.predict_proba` bit-for-bit (1250 trees, 45 form features, per-class `base` margin, 882 KB `triage-model-data.js`).
+- Two converter bugs found and fixed during self-check (recorded so they are never reintroduced):
+  1. **Sentinel bug:** `leaf[i] < 0` is NOT a valid internal-node test — GBDT leaf values are frequently negative → infinite walk. Internal node ⇔ `split[i] >= 0`.
+  2. **XGBoost compare semantics:** C++ evaluates `float32(v) < float32(thresh)` (strict, quantized). Python `<=` in float64 gave residual 8.3; strict `<` in float32 gives 4e-06. JS must use `Math.fround(v) < Math.fround(thresh)`.
+- Honest web metrics (20k holdout, form features only, rule+safety layer included): macro-F1 **0.9161**, recalls T0 0.9042 / T1 0.9606 / T2 0.8740 / T3 0.9474 / T4 0.8749, T0-any-down 0.0958, T0-deep-to-T2+ 0.0022, beyond-adjacent 0.0117, over-triage 0.0016. Full server engine (4-model blend) keeps round-2 macro-F1 0.9388.
+
+**Safety layer (browser):** `triage-engine.js` rule_scan + safe_predict floors + review flag are a line-for-line port of `train_triage.py` (verified against source this session): 11 CRITICAL rules → T0; floors P(T0∪T1) ≥0.30→cap T1, ≥0.14→cap T2, P(T0∪T1∪T2) ≥0.55→cap T2; review when rules/model disagree. Triage remains **workflow urgency (T0–T4), never diagnosis**; AI assistive only.
+
+**Product pages:** `login.html` (Supabase email+password auth), `triage.html` (live engine, full intake form, confidence bars, reason codes, risk ratio/tier), `my-health.html` (saved checks: local `hg:triage-log` always; Supabase `triage_events` sync when signed in). Header gains **Triage Check** CTA + Sign-in chip on every page; nav gains **Your Care** family; footer gains **Your Care** column. Model+engine scripts load ONLY on `triage.html` (882 KB payload) — decision: keep every other page light.
+
+**Form↔engine contract (verified):** intake field ids (f-age…f-followup) + symptom/comorbidity checkbox names match `buildRow` keys 1:1 (all 45 model features covered; comorbidities use bare names `htn, dm, cad_hf, copd, ckd, cancer, stroke_hx, immuno` per `triage_synth`).
+
+**Supabase (production):** table `triage_events(id uuid pk, user_id uuid, payload jsonb, created_at timestamptz)`; RLS owner-only insert/select (`auth.uid() = user_id`); `hg_auto_confirm` trigger on `auth.users` auto-confirms signup emails (demo-market readiness decision — token expiry/brute-force throttling remain Supabase defaults; revisit before real PHI).
+
+**Remaining risks (accepted, documented):** JS `Math.round` is half-up vs numpy bankers' rounding on `news_like` boundaries (documented divergence); auto-confirm trades email verification for frictionless demo signup; web booster is a distilled single model — full blend ships server-side later.

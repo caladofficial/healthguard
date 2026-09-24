@@ -1,6 +1,8 @@
 // HealthGuard — shared layout: <head>, animated SVG logos, header nav, footer.
-// WHY: one source of truth so the logo/header/footer are pixel-identical on all 31 pages
+// WHY: one source of truth so the logo/header/footer are pixel-identical on all pages
 // (client requirement) and can never drift between pages.
+// v5: market-ready product surface — Sign-in chip (Supabase Auth), Triage Check CTA,
+// product nav family; triage model+engine scripts load ONLY on triage.html (882 KB).
 
 export const COMPANY = 'EVOLVEX IT SOLUTIONS PVT. LTD.';
 export const PRODUCT = 'HealthGuard';
@@ -8,6 +10,14 @@ export const YEAR = 2026;
 
 /* ---------------------------------- NAV ---------------------------------- */
 export const NAV = [
+  {
+    label: 'Your Care',
+    items: [
+      { href: 'triage.html', label: 'Triage Check', desc: 'Live urgency engine (T0–T4)' },
+      { href: 'my-health.html', label: 'My Health', desc: 'Your saved checks & records' },
+      { href: 'login.html', label: 'Sign In', desc: 'Create account or sign in' },
+    ],
+  },
   {
     label: 'Platform',
     items: [
@@ -168,7 +178,8 @@ export function header() {
           <path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/>
         </svg>
       </button>
-      <a class="btn btn-primary btn-sm" href="contact.html">Get Started</a>
+      <a class="btn btn-primary btn-sm" href="triage.html">Triage Check</a>
+      <a class="auth-chip" href="login.html" data-auth-chip hidden></a>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
@@ -184,7 +195,8 @@ export function header() {
     <nav class="drawer-nav" aria-label="Mobile">
       ${drawerMarkup()}
     </nav>
-    <a class="btn btn-primary btn-block" href="contact.html">Get Started</a>
+    <a class="btn btn-primary btn-block" href="triage.html">Triage Check</a>
+    <a class="auth-chip auth-chip--block" href="login.html" data-auth-chip hidden></a>
     <p class="drawer-legal">© ${YEAR} ${COMPANY}</p>
   </div>
   <div class="drawer-scrim" id="drawerScrim"></div>
@@ -214,6 +226,10 @@ export function footer() {
       <p class="foot-addr">Varanasi, Uttar Pradesh, India</p>
       <p class="foot-disclaimer">HealthGuard AI assists with document processing, extraction, summarization and workflow triage. It does not provide diagnosis. Clinical interpretation and medical decisions remain with qualified clinicians.</p>
     </div>
+    ${footCol('Your Care', [
+      ['triage.html', 'Triage Check (Live)'], ['my-health.html', 'My Health'],
+      ['login.html', 'Sign In / Account'], ['ai-triage.html', 'How Triage Works'],
+    ])}
     ${footCol('Document AI', [
       ['report-upload.html', 'Report Upload'], ['ocr-engine.html', 'Difficult Photo OCR'],
       ['ai-pipeline.html', 'AI Pipeline'], ['ai-models.html', 'Model Suite'],
@@ -235,7 +251,7 @@ export function footer() {
   </div>
   <div class="wrap foot-strip">
     <p>© ${YEAR} ${COMPANY} · ${PRODUCT} · All rights reserved.</p>
-    <p class="foot-strip-links"><a href="platform.html">Platform</a> · <a href="audit-security.html">Security</a> · <a href="fhir-standards.html">FHIR</a> · <a href="contact.html">Contact</a></p>
+    <p class="foot-strip-links"><a href="platform.html">Platform</a> · <a href="triage.html">Triage</a> · <a href="audit-security.html">Security</a> · <a href="fhir-standards.html">FHIR</a> · <a href="contact.html">Contact</a></p>
   </div>
 </footer>`;
 }
@@ -243,6 +259,10 @@ export function footer() {
 /* ---------------------------------- PAGE --------------------------------- */
 export function page({ slug, title, desc, family, body }) {
   const fullTitle = `${title} · ${PRODUCT}`;
+  // The distilled triage booster is 882 KB — load it ONLY on the live triage page.
+  const triageScripts = slug === 'triage'
+    ? '<script src="js/triage-model-data.js" defer></script>\n<script src="js/triage-engine.js" defer></script>\n'
+    : '';
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -259,6 +279,7 @@ export function page({ slug, title, desc, family, body }) {
 <script>try{var _t=localStorage.getItem('hg-theme');if(!_t)_t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',_t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z' fill='%235F7A63'/%3E%3Cpath d='M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9' stroke='%23F7F4EE' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body data-family="${family || ''}" data-slug="${slug}">
 <canvas id="livingCanvas" aria-hidden="true"></canvas>
@@ -273,6 +294,8 @@ ${footer()}
 <script src="js/canvas.js" defer></script>
 <script src="js/heart.js" defer></script>
 <script src="js/main.js" defer></script>
+${triageScripts}<script src="js/auth.js" defer></script>
+<script src="js/app-pages.js" defer></script>
 </body>
 </html>`;
 }

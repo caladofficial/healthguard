@@ -11,12 +11,13 @@ import docs from './content/pages-docs.mjs';
 import care from './content/pages-care.mjs';
 import trust from './content/pages-trust.mjs';
 import data from './content/pages-data.mjs';
+import product from './content/pages-product.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const OUT = join(ROOT, 'public');
 const IMG = join(OUT, 'images');
 
-const pages = [...core, ...docs, ...care, ...trust, ...data];
+const pages = [...core, ...docs, ...care, ...trust, ...data, ...product];
 
 // Art resolution: prefer the page's art; fall back gracefully if an asset is
 // pending generation (keeps the build green, never a broken <img>).
