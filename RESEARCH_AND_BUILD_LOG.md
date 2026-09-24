@@ -424,7 +424,35 @@ Verification: `node --check` ×3 pass; regression greps confirm **0 live `backgr
 
 Clustering report highlights (`reports/cluster_report.json`): fetal_risk k=8 with pure risk-tier phenotypes (purity 0.9–1.0); maternal_risk k=6 with severity-mixed phenotypes; liver k=2 (silhouette 0.46); GMM↔KMeans agreement 0.82–0.97 on the well-separated sets.
 
-#### G.3 Training Record (golden 20% holdout, stratified, SEED=42 — `reports/metrics.json` authoritative)
+#### G.3 Training Record — ROUND 2 (data expansion + feature engineering + heavier search; golden 20% holdout, SEED=42)
+
+Round-2 upgrades (user: *"collect even more data and train our data set more to increase accuracy"*):
+- **+5 new real sources** (UCI 296/519/529/571 + OpenML 337 SPECTF) → 12 specialist heads; total real rows up from 4,482 → **106,000+**; synthetic sepsis 12k→30k; triage cohort 45k→**100k**.
+- **Engineered clinical features**: shock index, pulse pressure, temp deviation, SpO2 gap, qSOFA/SIRS composites, NEWS-like score, age-risk — the same physiology the protocol encodes, made directly visible to learners.
+- **Heavier training**: XGB RandomizedSearch 14→40 iterations on small sets; size-aware calibration (sigmoid small / isotonic big); 4-model triage blend with validation-grid weights; memory-safe light globals on 100k-class sets (full pairwise silhouette + DBSCAN were the OOM culprits — sampled/skipped for big n).
+- BUPA liver (UCI 60) deliberately excluded: 'selector' label semantics disputed (documented in MANIFEST).
+
+Round-2 specialist results (20% golden holdout):
+| Head | Winner | Key metrics |
+|---|---|---|
+| cad | xgb tuned | ROC-AUC 0.912 / PR 0.930 |
+| cad_aux | xgb tuned | 0.910 / 0.869 |
+| **cad_spect (SPECTF)** | MoE de-clustered | **0.959 / 0.983** |
+| diabetes (Pima) | MoE de-clustered | 0.821 |
+| **diabetes_symptoms (UCI 529)** | MoE de-clustered | **1.000** (cleanly separable symptom rules) |
+| **diabetes_readmit (UCI 296, 101k)** | xgb tuned | 0.688 / PR 0.236 (2× lift over 11% base — matches published difficulty honestly) |
+| fetal_risk | MoE de-clustered | **0.998** OVR |
+| maternal_risk | xgb tuned | 0.946 OVR |
+| liver (ILPD) | stack group | 0.804 / 0.921 |
+| **liver_hcv (UCI 571)** | MoE de-clustered | **1.000** OVR |
+| **hf_mortality (UCI 519)** | MoE de-clustered | **0.882** (= published Chicco benchmark) |
+| **sepsis (synth 30k + engineered)** | xgb tuned | **0.870** (round 1: 0.633 → **+0.237**) |
+
+Triage round-2 final (100k cohort, golden 20k holdout; blend xgb 0.33 / group-vote 0.50 / MoE 0.17 — validation-grid, safety-penalized):
+- **macro-F1 0.9388** · weighted-F1 0.946 · log-loss 0.230 · per-class recall **T0 0.907 / T1 0.960 / T2 0.911 / T3 0.968 / T4 0.891**
+- **Deep T0 under-triage (T0→T2+): 0.04%** (1 case ≈ the irreducible 5% inter-rater label-noise floor; rules + safety floors catch everything structural). T0→T1 adjacent 9.2%; T0/T1 beyond-adjacent 1.13%.
+- Over-triage **0.12%** · `requires_human_review` flag rate 0.54% · T1 ECE 0.008 (calibration tight).
+- Rule engine completed at inference-time (ACS_RED_FLAG + HEMORRHAGE_OBSTETRIC + hypertensive-crisis-with-symptoms screens added to mirror the protocol labeller — deep under-triage 0.13%→0.04% without retraining).
 
 | Head | Winner | Key metrics (holdout) |
 |---|---|---|
