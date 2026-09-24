@@ -681,3 +681,21 @@ features), **Decks** (3 role hubs), **Doctor Desk** (4 doctor workspaces).
 6. ✅ Auto-fit + credits + theme toggle kept; QA regex clean across 41 pages; home carries the Patient/Doctor/Admin sign-in band.
 
 Architecture notes: login uses new `#lgForm` contract (deck-app.js owns it; legacy app-pages `#authForm` binding stays dormant). Video rooms = `meet.jit.si/healthguard-{booking_id}` (swap to HIPAA SFU before clinical use). Chat = 4s PostgREST polling (no realtime dependency). Photos canvas-compressed to ≤800px JPEG before storage in jsonb. Roles self-declared in v1 (see J.1 trade-off).
+
+## PART K — LEGIBILITY PASS (client report: text camouflaged by animations, rings, colour clashes; uneven structuring)
+
+### K.1 — Root causes (audited)
+
+1. **Effects paint OVER text:** `.cursor-glow` (z 65) and `.shock-ring` (z 64) sit above `main` (z 1) — every tap/click draws rings across copy; `.pf-ring`/`.pf-wash` (z 95) cover text during page transitions.
+2. **Translucent surfaces:** dark-mode `--surface` = 5% white glass → moving particles/heart-canvas show THROUGH cards behind text (the "animation images behind text" camouflage). Same for chips, notes, queue rows, float-chips, hero captions, header/panel.
+3. **Repeating ring pulses on elements:** `stat-beat`/`queue-beat` flash box-shadow "halo rings" every 3–4s around cards — visual noise around text.
+4. **Split-text fail-safe missing:** `[data-split] .sp` starts translated 110% inside a clip; if the reveal JS ever fails, headings stay half-hidden ("uneven structuring").
+5. **Ragged controls:** buttons/pills/slots/labels wrap mid-word lines → uneven structure.
+
+### K.2 — Fixes (decisions)
+
+- Effect layers move BEHIND content (`z-index: 0`) at reduced intensity (glow/rings 50% opacity, thinner) — ambient depth, never over copy. Page-transition wash/rings heavily softened.
+- ALL reading surfaces go opaque: dark `--surface: #0b352c`, solid chips/notes/rows/captions/float-chips/header/panel in both themes. Grain 0.14→0.06. Particles remain visible only in layout gutters (by design).
+- Kill `stat-beat`/`queue-beat` halo flashes entirely (keep content hierarchy cues via borders/pills).
+- Split-text CSS fail-safe: `animation sp-fallback` forces words visible after 2.5s even if JS never runs.
+- Structure: `white-space: nowrap` on buttons/pills/chips/slots/role-tabs/nav-triggers/big numbers; `text-wrap: balance` on headings, `pretty` on leads; tiny-text contrast bumped (dark `--ink-2` #9db3a8 → #b3c6bb).
