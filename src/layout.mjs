@@ -14,8 +14,13 @@ export const NAV = [
     label: 'Your Care',
     items: [
       { href: 'triage.html', label: 'Triage Check', desc: 'Live urgency engine (T0–T4)' },
-      { href: 'my-health.html', label: 'My Health', desc: 'Your saved checks & records' },
-      { href: 'login.html', label: 'Sign In', desc: 'Create account or sign in' },
+      { href: 'token.html', label: 'Token Making', desc: "Today's clinic queue number" },
+      { href: 'book.html', label: 'Book Appointment', desc: 'Doctor, day and slot' },
+      { href: 'prescription.html', label: 'Prescription Analysis', desc: 'Understand the slip' },
+      { href: 'ask-doctor.html', label: 'Ask a Doctor', desc: 'Reports, opinions & chat' },
+      { href: 'video.html', label: 'Video Consult', desc: 'Join your booked room' },
+      { href: 'my-health.html', label: 'My Health', desc: 'Your complete record' },
+      { href: 'login.html', label: 'Sign In', desc: 'Patient · Doctor · Admin' },
     ],
   },
   {
@@ -31,6 +36,17 @@ export const NAV = [
       { href: 'patient-deck.html', label: 'Patient Deck', desc: 'Records, uploads, booking' },
       { href: 'doctor-deck.html', label: 'Doctor Deck', desc: 'Queue, chart, prescriptions' },
       { href: 'admin-deck.html', label: 'Admin Deck', desc: 'Verification, AI & security ops' },
+    ],
+  },
+  {
+    label: 'Doctor Desk',
+    items: [
+      { href: 'doctor-deck.html', label: 'Doctor Deck', desc: 'Your clinic desk' },
+      { href: 'doctor-bookings.html', label: 'Bookings', desc: 'Accept, decline, complete' },
+      { href: 'doctor-tokens.html', label: 'Token Board', desc: "Today's queue" },
+      { href: 'doctor-chat.html', label: 'Patient Chat', desc: 'Talk to booked patients' },
+      { href: 'doctor-reports.html', label: 'Reports & Opinions', desc: 'Review and answer' },
+      { href: 'video.html', label: 'Video Consults', desc: 'Join booked rooms' },
     ],
   },
   {
@@ -295,6 +311,7 @@ ${footer()}
 <script src="js/heart.js" defer></script>
 <script src="js/main.js" defer></script>
 ${triageScripts}<script src="js/auth.js" defer></script>
+<script src="js/deck-app.js" defer></script>
 <script src="js/app-pages.js" defer></script>
 </body>
 </html>`;

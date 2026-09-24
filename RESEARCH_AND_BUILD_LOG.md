@@ -576,3 +576,108 @@ ROOT CAUSE (verified in source): `.drawer-sheet` is positioned with **no z-index
 
 - Aptos may fall back to system sans where unavailable (reference does the same via its font stack).
 - Shockwave/cursor features stay for coarse pointers per v4 standing scope, but toned down; desktop fine-pointer glow retained at lower intensity.
+
+## PART J — THE WORKING PLATFORM (role login → Patient / Doctor / Admin decks)
+
+Client brief: home opens where the user or doctor can login; after login each role
+accesses their deck — Patient: triage check, token making, appointment booking,
+prescription analysis, send-to-doctor for opinion. Doctor: accept bookings, video
+call booked patients, token list, chat with patients, review reports/opinions.
+Admin: what is happening — active doctors/patients, bookings active/completed/
+ongoing, everything. "Complete with perfection and planning and mapping."
+
+### J.1 — Role model & journeys
+
+Roles chosen at signup (Patient / Doctor / Admin) and stored in `profiles`.
+Post-login redirect: patient → patient-deck.html · doctor → doctor-deck.html ·
+admin → admin-deck.html. Every deck/feature page is auth-gated (sign-in prompt
+when signed out) and role-checked in UI. DEMO TRADE-OFF (accepted, documented):
+role is self-declared at signup (no license upload verification in v1 — the
+doctor-verification state machine remains specified on its product page; admin
+sees everyone). Real PHI deployments must verify roles before launch.
+
+**Patient journey:** Home → Sign in (role=Patient) → Patient Deck hub →
+(a) Triage Check (existing engine) → result usable as token urgency ·
+(b) Token Making: today's OPD queue token (auto number, urgency 0–4) ·
+(c) Appointment Booking: pick doctor + 30-min slot + reason + video/in-person ·
+(d) Prescription Analysis: pasted medicines → structure check + interaction
+flags + questions-for-your-doctor (assistive only, never dosing advice) →
+(e) Ask a Doctor: send prescription/report (text + compressed photo) for a
+second opinion to a chosen doctor · (f) chat with the booked doctor ·
+(g) Video call join for accepted bookings · (h) My Health = full personal record
+(triage log + tokens + bookings + opinions).
+
+**Doctor journey:** Sign in (role=Doctor) → Doctor Deck hub →
+(a) Bookings: accept / decline / complete patient requests ·
+(b) Token List: today's queue sorted by urgency then number, mark in-consult/done ·
+(c) Chat with patients (per accepted booking, near-realtime 4s polling) ·
+(d) Reports & Opinions: open patient requests, view content/photo, write the
+clinical opinion (assisted, human-authored) · (e) Video call into the booking room.
+
+**Admin journey:** Sign in (role=Admin) → Admin Deck live ops board:
+registered + active-now doctors/patients (heartbeat 15-min window), bookings by
+status (pending = active requests, accepted = ongoing program, completed,
+declined/cancelled), today's tokens by urgency, open opinions, recent-activity
+feed across all tables. 5s auto-refresh.
+
+### J.2 — Data model (Supabase Postgres, RLS owner+role matrix)
+
+- `profiles(user_id uuid pk, role patient|doctor|admin, full_name, specialty, verified bool, last_seen_at, created_at)` — select: all authed (booking needs doctor list); insert/update: own; admin update any.
+- `tokens(id, user_id, patient_name, day date, token_no int, urgency 0-4, note, status waiting|in_consult|done|cancelled, created_at)` — insert/select/update owner; doctors+admin see/update all (queue board). Unique numbering client-side max+1 per day (demo tolerance).
+- `bookings(id, patient_id, doctor_id, patient_name, doctor_name, slot_date, slot_time 'HH:MM', reason, mode video|in_person, status pending|accepted|declined|completed|cancelled, created_at, updated_at)` — insert patient=self; select/update participants + admin. **Partial unique index (doctor_id, slot_date, slot_time) where status in (pending,accepted)** = no double-booking.
+- `chat_messages(id, booking_id → bookings cascade, sender_id, sender_name, body, created_at)` — insert sender=self; select booking participants + admin (EXISTS subquery).
+- `opinion_requests(id, patient_id, doctor_id, patient_name, doctor_name, kind report|prescription, title, content jsonb {text, photo_dataurl ≤~350KB canvas-compressed, triage}, doctor_note, status open|answered, created_at, answered_at)` — insert patient=self; select participants+admin; doctor updates note/status.
+- `hg_is_admin()` / `hg_is_doctor()` security-definer functions for policy reuse.
+
+### J.3 — Page map (feature = own page, standing client rule)
+
+| Route | Role | Feature |
+|---|---|---|
+| index.html | all | Home + **role entry band** (Patient/Doctor/Admin sign-in cards) |
+| login.html | all | role-aware signup/sign-in (role picker + name + specialty) |
+| patient-deck.html | patient | working hub: today status + quick actions |
+| triage.html | patient/all | existing live engine → "use as token urgency" hook |
+| token.html | patient | **Token Making** (queue token) |
+| book.html | patient | **Appointment Booking** |
+| prescription.html | patient | **Prescription Analysis** + send to doctor |
+| ask-doctor.html | patient | **Reports/Opinions** + chat with doctor |
+| video.html | both | **Video Consultation** room per booking (Jitsi iframe room=hg-{booking_id}) |
+| my-health.html | patient | personal record (extended: tokens/bookings/opinions) |
+| doctor-deck.html | doctor | working hub: pending bookings, today queue, open opinions, chat |
+| doctor-bookings.html | doctor | accept/decline/complete bookings |
+| doctor-tokens.html | doctor | day token board |
+| doctor-chat.html | doctor | chat with patients |
+| doctor-reports.html | doctor | review + answer reports/prescriptions |
+| admin-deck.html | admin | live ops: actives, bookings lifecycle, tokens, opinions, feed |
+
+Marketing content pages (decks overview, ai-triage, token-queue, video-consultation,
+report-intelligence…) remain as product documentation; the deck slugs above become
+the REAL apps (client directive). Nav families updated: **Your Care** (patient
+features), **Decks** (3 role hubs), **Doctor Desk** (4 doctor workspaces).
+
+### J.4 — Client architecture
+
+- `public/js/auth.js` (extended): signup(role,name,specialty) → auto profile row; session JWT; `api()` REST helper; heartbeat last_seen; role redirects; chip/gate painting kept.
+- `public/js/deck-app.js` (new): per-`data-slug` controllers — decks render loops, token/booking/opinion forms, chat poller (4s), admin stats poller (5s), Jitsi room wiring. All data via PostgREST + RLS; every write falls back to clear inline error (never a dead button).
+- `content/pages-product.mjs` (rebuilt): 15 product pages as above with auth/role shells (`[data-auth-gate]`, `[data-role-gate="doctor"]`…).
+- `public/css/app.css` (extended): deck grids, boards, chat bubbles, status pills, token ticket.
+
+### J.5 — Acceptance checklist (perfection bar)
+
+1. Signed-out user opens any deck → sign-in prompt, not a broken page.
+2. Patient completes the full loop WITHOUT leaving the site: triage → token → book → prescription analysis → send for opinion → chat → video (Jitsi room opens with the booking id).
+3. Doctor sees the request appear, accepts → patient sees accepted + video/chat unlock; doctor answers the opinion → patient sees the answer in My Health.
+4. Admin counters reconcile with the boards below them (same queries).
+5. Double-booking the same doctor/slot is refused (unique index).
+6. All pages keep auto-fit, credits, theme toggle; QA regex clean; login stays one click from home (role band).
+
+### J.6 — Build results (acceptance checklist J.5)
+
+1. ✅ Signed-out deck access → sign-in prompt (`#gate`), never a broken page.
+2. ✅ Full patient loop live (E2E REST verified end-to-end): signup(role) → book (pending) → doctor accept → chat both directions → opinion request → doctor answer → patient sees answer → token issued → queue board.
+3. ✅ Doctor accept/decline/complete + token board transitions + opinion answers — RLS-verified with a second user.
+4. ✅ Admin counters = same queries as the boards (PostgREST exact counts).
+5. ✅ Double-booking refused by `bookings_slot_uniq` (HTTP 409 / 23505 in E2E).
+6. ✅ Auto-fit + credits + theme toggle kept; QA regex clean across 41 pages; home carries the Patient/Doctor/Admin sign-in band.
+
+Architecture notes: login uses new `#lgForm` contract (deck-app.js owns it; legacy app-pages `#authForm` binding stays dormant). Video rooms = `meet.jit.si/healthguard-{booking_id}` (swap to HIPAA SFU before clinical use). Chat = 4s PostgREST polling (no realtime dependency). Photos canvas-compressed to ≤800px JPEG before storage in jsonb. Roles self-declared in v1 (see J.1 trade-off).

@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#fffdf7">
-<meta name="description" content="Your private HealthGuard record: triage checks, queue tokens, bookings and doctor opinions. Row-level private — only you can see it.">
-<meta property="og:title" content="My Health — Your Complete Record · HealthGuard">
-<meta property="og:description" content="Your private HealthGuard record: triage checks, queue tokens, bookings and doctor opinions. Row-level private — only you can see it.">
+<meta name="description" content="Reports and prescriptions patients sent for your opinion: read the full picture, write the clinical opinion, send it back.">
+<meta property="og:title" content="Doctor Reports & Opinions — Review and Answer · HealthGuard">
+<meta property="og:description" content="Reports and prescriptions patients sent for your opinion: read the full picture, write the clinical opinion, send it back.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="HealthGuard — EVOLVEX IT SOLUTIONS PVT. LTD.">
-<title>My Health — Your Complete Record · HealthGuard</title>
+<title>Doctor Reports & Opinions — Review and Answer · HealthGuard</title>
 <script>try{var _t=localStorage.getItem('hg-theme');if(!_t)_t='light';document.documentElement.setAttribute('data-theme',_t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z' fill='%23087255'/%3E%3Cpath d='M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9' stroke='%23F7F4EE' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/app.css">
 </head>
-<body data-family="product" data-slug="my-health">
+<body data-family="product" data-slug="doctor-reports">
 <canvas id="livingCanvas" aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
 <div class="aurora" aria-hidden="true"><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span></div>
@@ -27,15 +27,15 @@
     <a class="brand" href="index.html" aria-label="HealthGuard — by EVOLVEX IT SOLUTIONS PVT. LTD.">
     <svg class="logo-mark logo-draw" viewBox="0 0 48 48" role="img" aria-label="HealthGuard logo" fill="none">
     <defs>
-      <linearGradient id="hg-109" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <linearGradient id="hg-121" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
         <stop stop-color="#087255"/><stop offset="0.55" stop-color="#0b8174"/><stop offset="1" stop-color="#56c99b"/>
       </linearGradient>
-      <linearGradient id="hp-109" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
+      <linearGradient id="hp-121" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
         <stop stop-color="#d8ef74"/><stop offset="1" stop-color="#087255"/>
       </linearGradient>
     </defs>
-    <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#hg-109)" stroke-width="2.2" stroke-linejoin="round"/>
-    <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#hp-109)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#hg-121)" stroke-width="2.2" stroke-linejoin="round"/>
+    <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#hp-121)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     <path class="ld ld-3" d="M30.2 12.6c2.9-.5 5.2.4 6.5 2.5-2.7 1.2-5 .8-6.5-2.5Z" fill="#f5b914" stroke="none" opacity=".95"/>
   </svg>
     <span class="brand-text">
@@ -314,15 +314,15 @@
       <a class="brand" href="index.html" aria-label="HealthGuard — by EVOLVEX IT SOLUTIONS PVT. LTD.">
     <svg class="logo-mark logo-draw" viewBox="0 0 48 48" role="img" aria-label="HealthGuard logo" fill="none">
     <defs>
-      <linearGradient id="hg-110" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <linearGradient id="hg-122" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
         <stop stop-color="#087255"/><stop offset="0.55" stop-color="#0b8174"/><stop offset="1" stop-color="#56c99b"/>
       </linearGradient>
-      <linearGradient id="hp-110" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
+      <linearGradient id="hp-122" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
         <stop stop-color="#d8ef74"/><stop offset="1" stop-color="#087255"/>
       </linearGradient>
     </defs>
-    <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#hg-110)" stroke-width="2.2" stroke-linejoin="round"/>
-    <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#hp-110)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#hg-122)" stroke-width="2.2" stroke-linejoin="round"/>
+    <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#hp-122)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     <path class="ld ld-3" d="M30.2 12.6c2.9-.5 5.2.4 6.5 2.5-2.7 1.2-5 .8-6.5-2.5Z" fill="#f5b914" stroke="none" opacity=".95"/>
   </svg>
     <span class="brand-text">
@@ -423,61 +423,47 @@
   </div>
 </div>
 <main id="main">
-<section class="section"><div class="wrap wrap-narrow">
-        <p class="eyebrow" data-reveal>Account · My Health</p>
-        <h1 class="h-sec" data-reveal>Your complete record</h1>
-        <p class="sec-lead" data-reveal>Triage checks, tokens, bookings and opinions in one private timeline. Row-level security — nobody else can read it.</p>
-        <div class="auth-card" data-reveal>
-          <div id="mhGuest" data-auth-gateout>
-            <p class="auth-msg">You are browsing as a guest. <a href="login.html">Sign in or create an account</a> to keep a private record across devices.</p>
-          </div>
-          <div id="mhUser" data-auth-gate hidden>
-            <div class="mh-head">
-              <p class="mh-email" id="mhEmail"></p>
-              <button class="btn btn-ghost btn-sm" id="mhSignout" type="button">Sign out</button>
-            </div>
-            <h2 class="h-3">Triage checks</h2>
-            <div id="mhList" class="mh-list"><p class="auth-msg">No saved checks yet — <a href="triage.html">run your first triage check</a>.</p></div>
-          </div>
-        </div>
-        <h2 class="h-3 sect-gap" data-auth-gate hidden>Queue tokens</h2>
-        <div class="board" id="mhTokens" data-auth-gate hidden></div>
-        <h2 class="h-3 sect-gap" data-auth-gate hidden>Appointments</h2>
-        <div class="board" id="mhBookings" data-auth-gate hidden></div>
-        <h2 class="h-3 sect-gap" data-auth-gate hidden>Doctor opinions</h2>
-        <div class="board" id="mhOpinions" data-auth-gate hidden></div>
-      </div></section>
-<section class="section section-rail">
-    <div class="wrap">
-      <p class="eyebrow" data-reveal>Related components</p>
-      <div class="rail" data-stagger>
-        <a class="rail-card" href="triage.html" data-reveal>
-          <span class="rail-t">Triage Check</span><span class="rail-go" aria-hidden="true">→</span>
-        </a>
-<a class="rail-card" href="ask-doctor.html" data-reveal>
-          <span class="rail-t">Ask a Doctor</span><span class="rail-go" aria-hidden="true">→</span>
-        </a>
-<a class="rail-card" href="consent-sharing.html" data-reveal>
-          <span class="rail-t">Consent &amp; Sharing</span><span class="rail-go" aria-hidden="true">→</span>
-        </a>
-      </div>
+<section class="section">
+  <div class="wrap wrap-narrow">
+    <div class="gate-shell" id="gate" hidden>
+      <p class="eyebrow">Members only</p>
+      <h2 class="h-sec">Sign in to open this workspace</h2>
+      <p class="sec-lead">This area is for doctors. Your deck unlocks after login.</p>
+      <div class="btn-row"><a class="btn btn-primary" href="login.html?role=doctor">Sign in</a>
+      <a class="btn btn-ghost" href="login.html">Create an account</a></div>
     </div>
-  </section>
+    <p class="note note-warn" id="roleWarn" hidden></p>
+    <div id="app" hidden>
+        <div class="deck-head"><div><p class="eyebrow">Live workspace</p><h1 class="deck-title">Reports &amp; Opinions</h1><p class="deck-sub">Patients are waiting for your read.</p></div></div>
+        <div class="board" id="drList"></div>
+        <div class="auth-card sect-gap" id="drDetail" hidden>
+          <p class="eyebrow">Patient request</p>
+          <div id="drDetailBody"></div>
+          <form id="drAnswerForm" class="auth-form sect-gap">
+            <label class="fld" for="drNote"><span class="fld-l">Your clinical opinion *</span>
+              <textarea class="fld-i" id="drNote" rows="5" placeholder="What the report shows, what it means, what to do next…"></textarea></label>
+            <button class="btn btn-primary" type="submit">Send opinion to patient</button>
+            <p class="auth-msg" id="drAnswerMsg" role="status"></p>
+          </form>
+        </div>
+      </div>
+  </div></section>
+<p class="note note-warn" data-reveal>You are the clinician of record. The platform's AI summaries are assistive only and never replace your interpretation.</p>
 </main>
 <footer class="site-footer" id="footer">
   <div class="wrap footer-grid">
     <div class="foot-brand">
       <div class="foot-brand-row"><svg class="logo-mark logo-mark--evx logo-draw" viewBox="0 0 48 48" role="img" aria-label="EVOLVEX logo" fill="none">
     <defs>
-      <linearGradient id="evx-111" x1="8" y1="38" x2="28" y2="10" gradientUnits="userSpaceOnUse">
+      <linearGradient id="evx-123" x1="8" y1="38" x2="28" y2="10" gradientUnits="userSpaceOnUse">
         <stop stop-color="#087255"/><stop offset="1" stop-color="#0b8174"/>
       </linearGradient>
-      <linearGradient id="evy-111" x1="40" y1="38" x2="20" y2="10" gradientUnits="userSpaceOnUse">
+      <linearGradient id="evy-123" x1="40" y1="38" x2="20" y2="10" gradientUnits="userSpaceOnUse">
         <stop stop-color="#56c99b"/><stop offset="1" stop-color="#56c99b"/>
       </linearGradient>
     </defs>
-    <path class="ld ld-1" d="M8 38 20 10l8 18" stroke="url(#evx-111)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path class="ld ld-2" d="M40 38 28 10l-8 18" stroke="url(#evy-111)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-1" d="M8 38 20 10l8 18" stroke="url(#evx-123)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-2" d="M40 38 28 10l-8 18" stroke="url(#evy-123)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
     <path class="ld ld-3" d="M14 31h20" stroke="#d8ef74" stroke-width="2.2" stroke-linecap="round"/>
     <circle class="ld ld-4" cx="24" cy="7" r="2.4" fill="#f5b914"/>
   </svg>

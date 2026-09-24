@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#fffdf7">
-<meta name="description" content="Create your HealthGuard account or sign in to save triage checks to your private health record. Secure Supabase authentication, row-level private data.">
-<meta property="og:title" content="Sign In — Your HealthGuard Account · HealthGuard">
-<meta property="og:description" content="Create your HealthGuard account or sign in to save triage checks to your private health record. Secure Supabase authentication, row-level private data.">
+<meta name="description" content="Sign in to HealthGuard: patients get triage, tokens, bookings and opinions; doctors get bookings, queue, chat and reports; admins get live operations.">
+<meta property="og:title" content="Sign In — Patient, Doctor or Admin · HealthGuard">
+<meta property="og:description" content="Sign in to HealthGuard: patients get triage, tokens, bookings and opinions; doctors get bookings, queue, chat and reports; admins get live operations.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="HealthGuard — EVOLVEX IT SOLUTIONS PVT. LTD.">
-<title>Sign In — Your HealthGuard Account · HealthGuard</title>
+<title>Sign In — Patient, Doctor or Admin · HealthGuard</title>
 <script>try{var _t=localStorage.getItem('hg-theme');if(!_t)_t='light';document.documentElement.setAttribute('data-theme',_t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z' fill='%23087255'/%3E%3Cpath d='M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9' stroke='%23F7F4EE' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/main.css">
@@ -54,13 +54,33 @@
             <span class="nav-card-t">Triage Check</span>
             <span class="nav-card-d">Live urgency engine (T0–T4)</span>
           </a>
+<a class="nav-card" href="token.html">
+            <span class="nav-card-t">Token Making</span>
+            <span class="nav-card-d">Today's clinic queue number</span>
+          </a>
+<a class="nav-card" href="book.html">
+            <span class="nav-card-t">Book Appointment</span>
+            <span class="nav-card-d">Doctor, day and slot</span>
+          </a>
+<a class="nav-card" href="prescription.html">
+            <span class="nav-card-t">Prescription Analysis</span>
+            <span class="nav-card-d">Understand the slip</span>
+          </a>
+<a class="nav-card" href="ask-doctor.html">
+            <span class="nav-card-t">Ask a Doctor</span>
+            <span class="nav-card-d">Reports, opinions & chat</span>
+          </a>
+<a class="nav-card" href="video.html">
+            <span class="nav-card-t">Video Consult</span>
+            <span class="nav-card-d">Join your booked room</span>
+          </a>
 <a class="nav-card" href="my-health.html">
             <span class="nav-card-t">My Health</span>
-            <span class="nav-card-d">Your saved checks & records</span>
+            <span class="nav-card-d">Your complete record</span>
           </a>
 <a class="nav-card" href="login.html">
             <span class="nav-card-t">Sign In</span>
-            <span class="nav-card-d">Create account or sign in</span>
+            <span class="nav-card-d">Patient · Doctor · Admin</span>
           </a>
       </div>
     </div></div>
@@ -105,9 +125,42 @@
     </div>
 <div class="nav-family" data-nav-family>
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-3">
+        Doctor Desk<span class="nav-caret" aria-hidden="true"></span>
+      </button>
+      <div id="navp-3" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Doctor Desk">
+      <div class="nav-panel-grid">
+        <a class="nav-card" href="doctor-deck.html">
+            <span class="nav-card-t">Doctor Deck</span>
+            <span class="nav-card-d">Your clinic desk</span>
+          </a>
+<a class="nav-card" href="doctor-bookings.html">
+            <span class="nav-card-t">Bookings</span>
+            <span class="nav-card-d">Accept, decline, complete</span>
+          </a>
+<a class="nav-card" href="doctor-tokens.html">
+            <span class="nav-card-t">Token Board</span>
+            <span class="nav-card-d">Today's queue</span>
+          </a>
+<a class="nav-card" href="doctor-chat.html">
+            <span class="nav-card-t">Patient Chat</span>
+            <span class="nav-card-d">Talk to booked patients</span>
+          </a>
+<a class="nav-card" href="doctor-reports.html">
+            <span class="nav-card-t">Reports & Opinions</span>
+            <span class="nav-card-d">Review and answer</span>
+          </a>
+<a class="nav-card" href="video.html">
+            <span class="nav-card-t">Video Consults</span>
+            <span class="nav-card-d">Join booked rooms</span>
+          </a>
+      </div>
+    </div></div>
+    </div>
+<div class="nav-family" data-nav-family>
+      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-4">
         Document AI<span class="nav-caret" aria-hidden="true"></span>
       </button>
-      <div id="navp-3" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Document AI">
+      <div id="navp-4" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Document AI">
       <div class="nav-panel-grid">
         <a class="nav-card" href="report-upload.html">
             <span class="nav-card-t">Report Upload</span>
@@ -137,10 +190,10 @@
     </div></div>
     </div>
 <div class="nav-family" data-nav-family>
-      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-4">
+      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-5">
         Triage & Consult<span class="nav-caret" aria-hidden="true"></span>
       </button>
-      <div id="navp-4" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Triage & Consult">
+      <div id="navp-5" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Triage & Consult">
       <div class="nav-panel-grid">
         <a class="nav-card" href="ai-triage.html">
             <span class="nav-card-t">AI Triage</span>
@@ -166,10 +219,10 @@
     </div></div>
     </div>
 <div class="nav-family" data-nav-family>
-      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-5">
+      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-6">
         Trust & Safety<span class="nav-caret" aria-hidden="true"></span>
       </button>
-      <div id="navp-5" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Trust & Safety">
+      <div id="navp-6" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Trust & Safety">
       <div class="nav-panel-grid">
         <a class="nav-card" href="consent-sharing.html">
             <span class="nav-card-t">Consent & Sharing</span>
@@ -191,10 +244,10 @@
     </div></div>
     </div>
 <div class="nav-family" data-nav-family>
-      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-6">
+      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-7">
         Data & Company<span class="nav-caret" aria-hidden="true"></span>
       </button>
-      <div id="navp-6" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Data & Company">
+      <div id="navp-7" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Data & Company">
       <div class="nav-panel-grid">
         <a class="nav-card" href="fhir-standards.html">
             <span class="nav-card-t">FHIR & Standards</span>
@@ -284,6 +337,11 @@
       <summary>Your Care<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="triage.html">Triage Check</a>
+<a href="token.html">Token Making</a>
+<a href="book.html">Book Appointment</a>
+<a href="prescription.html">Prescription Analysis</a>
+<a href="ask-doctor.html">Ask a Doctor</a>
+<a href="video.html">Video Consult</a>
 <a href="my-health.html">My Health</a>
 <a href="login.html">Sign In</a>
       </div>
@@ -304,6 +362,17 @@
       </div>
     </details>
 <details class="drawer-group" id="dg-3">
+      <summary>Doctor Desk<span class="drawer-caret" aria-hidden="true"></span></summary>
+      <div class="drawer-links">
+        <a href="doctor-deck.html">Doctor Deck</a>
+<a href="doctor-bookings.html">Bookings</a>
+<a href="doctor-tokens.html">Token Board</a>
+<a href="doctor-chat.html">Patient Chat</a>
+<a href="doctor-reports.html">Reports & Opinions</a>
+<a href="video.html">Video Consults</a>
+      </div>
+    </details>
+<details class="drawer-group" id="dg-4">
       <summary>Document AI<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="report-upload.html">Report Upload</a>
@@ -314,7 +383,7 @@
 <a href="health-timeline.html">Health Timeline</a>
       </div>
     </details>
-<details class="drawer-group" id="dg-4">
+<details class="drawer-group" id="dg-5">
       <summary>Triage & Consult<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="ai-triage.html">AI Triage</a>
@@ -324,7 +393,7 @@
 <a href="doctor-verification.html">Doctor Verification</a>
       </div>
     </details>
-<details class="drawer-group" id="dg-5">
+<details class="drawer-group" id="dg-6">
       <summary>Trust & Safety<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="consent-sharing.html">Consent & Sharing</a>
@@ -333,7 +402,7 @@
 <a href="rag-safety.html">RAG & AI Safety</a>
       </div>
     </details>
-<details class="drawer-group" id="dg-6">
+<details class="drawer-group" id="dg-7">
       <summary>Data & Company<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="fhir-standards.html">FHIR & Standards</a>
@@ -355,43 +424,58 @@
 </div>
 <main id="main">
 <section class="section"><div class="wrap wrap-narrow">
-        <p class="eyebrow" data-reveal>Account</p>
+        <p class="eyebrow" data-reveal>Account · one door, three decks</p>
         <h1 class="h-sec" data-reveal>Sign in to HealthGuard</h1>
-        <p class="sec-lead" data-reveal>Save triage checks to your private record. You can still run a triage check without an account — accounts add history, not gates.</p>
+        <p class="sec-lead" data-reveal>Choose who you are. Patients get the care deck, doctors get the clinic desk, admins get live operations. Accounts keep your record private — row-level security on every table.</p>
         <div class="auth-card" data-reveal>
           <div class="auth-tabs" role="tablist">
-            <button class="auth-tab is-on" id="tabIn" role="tab" aria-selected="true">Sign in</button>
-            <button class="auth-tab" id="tabUp" role="tab" aria-selected="false">Create account</button>
+            <button class="auth-tab is-on" type="button" data-lg-mode="in" role="tab" aria-selected="true">Sign in</button>
+            <button class="auth-tab" type="button" data-lg-mode="up" role="tab" aria-selected="false">Create account</button>
           </div>
-          <form id="authForm" class="auth-form" novalidate>
-            <label class="fld" for="authEmail">
+          <form id="lgForm" class="auth-form" novalidate>
+            <div class="role-tabs" id="lgRoleRow">
+              <button class="role-tab is-on" type="button" data-lg-role="patient">🩺 Patient</button>
+              <button class="role-tab" type="button" data-lg-role="doctor">👨‍⚕️ Doctor</button>
+              <button class="role-tab" type="button" data-lg-role="admin">📊 Admin</button>
+            </div>
+            <label class="fld" for="lgName">
+    <span class="fld-l">Full name <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="lgName" name="lgName" type="text"    value="" required inputmode="text">
+    <span class="fld-h">Shown on tokens, bookings and chat.</span>
+  </label>
+            <div id="lgSpecRow"><label class="fld" for="lgSpecialty">
+    <span class="fld-l">Specialty</span>
+    <input class="fld-i" id="lgSpecialty" name="lgSpecialty" type="text"    value=""  inputmode="text">
+    <span class="fld-h">e.g. General Medicine, Pediatrics…</span>
+  </label></div>
+            <label class="fld" for="lgEmail">
     <span class="fld-l">Email <b aria-hidden="true">*</b></span>
-    <input class="fld-i" id="authEmail" name="authEmail" type="email"    value="" required inputmode="text">
+    <input class="fld-i" id="lgEmail" name="lgEmail" type="email"    value="" required inputmode="text">
     <span class="fld-h">We never show your email to other users.</span>
   </label>
-            <label class="fld" for="authPass">
+            <label class="fld" for="lgPass">
     <span class="fld-l">Password <b aria-hidden="true">*</b></span>
-    <input class="fld-i" id="authPass" name="authPass" type="password"    value="" required inputmode="text">
+    <input class="fld-i" id="lgPass" name="lgPass" type="password"    value="" required inputmode="text">
     <span class="fld-h">Minimum 8 characters.</span>
   </label>
-            <button class="btn btn-primary btn-block" id="authSubmit" type="submit">Sign in</button>
-            <p class="auth-msg" id="authMsg" role="status" aria-live="polite"></p>
+            <button class="btn btn-primary btn-block" id="lgSubmit" type="submit">Sign in</button>
+            <p class="auth-msg" id="lgMsg" role="status" aria-live="polite"></p>
           </form>
-          <p class="auth-note">AI assistive triage — workflow urgency only, not diagnosis. Clinical decisions remain with qualified clinicians.</p>
+          <p class="auth-note">AI assistive triage — workflow urgency only, not diagnosis. Clinical decisions remain with qualified clinicians. Demo note: roles are self-declared in v1 — production verifies clinician credentials before launch.</p>
         </div>
       </div></section>
 <section class="section section-rail">
     <div class="wrap">
       <p class="eyebrow" data-reveal>Related components</p>
       <div class="rail" data-stagger>
-        <a class="rail-card" href="triage.html" data-reveal>
-          <span class="rail-t">Triage Check</span><span class="rail-go" aria-hidden="true">→</span>
+        <a class="rail-card" href="patient-deck.html" data-reveal>
+          <span class="rail-t">Patient Deck</span><span class="rail-go" aria-hidden="true">→</span>
         </a>
-<a class="rail-card" href="my-health.html" data-reveal>
-          <span class="rail-t">My Health</span><span class="rail-go" aria-hidden="true">→</span>
+<a class="rail-card" href="doctor-deck.html" data-reveal>
+          <span class="rail-t">Doctor Deck</span><span class="rail-go" aria-hidden="true">→</span>
         </a>
-<a class="rail-card" href="audit-security.html" data-reveal>
-          <span class="rail-t">Audit &amp; Security</span><span class="rail-go" aria-hidden="true">→</span>
+<a class="rail-card" href="admin-deck.html" data-reveal>
+          <span class="rail-t">Admin Deck</span><span class="rail-go" aria-hidden="true">→</span>
         </a>
       </div>
     </div>
@@ -480,6 +564,7 @@
 <script src="js/heart.js" defer></script>
 <script src="js/main.js" defer></script>
 <script src="js/auth.js" defer></script>
+<script src="js/deck-app.js" defer></script>
 <script src="js/app-pages.js" defer></script>
 </body>
 </html>

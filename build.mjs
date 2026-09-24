@@ -17,7 +17,10 @@ const ROOT = dirname(fileURLToPath(import.meta.url));
 const OUT = join(ROOT, 'public');
 const IMG = join(OUT, 'images');
 
-const pages = [...core, ...docs, ...care, ...trust, ...data, ...product];
+const allPages = [...core, ...docs, ...care, ...trust, ...data, ...product];
+// product pages own their slugs (patient-deck/doctor-deck/admin-deck become the
+// real working decks) — last writer wins on duplicate slugs.
+const pages = [...new Map(allPages.map((p) => [p.slug, p])).values()];
 
 // Art resolution: prefer the page's art; fall back gracefully if an asset is
 // pending generation (keeps the build green, never a broken <img>).

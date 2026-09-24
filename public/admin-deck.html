@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#fffdf7">
-<meta name="description" content="The HealthGuard Admin Deck: doctor verification, patient and doctor management, triage configuration, AI monitoring, dataset governance, security events, analytics and emergency AI shutdown.">
-<meta property="og:title" content="Admin Deck — Verification, AI Ops, Security · HealthGuard">
-<meta property="og:description" content="The HealthGuard Admin Deck: doctor verification, patient and doctor management, triage configuration, AI monitoring, dataset governance, security events, analytics and emergency AI shutdown.">
+<meta name="description" content="Platform operations in real time: doctors and patients registered and active, bookings pending/ongoing/completed, queue load, open opinions.">
+<meta property="og:title" content="Admin Deck — Live Operations · HealthGuard">
+<meta property="og:description" content="Platform operations in real time: doctors and patients registered and active, bookings pending/ongoing/completed, queue load, open opinions.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="HealthGuard — EVOLVEX IT SOLUTIONS PVT. LTD.">
-<title>Admin Deck — Verification, AI Ops, Security · HealthGuard</title>
+<title>Admin Deck — Live Operations · HealthGuard</title>
 <script>try{var _t=localStorage.getItem('hg-theme');if(!_t)_t='light';document.documentElement.setAttribute('data-theme',_t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z' fill='%23087255'/%3E%3Cpath d='M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9' stroke='%23F7F4EE' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/app.css">
 </head>
-<body data-family="decks" data-slug="admin-deck">
+<body data-family="product" data-slug="admin-deck">
 <canvas id="livingCanvas" aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
 <div class="aurora" aria-hidden="true"><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span></div>
@@ -54,13 +54,33 @@
             <span class="nav-card-t">Triage Check</span>
             <span class="nav-card-d">Live urgency engine (T0–T4)</span>
           </a>
+<a class="nav-card" href="token.html">
+            <span class="nav-card-t">Token Making</span>
+            <span class="nav-card-d">Today's clinic queue number</span>
+          </a>
+<a class="nav-card" href="book.html">
+            <span class="nav-card-t">Book Appointment</span>
+            <span class="nav-card-d">Doctor, day and slot</span>
+          </a>
+<a class="nav-card" href="prescription.html">
+            <span class="nav-card-t">Prescription Analysis</span>
+            <span class="nav-card-d">Understand the slip</span>
+          </a>
+<a class="nav-card" href="ask-doctor.html">
+            <span class="nav-card-t">Ask a Doctor</span>
+            <span class="nav-card-d">Reports, opinions & chat</span>
+          </a>
+<a class="nav-card" href="video.html">
+            <span class="nav-card-t">Video Consult</span>
+            <span class="nav-card-d">Join your booked room</span>
+          </a>
 <a class="nav-card" href="my-health.html">
             <span class="nav-card-t">My Health</span>
-            <span class="nav-card-d">Your saved checks & records</span>
+            <span class="nav-card-d">Your complete record</span>
           </a>
 <a class="nav-card" href="login.html">
             <span class="nav-card-t">Sign In</span>
-            <span class="nav-card-d">Create account or sign in</span>
+            <span class="nav-card-d">Patient · Doctor · Admin</span>
           </a>
       </div>
     </div></div>
@@ -105,9 +125,42 @@
     </div>
 <div class="nav-family" data-nav-family>
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-3">
+        Doctor Desk<span class="nav-caret" aria-hidden="true"></span>
+      </button>
+      <div id="navp-3" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Doctor Desk">
+      <div class="nav-panel-grid">
+        <a class="nav-card" href="doctor-deck.html">
+            <span class="nav-card-t">Doctor Deck</span>
+            <span class="nav-card-d">Your clinic desk</span>
+          </a>
+<a class="nav-card" href="doctor-bookings.html">
+            <span class="nav-card-t">Bookings</span>
+            <span class="nav-card-d">Accept, decline, complete</span>
+          </a>
+<a class="nav-card" href="doctor-tokens.html">
+            <span class="nav-card-t">Token Board</span>
+            <span class="nav-card-d">Today's queue</span>
+          </a>
+<a class="nav-card" href="doctor-chat.html">
+            <span class="nav-card-t">Patient Chat</span>
+            <span class="nav-card-d">Talk to booked patients</span>
+          </a>
+<a class="nav-card" href="doctor-reports.html">
+            <span class="nav-card-t">Reports & Opinions</span>
+            <span class="nav-card-d">Review and answer</span>
+          </a>
+<a class="nav-card" href="video.html">
+            <span class="nav-card-t">Video Consults</span>
+            <span class="nav-card-d">Join booked rooms</span>
+          </a>
+      </div>
+    </div></div>
+    </div>
+<div class="nav-family" data-nav-family>
+      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-4">
         Document AI<span class="nav-caret" aria-hidden="true"></span>
       </button>
-      <div id="navp-3" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Document AI">
+      <div id="navp-4" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Document AI">
       <div class="nav-panel-grid">
         <a class="nav-card" href="report-upload.html">
             <span class="nav-card-t">Report Upload</span>
@@ -137,10 +190,10 @@
     </div></div>
     </div>
 <div class="nav-family" data-nav-family>
-      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-4">
+      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-5">
         Triage & Consult<span class="nav-caret" aria-hidden="true"></span>
       </button>
-      <div id="navp-4" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Triage & Consult">
+      <div id="navp-5" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Triage & Consult">
       <div class="nav-panel-grid">
         <a class="nav-card" href="ai-triage.html">
             <span class="nav-card-t">AI Triage</span>
@@ -166,10 +219,10 @@
     </div></div>
     </div>
 <div class="nav-family" data-nav-family>
-      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-5">
+      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-6">
         Trust & Safety<span class="nav-caret" aria-hidden="true"></span>
       </button>
-      <div id="navp-5" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Trust & Safety">
+      <div id="navp-6" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Trust & Safety">
       <div class="nav-panel-grid">
         <a class="nav-card" href="consent-sharing.html">
             <span class="nav-card-t">Consent & Sharing</span>
@@ -191,10 +244,10 @@
     </div></div>
     </div>
 <div class="nav-family" data-nav-family>
-      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-6">
+      <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-7">
         Data & Company<span class="nav-caret" aria-hidden="true"></span>
       </button>
-      <div id="navp-6" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Data & Company">
+      <div id="navp-7" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Data & Company">
       <div class="nav-panel-grid">
         <a class="nav-card" href="fhir-standards.html">
             <span class="nav-card-t">FHIR & Standards</span>
@@ -284,6 +337,11 @@
       <summary>Your Care<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="triage.html">Triage Check</a>
+<a href="token.html">Token Making</a>
+<a href="book.html">Book Appointment</a>
+<a href="prescription.html">Prescription Analysis</a>
+<a href="ask-doctor.html">Ask a Doctor</a>
+<a href="video.html">Video Consult</a>
 <a href="my-health.html">My Health</a>
 <a href="login.html">Sign In</a>
       </div>
@@ -304,6 +362,17 @@
       </div>
     </details>
 <details class="drawer-group" id="dg-3">
+      <summary>Doctor Desk<span class="drawer-caret" aria-hidden="true"></span></summary>
+      <div class="drawer-links">
+        <a href="doctor-deck.html">Doctor Deck</a>
+<a href="doctor-bookings.html">Bookings</a>
+<a href="doctor-tokens.html">Token Board</a>
+<a href="doctor-chat.html">Patient Chat</a>
+<a href="doctor-reports.html">Reports & Opinions</a>
+<a href="video.html">Video Consults</a>
+      </div>
+    </details>
+<details class="drawer-group" id="dg-4">
       <summary>Document AI<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="report-upload.html">Report Upload</a>
@@ -314,7 +383,7 @@
 <a href="health-timeline.html">Health Timeline</a>
       </div>
     </details>
-<details class="drawer-group" id="dg-4">
+<details class="drawer-group" id="dg-5">
       <summary>Triage & Consult<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="ai-triage.html">AI Triage</a>
@@ -324,7 +393,7 @@
 <a href="doctor-verification.html">Doctor Verification</a>
       </div>
     </details>
-<details class="drawer-group" id="dg-5">
+<details class="drawer-group" id="dg-6">
       <summary>Trust & Safety<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="consent-sharing.html">Consent & Sharing</a>
@@ -333,7 +402,7 @@
 <a href="rag-safety.html">RAG & AI Safety</a>
       </div>
     </details>
-<details class="drawer-group" id="dg-6">
+<details class="drawer-group" id="dg-7">
       <summary>Data & Company<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="fhir-standards.html">FHIR & Standards</a>
@@ -354,149 +423,34 @@
   </div>
 </div>
 <main id="main">
-<section class="hero" data-spotlight>
-    <div class="hero-spot" aria-hidden="true"></div>
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow" data-reveal>Deck 3 of 3</p>
-        <h1 class="h-display" data-split>Admin Deck</h1>
-        <p class="lead" data-reveal data-reveal-delay="1">Operational control over trust: who is verified, how the AI is behaving, which security events fired, and a kill-switch for AI features when needed.</p>
-        <div class="chip-row" data-reveal data-reveal-delay="2"><span class="chip">Doctor verification</span><span class="chip">AI monitoring</span><span class="chip">Security events</span><span class="chip">Feature flags</span><span class="chip">AI emergency-disable</span></div>
-        
+<section class="section">
+  <div class="wrap wrap-narrow">
+    <div class="gate-shell" id="gate" hidden>
+      <p class="eyebrow">Members only</p>
+      <h2 class="h-sec">Sign in to open this workspace</h2>
+      <p class="sec-lead">This area is for admins. Your deck unlocks after login.</p>
+      <div class="btn-row"><a class="btn btn-primary" href="login.html?role=admin">Sign in</a>
+      <a class="btn btn-ghost" href="login.html">Create an account</a></div>
+    </div>
+    <p class="note note-warn" id="roleWarn" hidden></p>
+    <div id="app" hidden>
+        <div class="deck-head"><div><p class="eyebrow">Live workspace</p><h1 class="deck-title">Admin Deck — Live Operations</h1><p class="deck-sub">Everything that is happening, refreshed every 5 seconds.</p></div></div>
+        <div class="dash-grid cols-4" id="adStats"></div>
+        <div class="work has-side sect-gap">
+          <div>
+            <h2 class="h-3">Latest bookings</h2>
+            <div class="board sect-gap" id="adBookings"></div>
+            <h2 class="h-3 sect-gap">Today's queue</h2>
+            <div class="board" id="adTokens"></div>
+          </div>
+          <div>
+            <h2 class="h-3">Users & presence</h2>
+            <div class="board sect-gap" id="adUsers"></div>
+          </div>
+        </div>
       </div>
-      <figure class="hero-art" data-reveal data-reveal-delay="1">
-        <div class="hero-art-frame"><img src="images/art-decks.jpg" alt="" loading="eager" decoding="async"></div>
-        <div class="float-chip fc-1"><span class="fc-dot"></span>AI extraction ✓</div>
-        <div class="float-chip fc-2"><svg class="mini-ecg" viewBox="0 0 36 16" aria-hidden="true"><path d="M0 8 H6 L8 4 L10 13 L12 8 H18 L20 3 L22 13 L24 8 H36"/></svg>72 bpm</div>
-        <div class="float-chip fc-3"><span class="fc-dot"></span>94% confidence</div>
-        <figcaption class="hero-art-cap">Deck 3 of 3</figcaption>
-      </figure>
-    </div>
-  </section>
-<section class="section" >
-    <div class="wrap ">
-      <p class="eyebrow" data-reveal>Overview metrics</p>
-      <h2 class="h-sec" data-reveal>What the admin sees first</h2>
-      
-      <div class="stats" data-stagger>
-    <div class="stat" data-reveal>
-      <p class="stat-n"><span data-count="23">0</span><span class="stat-suffix"></span></p>
-      <p class="stat-l">Pending verifications</p>
-    </div>
-<div class="stat" data-reveal>
-      <p class="stat-n"><span data-count="98">0</span><span class="stat-suffix">%</span></p>
-      <p class="stat-l">OCR success rate</p>
-    </div>
-<div class="stat" data-reveal>
-      <p class="stat-n"><span data-count="12">0</span><span class="stat-suffix"></span></p>
-      <p class="stat-l">Failed AI extractions / day</p>
-    </div>
-<div class="stat" data-reveal>
-      <p class="stat-n"><span data-count="4">0</span><span class="stat-suffix"></span></p>
-      <p class="stat-l">Security events / week</p>
-    </div>
-  </div><ul class="checks cols-2" data-stagger>
-    <li data-reveal>Active patients</li>
-<li data-reveal>Verified doctors</li>
-<li data-reveal>Active consultations</li>
-<li data-reveal>Reports processed</li>
-<li data-reveal>AI reviews</li>
-<li data-reveal>Human-review backlog</li>
-<li data-reveal>Model versions live</li>
-<li data-reveal>System latency</li>
-  </ul>
-    </div>
-  </section>
-<section class="section" >
-    <div class="wrap ">
-      <p class="eyebrow" data-reveal>Doctor verification</p>
-      <h2 class="h-sec" data-reveal>Identity ✓ Registration ✓ Degree ✓</h2>
-      
-      <div class="split ">
-    <div class="split-copy">
-      <h3 class="h-sub" data-reveal>A review queue with receipts</h3>
-      <p data-reveal>Each pending doctor shows a checklist of identity, registration, degree, specialty and documents. Approve, reject, or request clarification — every decision writes an immutable audit event with verification_version, verified_by, verified_at, expiry_date and documents_hash.</p>
-      
-    </div>
-    <div class="split-fig" data-reveal><div class="pill-row" data-reveal><span class="pill ">UNVERIFIED</span><span class="pill ">PENDING_REVIEW</span><span class="pill pill-ok">VERIFIED</span><span class="pill pill-t2">SUSPENDED</span><span class="pill pill-danger">REJECTED</span></div></div>
-  </div>
-    </div>
-  </section>
-<section class="section" >
-    <div class="wrap ">
-      <p class="eyebrow" data-reveal>AI monitoring</p>
-      <h2 class="h-sec" data-reveal>Model behaviour, measured</h2>
-      
-      <div class="conf" data-stagger>
-    <div class="conf-row" data-reveal>
-      <div class="conf-head"><span>OCR success rate</span><span class="conf-v">96%</span></div>
-      <div class="conf-track"><div class="conf-fill" data-bar="96" style="--target:96%"></div></div>
-    </div>
-<div class="conf-row" data-reveal>
-      <div class="conf-head"><span>Extraction field accuracy</span><span class="conf-v">94%</span></div>
-      <div class="conf-track"><div class="conf-fill" data-bar="94" style="--target:94%"></div></div>
-    </div>
-<div class="conf-row" data-reveal>
-      <div class="conf-head"><span>Human-review agreement</span><span class="conf-v">91%</span></div>
-      <div class="conf-track"><div class="conf-fill" data-bar="91" style="--target:91%"></div></div>
-    </div>
-<div class="conf-row" data-reveal>
-      <div class="conf-head"><span>Triage override rate (lower is better)</span><span class="conf-v">8%</span></div>
-      <div class="conf-track"><div class="conf-fill" data-bar="8" style="--target:8%"></div></div>
-    </div>
-  </div><ul class="checks cols-2" data-stagger>
-    <li data-reveal>Model disagreement tracking</li>
-<li data-reveal>Hallucination rate</li>
-<li data-reveal>Triage override rate</li>
-<li data-reveal>Latency and token cost</li>
-<li data-reveal>Model version registry</li>
-<li data-reveal>Emergency shutdown of AI features</li>
-<li data-reveal>Dataset governance controls</li>
-<li data-reveal>Abuse detection</li>
-  </ul>
-    </div>
-  </section>
-<section class="section" >
-    <div class="wrap ">
-      <p class="eyebrow" data-reveal>Also inside</p>
-      <h2 class="h-sec" data-reveal>The rest of the console</h2>
-      
-      <div class="acc" data-stagger>
-    <details class="acc-item" open data-reveal>
-      <summary>Patient &amp; doctor management<span class="acc-caret" aria-hidden="true"></span></summary>
-      <div class="acc-body"><p>Search, inspect, suspend and restore accounts. Tenant isolation and object-level authorization are enforced server-side — never trusted from the client.</p></div>
-    </details>
-<details class="acc-item"  data-reveal>
-      <summary>Appointments &amp; tokens<span class="acc-caret" aria-hidden="true"></span></summary>
-      <div class="acc-body"><p>Monitor appointment flow, queue health, estimated waits, cancellations, expirations and escalations across specialties.</p></div>
-    </details>
-<details class="acc-item"  data-reveal>
-      <summary>Security events &amp; audit viewer<span class="acc-caret" aria-hidden="true"></span></summary>
-      <div class="acc-body"><p>Immutable audit stream (WHO/WHAT/WHEN/WHERE/WHY/RESOURCE/RESULT) with anomaly flags for suspicious access patterns.</p></div>
-    </details>
-<details class="acc-item"  data-reveal>
-      <summary>Complaints, content &amp; feature flags<span class="acc-caret" aria-hidden="true"></span></summary>
-      <div class="acc-body"><p>Dispute management, CMS for patient-facing content, and staged feature flags — including AI emergency-disable controls.</p></div>
-    </details>
-  </div>
-    </div>
-  </section>
-<section class="section section-rail">
-    <div class="wrap">
-      <p class="eyebrow" data-reveal>Related components</p>
-      <div class="rail" data-stagger>
-        <a class="rail-card" href="doctor-verification.html" data-reveal>
-          <span class="rail-t">Doctor Verification</span><span class="rail-go" aria-hidden="true">→</span>
-        </a>
-<a class="rail-card" href="audit-security.html" data-reveal>
-          <span class="rail-t">Audit &amp; Security</span><span class="rail-go" aria-hidden="true">→</span>
-        </a>
-<a class="rail-card" href="analytics.html" data-reveal>
-          <span class="rail-t">Analytics</span><span class="rail-go" aria-hidden="true">→</span>
-        </a>
-      </div>
-    </div>
-  </section>
+  </div></section>
+<p class="note note-" data-reveal>Active now = seen in the last 15 minutes. Roles are self-declared in v1; credential verification ships with the doctor-verification workflow before real clinical deployment.</p>
 </main>
 <footer class="site-footer" id="footer">
   <div class="wrap footer-grid">
@@ -581,6 +535,7 @@
 <script src="js/heart.js" defer></script>
 <script src="js/main.js" defer></script>
 <script src="js/auth.js" defer></script>
+<script src="js/deck-app.js" defer></script>
 <script src="js/app-pages.js" defer></script>
 </body>
 </html>
