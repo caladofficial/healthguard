@@ -14,7 +14,9 @@
       'Content-Type': 'application/json'
     }, opts.headers || {});
     return fetch(SB_URL + path, opts).then(function (r) {
-      return r.json().then(function (j) {
+      return r.text().then(function (t) {
+        var j = {};
+        if (t) { try { j = JSON.parse(t); } catch (e) { j = {}; } }
         if (!r.ok) throw new Error((j && (j.msg || j.error_description || j.message)) || ('HTTP ' + r.status));
         return j;
       });
