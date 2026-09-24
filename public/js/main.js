@@ -19,7 +19,7 @@
   (function themeInit() {
     var root = document.documentElement;
     var meta = document.querySelector('meta[name="theme-color"]');
-    function syncMeta(t) { if (meta) meta.setAttribute('content', t === 'light' ? '#eef1f8' : '#070b18'); }
+    function syncMeta(t) { if (meta) meta.setAttribute('content', t === 'light' ? '#fffdf7' : '#062d25'); }
     function apply(t) {
       root.setAttribute('data-theme', t);
       try { localStorage.setItem('hg-theme', t); } catch (e) { }
@@ -88,12 +88,24 @@
   var drawer = document.getElementById('drawer');
   var drawerClose = document.getElementById('drawerClose');
   var scrim = document.getElementById('drawerScrim');
+  var closeTimer = null;
   function setDrawer(open) {
     if (!drawer || !burger) return;
-    drawer.hidden = !open;
+    if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
     burger.setAttribute('aria-expanded', String(open));
     document.documentElement.style.overflow = open ? 'hidden' : '';
-    if (open && drawerClose) drawerClose.focus();
+    if (open) {
+      drawer.classList.remove('closing');
+      drawer.hidden = false;
+      if (drawerClose) drawerClose.focus();
+    } else {
+      // smooth slide-out to the right, then hide
+      drawer.classList.add('closing');
+      closeTimer = setTimeout(function () {
+        drawer.classList.remove('closing');
+        drawer.hidden = true;
+      }, 280);
+    }
   }
   if (burger) burger.addEventListener('click', function () { setDrawer(drawer.hidden); });
   if (drawerClose) drawerClose.addEventListener('click', function () { setDrawer(false); if (burger) burger.focus(); });

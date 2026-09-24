@@ -15,34 +15,34 @@
 .auth-tab {
   flex: 1 1 0; min-width: 0; padding: .65rem .8rem; border-radius: 12px; cursor: pointer;
   border: 1px solid var(--line, rgba(201, 162, 39, .25)); background: transparent;
-  color: var(--ink-2, #cdc6b8); font: inherit; font-weight: 600;
+  color: var(--ink-2, #cfe0d7); font: inherit; font-weight: 600;
 }
-.auth-tab.is-on { background: var(--gold, #c9a227); color: #14171e; border-color: transparent; }
+.auth-tab.is-on { background: var(--gold, #087255); color: #082f27; border-color: transparent; }
 .auth-form { display: grid; gap: 1rem; }
-.auth-msg { margin: .2rem 0 0; font-size: .92rem; color: var(--ink-2, #cdc6b8); overflow-wrap: anywhere; }
-.auth-msg.is-err { color: var(--rose, #c98a8a); }
-.auth-msg.is-ok { color: var(--sage, #7d8a74); }
-.auth-note { margin-top: 1.1rem; font-size: .82rem; color: var(--ink-3, #938c7e); }
-.auth-note a, .auth-msg a { color: var(--champagne, #d8b980); }
+.auth-msg { margin: .2rem 0 0; font-size: .92rem; color: var(--ink-2, #cfe0d7); overflow-wrap: anywhere; }
+.auth-msg.is-err { color: var(--rose, #d7574c); }
+.auth-msg.is-ok { color: var(--sage, #0b8174); }
+.auth-note { margin-top: 1.1rem; font-size: .82rem; color: var(--ink-3, #9db3a8); }
+.auth-note a, .auth-msg a { color: var(--champagne, #087255); }
 
 /* --------------------------------- fields --------------------------------- */
 .fld-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(13.5rem, 100%), 1fr)); gap: .9rem; }
 .fld { display: grid; gap: .3rem; min-width: 0; }
-.fld-l { font-size: .85rem; color: var(--ink-2, #cdc6b8); font-weight: 600; }
-.fld-l b { color: var(--gold, #c9a227); }
+.fld-l { font-size: .85rem; color: var(--ink-2, #cfe0d7); font-weight: 600; }
+.fld-l b { color: var(--gold, #087255); }
 .fld-i {
   width: 100%; min-width: 0; padding: .6rem .75rem; border-radius: 10px; font: inherit;
   border: 1px solid var(--line, rgba(201, 162, 39, .28)); background: var(--panel-2, rgba(26, 30, 38, .8));
-  color: var(--ink, #f2ede3);
+  color: var(--ink, #eef5f0);
 }
-.fld-i:focus-visible { outline: 2px solid var(--gold, #c9a227); outline-offset: 1px; }
-.fld-h { font-size: .74rem; color: var(--ink-3, #938c7e); }
-.fs { border: 1px solid var(--line, rgba(201, 162, 39, .22)); border-radius: 16px; padding: 1rem 1.1rem 1.2rem; margin: 0 0 1.1rem; min-width: 0; }
-.fs legend { padding: 0 .5rem; font-weight: 700; color: var(--champagne, #d8b980); }
+.fld-i:focus-visible { outline: 2px solid var(--gold, #087255); outline-offset: 1px; }
+.fld-h { font-size: .74rem; color: var(--ink-3, #9db3a8); }
+.fs { border: 1px solid var(--line, rgba(8, 114, 85, .18)); border-radius: 16px; padding: 1rem 1.1rem 1.2rem; margin: 0 0 1.1rem; min-width: 0; }
+.fs legend { padding: 0 .5rem; font-weight: 700; color: var(--champagne, #087255); }
 .check-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr)); gap: .45rem .9rem; }
 .ck { display: flex; gap: .55rem; align-items: flex-start; padding: .45rem .55rem; border-radius: 10px; cursor: pointer; min-width: 0; }
 .ck:hover { background: rgba(201, 162, 39, .08); }
-.ck input { margin-top: .18rem; accent-color: var(--gold, #c9a227); flex: 0 0 auto; }
+.ck input { margin-top: .18rem; accent-color: var(--gold, #087255); flex: 0 0 auto; }
 .ck span { overflow-wrap: anywhere; }
 .ck-fld { align-items: center; align-self: end; min-height: 2.6rem; }
 .triage-form { margin-top: .6rem; }
@@ -58,29 +58,29 @@
 .res-top { display: flex; gap: 1rem; align-items: center; min-width: 0; }
 .res-badge {
   flex: 0 0 auto; min-width: 4.4rem; text-align: center; padding: .55rem .8rem; border-radius: 14px;
-  font-weight: 800; font-size: 1.25rem; letter-spacing: .04em; color: #14171e;
+  font-weight: 800; font-size: 1.25rem; letter-spacing: .04em; color: #082f27;
 }
-.pill-t0 { background: #9e3b3b; color: #fff; }
-.pill-t1 { background: #c98a8a; }
-.pill-t2 { background: #d8b980; }
-.pill-t3 { background: #7d8a74; }
-.pill-t4 { background: #4a6b8a; color: #f2ede3; }
+.pill-t0 { background: #d7574c; color: #fff; }
+.pill-t1 { background: #d7574c; }
+.pill-t2 { background: #087255; }
+.pill-t3 { background: #0b8174; }
+.pill-t4 { background: #4a6b8a; color: #eef5f0; }
 .res-class { margin: 0; font-size: clamp(1.2rem, 4vw, 1.7rem); overflow-wrap: anywhere; }
-.res-sub { margin: .15rem 0 0; color: var(--ink-3, #938c7e); font-size: .88rem; }
+.res-sub { margin: .15rem 0 0; color: var(--ink-3, #9db3a8); font-size: .88rem; }
 .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr)); gap: 1rem; }
-.res-k { margin: 0 0 .35rem; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3, #938c7e); }
+.res-k { margin: 0 0 .35rem; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3, #9db3a8); }
 .res-v { margin: 0; font-size: 1.15rem; display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
-.res-meta { margin: 0; font-size: .76rem; color: var(--ink-3, #938c7e); font-family: ui-monospace, monospace; overflow-wrap: anywhere; }
+.res-meta { margin: 0; font-size: .76rem; color: var(--ink-3, #9db3a8); font-family: ui-monospace, monospace; overflow-wrap: anywhere; }
 .pill-code { text-transform: none; letter-spacing: 0; }
 
 /* ------------------------------- my health -------------------------------- */
 .mh-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
 .mh-email { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
 .mh-list { display: grid; gap: .8rem; }
-.mh-row { border: 1px solid var(--line, rgba(201, 162, 39, .22)); border-radius: 14px; padding: .9rem 1rem; display: grid; gap: .5rem; min-width: 0; }
+.mh-row { border: 1px solid var(--line, rgba(8, 114, 85, .18)); border-radius: 14px; padding: .9rem 1rem; display: grid; gap: .5rem; min-width: 0; }
 .mh-row-top { display: flex; align-items: center; gap: .9rem; flex-wrap: wrap; }
-.mh-when { color: var(--ink-3, #938c7e); font-size: .82rem; }
-.mh-mean { margin: 0; color: var(--ink-2, #cdc6b8); overflow-wrap: anywhere; }
+.mh-when { color: var(--ink-3, #9db3a8); font-size: .82rem; }
+.mh-mean { margin: 0; color: var(--ink-2, #cfe0d7); overflow-wrap: anywhere; }
 
 @media (max-width: 30rem) {
   .res-top { flex-wrap: wrap; }

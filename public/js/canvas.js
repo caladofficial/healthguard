@@ -159,8 +159,8 @@
     var c = ctx2;
     c.clearRect(0, 0, W, H);
     var grd = c.createLinearGradient(0, 0, W, H);
-    if (theme) { grd.addColorStop(0, 'rgba(123,97,255,0.05)'); grd.addColorStop(0.5, 'rgba(34,211,238,0.05)'); grd.addColorStop(1, 'rgba(52,211,153,0.05)'); }
-    else { grd.addColorStop(0, 'rgba(88,28,135,0.10)'); grd.addColorStop(0.5, 'rgba(8,145,178,0.08)'); grd.addColorStop(1, 'rgba(6,95,70,0.08)'); }
+    if (theme) { grd.addColorStop(0, 'rgba(8,114,85,0.05)'); grd.addColorStop(0.5, 'rgba(86,201,155,0.05)'); grd.addColorStop(1, 'rgba(52,211,153,0.05)'); }
+    else { grd.addColorStop(0, 'rgba(6,45,37,0.10)'); grd.addColorStop(0.5, 'rgba(11,129,116,0.08)'); grd.addColorStop(1, 'rgba(6,95,70,0.08)'); }
     c.fillStyle = grd; c.fillRect(0, 0, W, H);
     c.beginPath();
     for (var x = -10; x <= W + 10; x += 3) {
@@ -177,12 +177,12 @@
       var r = rp * Math.max(W, H) * 0.55;
       c.beginPath(); c.arc(W * 0.5, H * 0.45, r, 0, Math.PI * 2);
       var al = (1 - rp) * (1 - rp) * (theme ? 0.10 : 0.16);
-      c.strokeStyle = i === 0 ? 'rgba(34,211,238,' + al + ')' : (i === 1 ? 'rgba(139,92,246,' + al + ')' : 'rgba(52,211,153,' + al + ')');
+      c.strokeStyle = i === 0 ? 'rgba(86,201,155,' + al + ')' : (i === 1 ? 'rgba(245,185,20,' + al + ')' : 'rgba(52,211,153,' + al + ')');
       c.lineWidth = 1.6; c.stroke();
     }
     var core = c.createRadialGradient(W * 0.5, H * 0.45, 0, W * 0.5, H * 0.45, 90);
-    core.addColorStop(0, 'rgba(251,113,133,' + (theme ? 0.03 : 0.05) * (1 + hb) + ')');
-    core.addColorStop(1, 'rgba(251,113,133,0)');
+    core.addColorStop(0, 'rgba(245,185,20,' + (theme ? 0.03 : 0.05) * (1 + hb) + ')');
+    core.addColorStop(1, 'rgba(245,185,20,0)');
     c.fillStyle = core; c.fillRect(0, 0, W, H);
     for (var m = 0; m < motes.length; m++) {
       var mo = motes[m];

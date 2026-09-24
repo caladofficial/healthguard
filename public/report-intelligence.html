@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<meta name="theme-color" content="#070b18">
+<meta name="theme-color" content="#fffdf7">
 <meta name="description" content="HealthGuard AI report screen: patient-friendly summaries, abnormal-value highlighting against supplied ranges, doctor views with confidence, and an uncertainty UI that shows verified, review-required and unable-to-determine states.">
 <meta property="og:title" content="Report Intelligence — Summaries & Uncertainty UI · HealthGuard">
 <meta property="og:description" content="HealthGuard AI report screen: patient-friendly summaries, abnormal-value highlighting against supplied ranges, doctor views with confidence, and an uncertainty UI that shows verified, review-required and unable-to-determine states.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="HealthGuard — EVOLVEX IT SOLUTIONS PVT. LTD.">
 <title>Report Intelligence — Summaries & Uncertainty UI · HealthGuard</title>
-<script>try{var _t=localStorage.getItem('hg-theme');if(!_t)_t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',_t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z' fill='%235F7A63'/%3E%3Cpath d='M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9' stroke='%23F7F4EE' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>try{var _t=localStorage.getItem('hg-theme');if(!_t)_t='light';document.documentElement.setAttribute('data-theme',_t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z' fill='%23087255'/%3E%3Cpath d='M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9' stroke='%23F7F4EE' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/app.css">
 </head>
@@ -28,15 +28,15 @@
     <svg class="logo-mark logo-draw" viewBox="0 0 48 48" role="img" aria-label="HealthGuard logo" fill="none">
     <defs>
       <linearGradient id="hg-40" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-        <stop stop-color="#22d3ee"/><stop offset="0.55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#e879f9"/>
+        <stop stop-color="#087255"/><stop offset="0.55" stop-color="#0b8174"/><stop offset="1" stop-color="#56c99b"/>
       </linearGradient>
       <linearGradient id="hp-40" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
-        <stop stop-color="#34d399"/><stop offset="1" stop-color="#22d3ee"/>
+        <stop stop-color="#d8ef74"/><stop offset="1" stop-color="#087255"/>
       </linearGradient>
     </defs>
     <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#hg-40)" stroke-width="2.2" stroke-linejoin="round"/>
     <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#hp-40)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path class="ld ld-3" d="M30.2 12.6c2.9-.5 5.2.4 6.5 2.5-2.7 1.2-5 .8-6.5-2.5Z" fill="#fbbf24" stroke="none" opacity=".95"/>
+    <path class="ld ld-3" d="M30.2 12.6c2.9-.5 5.2.4 6.5 2.5-2.7 1.2-5 .8-6.5-2.5Z" fill="#f5b914" stroke="none" opacity=".95"/>
   </svg>
     <span class="brand-text">
       <strong class="brand-name">HealthGuard</strong>
@@ -255,21 +255,22 @@
   </div>
 </header>
 <div class="drawer" id="drawer" hidden>
+  <div class="drawer-scrim" id="drawerScrim"></div>
   <div class="drawer-sheet" role="dialog" aria-modal="true" aria-label="Site menu">
     <div class="drawer-top">
       <a class="brand" href="index.html" aria-label="HealthGuard — by EVOLVEX IT SOLUTIONS PVT. LTD.">
     <svg class="logo-mark logo-draw" viewBox="0 0 48 48" role="img" aria-label="HealthGuard logo" fill="none">
     <defs>
       <linearGradient id="hg-41" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-        <stop stop-color="#22d3ee"/><stop offset="0.55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#e879f9"/>
+        <stop stop-color="#087255"/><stop offset="0.55" stop-color="#0b8174"/><stop offset="1" stop-color="#56c99b"/>
       </linearGradient>
       <linearGradient id="hp-41" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
-        <stop stop-color="#34d399"/><stop offset="1" stop-color="#22d3ee"/>
+        <stop stop-color="#d8ef74"/><stop offset="1" stop-color="#087255"/>
       </linearGradient>
     </defs>
     <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#hg-41)" stroke-width="2.2" stroke-linejoin="round"/>
     <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#hp-41)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path class="ld ld-3" d="M30.2 12.6c2.9-.5 5.2.4 6.5 2.5-2.7 1.2-5 .8-6.5-2.5Z" fill="#fbbf24" stroke="none" opacity=".95"/>
+    <path class="ld ld-3" d="M30.2 12.6c2.9-.5 5.2.4 6.5 2.5-2.7 1.2-5 .8-6.5-2.5Z" fill="#f5b914" stroke="none" opacity=".95"/>
   </svg>
     <span class="brand-text">
       <strong class="brand-name">HealthGuard</strong>
@@ -351,7 +352,6 @@
     <a class="auth-chip auth-chip--block" href="login.html" data-auth-chip hidden></a>
     <p class="drawer-legal">© 2026 EVOLVEX IT SOLUTIONS PVT. LTD.</p>
   </div>
-  <div class="drawer-scrim" id="drawerScrim"></div>
 </div>
 <main id="main">
 <section class="hero" data-spotlight>
@@ -462,16 +462,16 @@ MISSING INFORMATION
       <div class="foot-brand-row"><svg class="logo-mark logo-mark--evx logo-draw" viewBox="0 0 48 48" role="img" aria-label="EVOLVEX logo" fill="none">
     <defs>
       <linearGradient id="evx-42" x1="8" y1="38" x2="28" y2="10" gradientUnits="userSpaceOnUse">
-        <stop stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/>
+        <stop stop-color="#087255"/><stop offset="1" stop-color="#0b8174"/>
       </linearGradient>
       <linearGradient id="evy-42" x1="40" y1="38" x2="20" y2="10" gradientUnits="userSpaceOnUse">
-        <stop stop-color="#e879f9"/><stop offset="1" stop-color="#60a5fa"/>
+        <stop stop-color="#56c99b"/><stop offset="1" stop-color="#56c99b"/>
       </linearGradient>
     </defs>
     <path class="ld ld-1" d="M8 38 20 10l8 18" stroke="url(#evx-42)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
     <path class="ld ld-2" d="M40 38 28 10l-8 18" stroke="url(#evy-42)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path class="ld ld-3" d="M14 31h20" stroke="#34d399" stroke-width="2.2" stroke-linecap="round"/>
-    <circle class="ld ld-4" cx="24" cy="7" r="2.4" fill="#fbbf24"/>
+    <path class="ld ld-3" d="M14 31h20" stroke="#d8ef74" stroke-width="2.2" stroke-linecap="round"/>
+    <circle class="ld ld-4" cx="24" cy="7" r="2.4" fill="#f5b914"/>
   </svg>
         <div>
           <p class="foot-company">EVOLVEX IT SOLUTIONS PVT. LTD.</p>

@@ -480,4 +480,99 @@ Training cost: ~35 min wall (7 specialist heads + 45k triage fusion; XGB randomi
 
 ---
 
+### PART H — MARKET-READY PRODUCT REPLAN (Login + Working Triage) — 2026-09-24
+
+> Brief (user, verbatim intent): *"it's not getting login option for anyone just showing details and no option for triage or anything, replan it i want it to be perfectly working and market ready"* + new kaggle.json provided.
+
+#### H.1 Findings & Constraints (research before build)
+- **kaggle.json (2nd upload) is still username-only** (`{"username":"KGAT_…"}` — no `key` field) → Kaggle API auth remains impossible. ML data stays UCI/OpenML-sourced (G.1); noted for the user once, no other impact on this phase.
+- **Gap analysis of v4 site:** 29 static informational pages. No authentication of any kind, no working triage product — the model from Part G exists only in the Python project. A "market ready" health product needs accounts and a working core action.
+- **Supabase credentials are real and sufficient:** `SUPABASE_URL` + publishable key (client-safe) + `sbp_…` service key + Postgres DSN (both server-only). → Real auth + persistence are possible today.
+- **Hosting constraint:** site is static on Vercel. The full Python triage stack (4-model blend + MoE, hundreds of MB) cannot ship in a static bundle; a Python serverless function with joblib+xgboost exceeds practical limits.
+
+#### H.2 Product Replan — decisions & reasons
+| # | Decision | Reason |
+|---|---|---|
+| 1 | **Login/Signup via Supabase Auth REST** (plain `fetch`, no SDK) | real accounts & sessions; zero-dependency fits the custom stack; publishable key only in client; service key/DSN never leave `.env`/setup scripts |
+| 2 | **Instant account creation** (enable auto-confirm via admin API at setup) | market-ready signup cannot dead-end at "check your email" in a demo/product launch flow |
+| 3 | **Working triage in the browser** — distilled production booster (single XGB, form-collectable features) exported as compact JS trees + **identical deterministic red-flag rules + safety floors + human-review logic** | instant (<5ms), private (health data never leaves the device), works offline, and safety rules are bit-identical to the Python engine (they carry the T0 guarantees) |
+| 4 | Distillation drops the 6 `p_*` specialist-risk columns | a form cannot contain other models' outputs; rules+vitals+symptoms carry the protocol labels; holdout metrics of the web booster are measured and published honestly (not the full engine's numbers) |
+| 5 | **3 new pages — one per feature (standing rule):** `login.html` (sign in / create account), `triage.html` (live Triage Check), `my-health.html` (account + saved triage record) | every component gets its own page; logged-in users need a destination |
+| 6 | **Triage works signed-out** (crisis usability), "Save to my record" requires login; results persist to Supabase `triage_events` (RLS: owner-only) with localStorage fallback | never gate an emergency aid behind a signup form; persistence is the account value |
+| 7 | Header everywhere: **"Triage Check" primary CTA + "Sign in"/user chip**; nav + drawer + footer updated | user's core complaint — the entry points didn't exist |
+| 8 | Every triage result ships the Part G output contract: class, probability bars, **reason codes**, confidence, `requires_human_review`, model+rule versions, disclaimer | accountability + AI-assistive standing constraint (triage = urgency, never diagnosis) |
+| 9 | New `css/app.css` (forms/auth/triage styles) instead of editing the 893-line `main.css` | zero regression risk to the v4 GALLERY theme; additive-only styling |
+
+#### H.3 Build Order (recorded before construction)
+1. `healthguard-ml/src/export_web.py` — distil web booster → `public/js/triage-model-data.js` + honest `reports/web_model_metrics.json`
+2. `public/js/triage-engine.js` — feature assembly + GBDT scorer + rule engine (Python-identical thresholds) + result rendering
+3. `public/js/auth.js` — Supabase REST auth (signup/signin/signout/session chip)
+4. `content/pages-product.mjs` (login / triage / my-health) + `build.mjs` wiring + `layout.mjs` header/nav/footer/scripts
+5. `css/app.css` + Supabase DDL (`triage_events`, RLS) + auto-confirm setting
+6. Build 32 pages → QA (auto-fit, brand, regex) → deploy Vercel → push GitHub → MODEL_CARD/MD sync
+
+---
+
 *End of Research & Build Log — compiled and executed on 2026-09-23/24 by the HealthGuard build (v1 → v2 "Vitality Engine" → v3 "Do All" → v4 "Gallery" → G ML Triage Risk Engine), for EVOLVEX IT SOLUTIONS PVT. LTD.*
+
+### H.4 — Build results (market-ready v5: login + live triage)
+
+**Export parity (distilled web booster):**
+- `converter parity: max residual after base-calibration = 0.000004` — the browser scorer reproduces `booster.predict_proba` bit-for-bit (1250 trees, 45 form features, per-class `base` margin, 882 KB `triage-model-data.js`).
+- Two converter bugs found and fixed during self-check (recorded so they are never reintroduced):
+  1. **Sentinel bug:** `leaf[i] < 0` is NOT a valid internal-node test — GBDT leaf values are frequently negative → infinite walk. Internal node ⇔ `split[i] >= 0`.
+  2. **XGBoost compare semantics:** C++ evaluates `float32(v) < float32(thresh)` (strict, quantized). Python `<=` in float64 gave residual 8.3; strict `<` in float32 gives 4e-06. JS must use `Math.fround(v) < Math.fround(thresh)`.
+- Honest web metrics (20k holdout, form features only, rule+safety layer included): macro-F1 **0.9161**, recalls T0 0.9042 / T1 0.9606 / T2 0.8740 / T3 0.9474 / T4 0.8749, T0-any-down 0.0958, T0-deep-to-T2+ 0.0022, beyond-adjacent 0.0117, over-triage 0.0016. Full server engine (4-model blend) keeps round-2 macro-F1 0.9388.
+
+**Safety layer (browser):** `triage-engine.js` rule_scan + safe_predict floors + review flag are a line-for-line port of `train_triage.py` (verified against source this session): 11 CRITICAL rules → T0; floors P(T0∪T1) ≥0.30→cap T1, ≥0.14→cap T2, P(T0∪T1∪T2) ≥0.55→cap T2; review when rules/model disagree. Triage remains **workflow urgency (T0–T4), never diagnosis**; AI assistive only.
+
+**Product pages:** `login.html` (Supabase email+password auth), `triage.html` (live engine, full intake form, confidence bars, reason codes, risk ratio/tier), `my-health.html` (saved checks: local `hg:triage-log` always; Supabase `triage_events` sync when signed in). Header gains **Triage Check** CTA + Sign-in chip on every page; nav gains **Your Care** family; footer gains **Your Care** column. Model+engine scripts load ONLY on `triage.html` (882 KB payload) — decision: keep every other page light.
+
+**Form↔engine contract (verified):** intake field ids (f-age…f-followup) + symptom/comorbidity checkbox names match `buildRow` keys 1:1 (all 45 model features covered; comorbidities use bare names `htn, dm, cad_hf, copd, ckd, cancer, stroke_hx, immuno` per `triage_synth`).
+
+**Supabase (production):** table `triage_events(id uuid pk, user_id uuid, payload jsonb, created_at timestamptz)`; RLS owner-only insert/select (`auth.uid() = user_id`); `hg_auto_confirm` trigger on `auth.users` auto-confirms signup emails (demo-market readiness decision — token expiry/brute-force throttling remain Supabase defaults; revisit before real PHI).
+
+**Remaining risks (accepted, documented):** JS `Math.round` is half-up vs numpy bankers' rounding on `news_like` boundaries (documented divergence); auto-confirm trades email verification for frictionless demo signup; web booster is a distilled single model — full blend ships server-side later.
+
+## PART I — VERDANT REDESIGN (reference: healthguard-rural) + navigation repair
+
+### I.1 — Reference study (https://healthguard-rural.vercel.app/)
+
+Extracted from the live reference CSS (Next.js chunk 091eu0wmjpva8.css) — adopted as the new design language:
+
+| Token | Value | Role |
+|---|---|---|
+| ink | `#10251e` | forest-black text |
+| green / green-deep / green-dark | `#087255` / `#0e4d3d` / `#062d25` | brand + dark surfaces |
+| mint tints | `#dff6e8` `#e9f7f3` `#edf1ee` | soft panels |
+| cream surfaces | `#fffdf7` `#fbfcfa` | page + cards |
+| lime / gold | `#d8ef74` `#c8f27c` / `#f5b914` | fresh accents |
+| borders | `#dbe6de` `#c9d9cf` | sage hairlines |
+| semantic | emergency `#d7574c` · high `#d9a42f` · busy `#d97706` · danger `#a6453d` | triage/status pills |
+| motion | `--ease-out: cubic-bezier(.22, 1, .36, 1)` | the "smooth" feel |
+| shadows | soft sage tint `#113a2b0e/1a` | never black, never glow |
+| type | Aptos/Inter body, Georgia serif accents | clean editorial |
+
+Decision: the site becomes **light-first "VERDANT DAYLIGHT"** (cream/forest/mint), dark toggle becomes **"ORCHARD NIGHT"** (deep forest `#062d25` with mint ink). The GALLERY jewel palette (champagne/garnet/amethyst/neon cyan-violet logos) is retired — user directive: "avoid electronic theme", "cleaner", "better colour pallets".
+
+### I.2 — Navigation bug (client report: "when I open it it gets GR and not working")
+
+ROOT CAUSE (verified in source): `.drawer-sheet` is positioned with **no z-index** while `.drawer-scrim` (gray blur, rgba(8,9,12,.55)) comes **after it in DOM** — the scrim paints over the entire drawer sheet and intercepts every tap. On open the user sees a gray veil and nothing works. Repair: (1) scrim becomes the FIRST child of `.drawer`, (2) explicit z-index scrim=1 / sheet=2, (3) open = true slide from the right (`translateX(100%) → 0`, 0.42s `--ease-out`) with scrim fade; close = 0.28s slide-out then hide (JS `closing` class), (4) body scroll-lock while open.
+
+"clean move to the right is not smoother" — nav-card hover slide (translateX) retimed to 0.3s `--ease-out`; nav panels open with translateY(10px)→0 + fade on `--ease-out`; page-transition and reveal easings unified to `--ease-out`. All motion respects `prefers-reduced-motion` (kept).
+
+### I.3 — Scope decisions
+
+1. Login feature stays fully enabled (client: "enable login feature also then only it will work") — auth chip, login.html, triage.html, my-health.html, Supabase save flow all carried over untouched except recolor.
+2. All 32 pages keep content/logos/header/footer credits (EVOLVEX IT SOLUTIONS PVT. LTD. + user) — shell recolored only.
+3. Cleaner surfaces: glass-gradient cards → solid cream/white cards + sage hairlines + soft green shadows (reference style); shine-sweep buttons → solid green buttons; glow halos removed; grain/orbs heavily softened (mint/cream tints at low opacity).
+4. Single brand accent (green `#087255`) + gold `#f5b914` micro-accents; per-family jewel accents removed for coherence.
+5. Logos redrawn in palette: forest-green shield + mint pulse + gold leaf; EVOLVEX chevrons green→mint + gold spark. Favicon/theme-color updated.
+6. Effects kept (client standing: 3D hero, heartbeat, shockwaves, cursor-heart, theme toggle) but recolored organic: shockwaves = thin green/gold rings, cursor = soft mint, heartbeat + cursor-heart = warm coral `#d7574c` family (a heart reads as a heart), canvas particles = forest/mint/gold (kill cyan/violet/rose neon).
+7. Images regenerated (10) to match palette/theme/workflow (client permission: "you can change images to match now colour pallet, them and workflow too") — clean editorial style, warm cream + forest green + mint, gentle daylight, rural Indian community-health subjects matching each page's workflow, no neon, no text.
+8. Triage pill semantics remapped to reference health colors: T0 `#d7574c`, T1 `#d97706`, T2 `#d9a42f`, T3 `#087255`, T4 `#59675f`.
+
+### I.4 — Accepted trade-offs
+
+- Aptos may fall back to system sans where unavailable (reference does the same via its font stack).
+- Shockwave/cursor features stay for coarse pointers per v4 standing scope, but toned down; desktop fine-pointer glow retained at lower intensity.
