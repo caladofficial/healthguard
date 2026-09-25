@@ -890,3 +890,12 @@ From the user's review screenshot:
 User request: remove the "Triage Check" button from the header bar. The CTA is gone from the
 top header on every page; triage stays reachable where it belongs — patient deck action card,
 site menu button, Product nav family, and My Health links (patients-only gate unchanged).
+
+### Q.3 — Deck selection removed (v14.2)
+User: opening the patient deck still offered access to other decks. Removed the deck selection
+entirely: the nav/drawer 'Decks' family is gone. Replaced by a role-locked 'My Deck' menu that
+exists only after sign-in and shows exactly one deck — the viewer's own (patient/doctor/admin each
+see only theirs; anonymous visitors see no deck menu at all). Workspace menus are role-locked too
+('Your Care' = patients, 'Doctor Desk' = doctors; other signed-in roles no longer see them via
+paint() [data-role]). Public pages lost the deck-selection buttons/links (home hero actions; deck
+hrefs on the platform/feature-map cards — descriptions kept as documentation).

@@ -193,6 +193,9 @@
     document.querySelectorAll('[data-auth-gate]').forEach(function (el) {
       el.hidden = !s;
     });
+    document.querySelectorAll('[data-role]').forEach(function (el) {
+      el.hidden = !!(s && role !== el.getAttribute('data-role'));
+    });
     document.querySelectorAll('[data-auth-gateout]').forEach(function (el) {
       el.hidden = !!s;
     });

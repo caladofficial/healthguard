@@ -45,7 +45,7 @@
     </span>
   </a>
     <nav class="site-nav" aria-label="Primary">
-      <div class="nav-family" data-nav-family>
+      <div class="nav-family" data-nav-family data-role="patient">
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-0">
         Your Care<span class="nav-caret" aria-hidden="true"></span>
       </button>
@@ -86,7 +86,7 @@
       </div>
     </div></div>
     </div>
-<div class="nav-family" data-nav-family>
+<div class="nav-family" data-nav-family >
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-1">
         Platform<span class="nav-caret" aria-hidden="true"></span>
       </button>
@@ -103,28 +103,28 @@
       </div>
     </div></div>
     </div>
-<div class="nav-family" data-nav-family>
+<div class="nav-family" data-nav-family  data-auth-gate>
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-2">
-        Decks<span class="nav-caret" aria-hidden="true"></span>
+        My Deck<span class="nav-caret" aria-hidden="true"></span>
       </button>
-      <div id="navp-2" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="Decks">
+      <div id="navp-2" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="My Deck">
       <div class="nav-panel-grid">
-        <a class="nav-card" href="patient-deck.html">
+        <a class="nav-card" href="patient-deck.html" data-role="patient">
             <span class="nav-card-t">Patient Deck</span>
-            <span class="nav-card-d">Records, uploads, booking</span>
+            <span class="nav-card-d">Your care workspace</span>
           </a>
-<a class="nav-card" href="doctor-deck.html">
+<a class="nav-card" href="doctor-deck.html" data-role="doctor">
             <span class="nav-card-t">Doctor Deck</span>
-            <span class="nav-card-d">Queue, chart, prescriptions</span>
+            <span class="nav-card-d">Your clinic desk</span>
           </a>
-<a class="nav-card" href="admin-deck.html">
+<a class="nav-card" href="admin-deck.html" data-role="admin">
             <span class="nav-card-t">Admin Deck</span>
-            <span class="nav-card-d">Verification, AI & security ops</span>
+            <span class="nav-card-d">Live operations</span>
           </a>
       </div>
     </div></div>
     </div>
-<div class="nav-family" data-nav-family>
+<div class="nav-family" data-nav-family data-role="doctor">
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-3">
         Doctor Desk<span class="nav-caret" aria-hidden="true"></span>
       </button>
@@ -157,7 +157,7 @@
       </div>
     </div></div>
     </div>
-<div class="nav-family" data-nav-family>
+<div class="nav-family" data-nav-family >
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-4">
         Document AI<span class="nav-caret" aria-hidden="true"></span>
       </button>
@@ -190,7 +190,7 @@
       </div>
     </div></div>
     </div>
-<div class="nav-family" data-nav-family>
+<div class="nav-family" data-nav-family >
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-5">
         Triage & Consult<span class="nav-caret" aria-hidden="true"></span>
       </button>
@@ -219,7 +219,7 @@
       </div>
     </div></div>
     </div>
-<div class="nav-family" data-nav-family>
+<div class="nav-family" data-nav-family >
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-6">
         Trust & Safety<span class="nav-caret" aria-hidden="true"></span>
       </button>
@@ -244,7 +244,7 @@
       </div>
     </div></div>
     </div>
-<div class="nav-family" data-nav-family>
+<div class="nav-family" data-nav-family >
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-7">
         Data & Company<span class="nav-caret" aria-hidden="true"></span>
       </button>
@@ -333,7 +333,7 @@
       <button class="drawer-close" id="drawerClose" type="button" aria-label="Close menu">✕</button>
     </div>
     <nav class="drawer-nav" aria-label="Mobile">
-      <details class="drawer-group" id="dg-0">
+      <details class="drawer-group" id="dg-0" data-role="patient">
       <summary>Your Care<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="triage.html">Triage Check</a>
@@ -353,15 +353,15 @@
 <a href="index.html">Home</a>
       </div>
     </details>
-<details class="drawer-group" id="dg-2">
-      <summary>Decks<span class="drawer-caret" aria-hidden="true"></span></summary>
+<details class="drawer-group" id="dg-2" data-auth-gate>
+      <summary>My Deck<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
-        <a href="patient-deck.html">Patient Deck</a>
-<a href="doctor-deck.html">Doctor Deck</a>
-<a href="admin-deck.html">Admin Deck</a>
+        <a href="patient-deck.html" data-role="patient">Patient Deck</a>
+<a href="doctor-deck.html" data-role="doctor">Doctor Deck</a>
+<a href="admin-deck.html" data-role="admin">Admin Deck</a>
       </div>
     </details>
-<details class="drawer-group" id="dg-3">
+<details class="drawer-group" id="dg-3" data-role="doctor">
       <summary>Doctor Desk<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
         <a href="doctor-deck.html">Doctor Deck</a>
@@ -452,19 +452,19 @@
       <div class="card-icon" aria-hidden="true">◐</div>
       <h3 class="card-t">Patient Deck</h3>
       <p class="card-d">Registration, vault, AI understanding, booking, consultations, follow-up.</p>
-      <a class="card-link" href="patient-deck.html">Explore <span aria-hidden="true">→</span></a>
+      
     </article>
 <article class="card" data-tilt data-reveal>
       <div class="card-icon" aria-hidden="true">◑</div>
       <h3 class="card-t">Doctor Deck</h3>
       <p class="card-d">Onboarding, queue, chart, assessment, prescriptions, audit history.</p>
-      <a class="card-link" href="doctor-deck.html">Explore <span aria-hidden="true">→</span></a>
+      
     </article>
 <article class="card" data-tilt data-reveal>
       <div class="card-icon" aria-hidden="true">◒</div>
       <h3 class="card-t">Admin Deck</h3>
       <p class="card-d">Verification, monitoring, AI ops, security, complaints, feature flags.</p>
-      <a class="card-link" href="admin-deck.html">Explore <span aria-hidden="true">→</span></a>
+      
     </article>
   </div>
     </div>

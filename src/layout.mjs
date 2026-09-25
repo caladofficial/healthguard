@@ -12,6 +12,7 @@ export const YEAR = 2026;
 export const NAV = [
   {
     label: 'Your Care',
+    role: 'patient',
     items: [
       { href: 'triage.html', label: 'Triage Check', desc: 'Live urgency engine (T0–T4)' },
       { href: 'token.html', label: 'Token Making', desc: "Today's clinic queue number" },
@@ -31,15 +32,17 @@ export const NAV = [
     ],
   },
   {
-    label: 'Decks',
+    label: 'My Deck',
+    authOnly: true,
     items: [
-      { href: 'patient-deck.html', label: 'Patient Deck', desc: 'Records, uploads, booking' },
-      { href: 'doctor-deck.html', label: 'Doctor Deck', desc: 'Queue, chart, prescriptions' },
-      { href: 'admin-deck.html', label: 'Admin Deck', desc: 'Verification, AI & security ops' },
+      { href: 'patient-deck.html', label: 'Patient Deck', desc: 'Your care workspace', role: 'patient' },
+      { href: 'doctor-deck.html', label: 'Doctor Deck', desc: 'Your clinic desk', role: 'doctor' },
+      { href: 'admin-deck.html', label: 'Admin Deck', desc: 'Live operations', role: 'admin' },
     ],
   },
   {
     label: 'Doctor Desk',
+    role: 'doctor',
     items: [
       { href: 'doctor-deck.html', label: 'Doctor Deck', desc: 'Your clinic desk' },
       { href: 'doctor-bookings.html', label: 'Bookings', desc: 'Accept, decline, complete' },
@@ -152,13 +155,13 @@ function navMarkup() {
   return NAV.map((f, i) => {
     const panel = `<div class="nav-panel" role="group" aria-label="${f.label}">
       <div class="nav-panel-grid">
-        ${f.items.map((it) => `<a class="nav-card" href="${it.href}">
+        ${f.items.map((it) => `<a class="nav-card" href="${it.href}"${it.role ? ` data-role="${it.role}"` : ''}>
             <span class="nav-card-t">${it.label}</span>
             <span class="nav-card-d">${it.desc}</span>
           </a>`).join('\n')}
       </div>
     </div>`;
-    return `<div class="nav-family" data-nav-family>
+    return `<div class="nav-family" data-nav-family ${f.role ? `data-role="${f.role}"` : ''}${f.authOnly ? ' data-auth-gate' : ''}>
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-${i}">
         ${f.label}<span class="nav-caret" aria-hidden="true"></span>
       </button>
@@ -168,10 +171,10 @@ function navMarkup() {
 }
 
 function drawerMarkup() {
-  return NAV.map((f, i) => `<details class="drawer-group" id="dg-${i}">
+  return NAV.map((f, i) => `<details class="drawer-group" id="dg-${i}"${f.role ? ` data-role="${f.role}"` : ''}${f.authOnly ? ' data-auth-gate' : ''}>
       <summary>${f.label}<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
-        ${f.items.map((it) => `<a href="${it.href}">${it.label}</a>`).join('\n')}
+        ${f.items.map((it) => `<a href="${it.href}"${it.role ? ` data-role="${it.role}"` : ''}>${it.label}</a>`).join('\n')}
       </div>
     </details>`).join('\n');
 }

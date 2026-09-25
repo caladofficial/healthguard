@@ -18,7 +18,7 @@ export default [
         lead: 'A clinician-connected health record intelligence platform that turns messy medical documents into structured, traceable information and connects patients with verified healthcare professionals.',
         art: a,
         chips: ['Patient Deck', 'Doctor Deck', 'Admin Deck', 'AI Document Intelligence', 'FHIR-ready'],
-        actions: [{ href: 'login.html', label: 'Sign in' }, { href: 'patient-deck.html', label: 'Patient deck' }, { href: 'doctor-deck.html', label: 'Doctor deck' }, { href: 'platform.html', label: 'Explore the platform' }],
+        actions: [{ href: 'login.html', label: 'Sign in' }, { href: 'platform.html', label: 'Explore the platform' }],
       }),
       U.marquee(['HL7 FHIR R4', 'LOINC', 'UCUM', 'ICD-10 / ICD-11', 'SNOMED CT', 'DICOM', 'WebRTC', 'OWASP ASVS']),
       U.section({
@@ -41,9 +41,9 @@ export default [
         kicker: 'The platform',
         title: 'Three completely separated application surfaces',
         inner: U.cards([
-          { icon: '◐', t: 'Patient Deck', d: 'Health profile, document vault, AI summaries, timeline, booking, consultations, consent controls.', href: 'patient-deck.html' },
-          { icon: '◑', t: 'Doctor Deck', d: 'Verified onboarding, consultation queue, patient chart, original documents, prescriptions, follow-up.', href: 'doctor-deck.html' },
-          { icon: '◒', t: 'Admin Deck', d: 'Credential verification, AI monitoring, security events, consent and audit oversight, feature flags.', href: 'admin-deck.html' },
+          { icon: '◐', t: 'Patient Deck', d: 'Health profile, document vault, AI summaries, timeline, booking, consultations, consent controls.' },
+          { icon: '◑', t: 'Doctor Deck', d: 'Verified onboarding, consultation queue, patient chart, original documents, prescriptions, follow-up.' },
+          { icon: '◒', t: 'Admin Deck', d: 'Credential verification, AI monitoring, security events, consent and audit oversight, feature flags.' },
         ], { cols: 3 }),
       }),
       U.section({
@@ -97,9 +97,9 @@ export default [
       U.section({
         kicker: 'Decks', title: 'Application surfaces',
         inner: U.cards([
-          { t: 'Patient Deck', d: 'Registration, vault, AI understanding, booking, consultations, follow-up.', href: 'patient-deck.html', icon: '◐' },
-          { t: 'Doctor Deck', d: 'Onboarding, queue, chart, assessment, prescriptions, audit history.', href: 'doctor-deck.html', icon: '◑' },
-          { t: 'Admin Deck', d: 'Verification, monitoring, AI ops, security, complaints, feature flags.', href: 'admin-deck.html', icon: '◒' },
+          { t: 'Patient Deck', d: 'Registration, vault, AI understanding, booking, consultations, follow-up.', icon: '◐' },
+          { t: 'Doctor Deck', d: 'Onboarding, queue, chart, assessment, prescriptions, audit history.', icon: '◑' },
+          { t: 'Admin Deck', d: 'Verification, monitoring, AI ops, security, complaints, feature flags.', icon: '◒' },
         ]),
       }),
       U.section({
