@@ -298,7 +298,8 @@ export function page({ slug, title, desc, family, body }) {
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body data-family="${family || ''}" data-slug="${slug}">
-<canvas id="livingCanvas" aria-hidden="true"></canvas>
+<div class="screensaver" aria-hidden="true"><i class="ss-b ss-1"></i><i class="ss-b ss-2"></i><i class="ss-b ss-3"></i><i class="ss-b ss-4"></i><i class="ss-streak"></i></div>
+<canvas id="livingCanvas" width="1" height="1" hidden aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
 <div class="aurora" aria-hidden="true"><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span></div>
 <div class="cursor-glow" aria-hidden="true"></div>

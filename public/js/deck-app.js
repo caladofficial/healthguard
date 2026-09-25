@@ -19,6 +19,7 @@
     return '<span class="s-pill s-' + (u <= 1 ? 'declined' : u === 2 ? 'pending' : 'completed') + '">' + esc(names[u] || ('T' + u)) + '</span>';
   }
   function msg(node, text, ok) { if (node) { node.textContent = text; node.className = 'auth-msg ' + (ok ? 'is-ok' : 'is-err'); } }
+  function setHTML(node, html) { if (node && node.innerHTML !== html) node.innerHTML = html; }
 
   /* gate: signed out → prompt; wrong role → notice */
   function gate(needRole) {
@@ -484,10 +485,11 @@
       if (!cur) return;
       A.select('chat_messages', { booking_id: 'eq.' + cur, order: 'created_at.asc', limit: 200 }).then(function (rows) {
         var atBottom = log.scrollTop + log.clientHeight > log.scrollHeight - 40;
-        log.innerHTML = rows.map(function (r) {
+        var html = rows.map(function (r) {
           var mine = r.sender_id === s.user.id;
           return '<div class="bub ' + (mine ? 'me' : 'them') + '">' + esc(r.body) + '<span class="b-when">' + esc((r.sender_name || '') + ' · ' + when(r.created_at)) + '</span></div>';
         }).join('') || '<p class="auth-msg">Say hello.</p>';
+        if (log.innerHTML !== html) log.innerHTML = html;
         if (atBottom) log.scrollTop = log.scrollHeight;
       });
     }
@@ -706,7 +708,7 @@
         A.count('tokens', { day: 'eq.' + today(), urgency: 'lte.1', status: 'neq.cancelled' }),
         A.count('opinion_requests', { status: 'eq.open' })
       ]).then(function (c) {
-        el('adStats').innerHTML =
+        var statsHtml =
           kv(c[0], 'Patients registered', c[2] + ' active now (15 min)') +
           kv(c[1], 'Doctors registered', c[3] + ' active now (15 min)') +
           kv(c[4], 'Bookings pending', 'waiting for doctor') +
@@ -715,23 +717,24 @@
           kv(c[7], 'Declined / cancelled', 'all time') +
           kv(c[8], 'Tokens today', c[10] + ' high-urgency · ' + c[9] + ' in consult') +
           kv(c[11], 'Open opinions', 'awaiting doctor reply');
+        setHTML(el('adStats'), statsHtml);
       }).catch(function (e) { el('adStats').innerHTML = '<p class="auth-msg is-err">' + esc(e.message || e) + '</p>'; });
     }
     function boards() {
       A.select('bookings', { order: 'created_at.desc', limit: 12 }).then(function (rows) {
-        el('adBookings').innerHTML = rows.map(function (b) {
+        setHTML(el('adBookings'), rows.map(function (b) {
           return boardRow({ t: esc(b.patient_name) + ' → ' + esc(b.doctor_name), s: esc(b.slot_date) + ' ' + esc(b.slot_time) + ' · ' + esc(b.mode), acts: sPill(b.status) });
-        }).join('') || '<p class="auth-msg">No bookings.</p>';
+        }).join('') || '<p class="auth-msg">No bookings.</p>');
       });
       A.select('tokens', { day: 'eq.' + today(), order: 'urgency.asc,token_no.asc', limit: 12 }).then(function (rows) {
-        el('adTokens').innerHTML = rows.map(function (t) {
+        setHTML(el('adTokens'), rows.map(function (t) {
           return boardRow({ no: '#' + t.token_no, t: esc(t.patient_name), s: 'T' + t.urgency + ' · ' + esc(t.status), urgent: t.urgency <= 1, acts: sPill(t.status) });
-        }).join('') || '<p class="auth-msg">No tokens today.</p>';
+        }).join('') || '<p class="auth-msg">No tokens today.</p>');
       });
       A.select('profiles', { order: 'last_seen_at.desc', limit: 12 }).then(function (rows) {
-        el('adUsers').innerHTML = rows.map(function (p) {
+        setHTML(el('adUsers'), rows.map(function (p) {
           return boardRow({ t: esc(p.full_name || p.user_id) + ' · ' + esc(p.role), s: esc(p.specialty || '') + ' · seen ' + when(p.last_seen_at), acts: sPill(p.last_seen_at > since ? 'accepted' : 'completed').replace('accepted', 'active').replace('completed', 'idle') });
-        }).join('') || '<p class="auth-msg">No users.</p>';
+        }).join('') || '<p class="auth-msg">No users.</p>');
       });
     }
     stats(); boards();

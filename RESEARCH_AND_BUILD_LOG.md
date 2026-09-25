@@ -699,3 +699,27 @@ Architecture notes: login uses new `#lgForm` contract (deck-app.js owns it; lega
 - Kill `stat-beat`/`queue-beat` halo flashes entirely (keep content hierarchy cues via borders/pills).
 - Split-text CSS fail-safe: `animation sp-fallback` forces words visible after 2.5s even if JS never runs.
 - Structure: `white-space: nowrap` on buttons/pills/chips/slots/role-tabs/nav-triggers/big numbers; `text-wrap: balance` on headings, `pretty` on leads; tiny-text contrast bumped (dark `--ink-2` #9db3a8 → #b3c6bb).
+
+## PART L — ANTI-FLICKER + LIGHT SCREENSAVER
+
+### L.1 — Flicker sources (audited)
+
+1. Per-frame repaints: `#livingCanvas` particles + `.heart-canvas` heartbeat + animated `.grain` noise shimmer.
+2. Ring flashes: `.shock-ring` (every tap), `.pf-ring`/`.pf-wash` (every navigation).
+3. Chasing layers: `.cursor-glow` (mix-blend repaint per mousemove), `.card::before` pointer glare.
+4. Load-time strobes: `logo-draw` stroke animation on every page.
+5. CSS motion noise: chip-bob, ecg-run, dot-thump, pipe-flow, marquee scroll, orb drift.
+6. Compositing jank: `backdrop-filter` blur on header/panel/chips (repaints on scroll), `background-attachment: fixed` on body.
+7. Pop-ins: `[data-reveal]` translate reveals + images without placeholder color.
+8. Poll re-renders: chat (4s) and admin boards (5s) replace `innerHTML` unconditionally → visible flash.
+
+### L.2 — Decision: one LIGHT SCREENSAVER replaces all of it
+
+Everything above is disabled/neutralized. Ambient beauty comes from a single
+fixed `.screensaver` layer BEHIND content: four huge soft radial blobs (lime,
+mint, cream, gold) drifting on 78–96s GPU transform loops + one gentle light
+streak sweeping every 34s — screensaver pacing (slow, continuous, zero
+repaint flicker). Light theme = airy cream daylight; dark = soft forest glow.
+`prefers-reduced-motion` → static. Content motion budget now = intentional
+transitions only (drawer, hover glide, conf-fill), reveals become opacity-only
+fades, polling updates render only when content actually changed.
