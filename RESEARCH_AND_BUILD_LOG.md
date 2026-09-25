@@ -885,3 +885,8 @@ From the user's review screenshot:
 5. Snapshot-restore regression struck a 3rd time at the turn boundary (auth.js/deck-app.js reverted to
    pre-v13 in the workspace). Recovered `git reset --hard origin/main` FIRST — remote is the source of
    truth; commit+push at every milestone continues to be mandatory.
+
+### Q.2 — Header cleanup (v14.1)
+User request: remove the "Triage Check" button from the header bar. The CTA is gone from the
+top header on every page; triage stays reachable where it belongs — patient deck action card,
+site menu button, Product nav family, and My Health links (patients-only gate unchanged).
