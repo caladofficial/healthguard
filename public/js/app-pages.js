@@ -47,13 +47,24 @@
   /* ----------------------------- TRIAGE PAGE ------------------------------ */
   var tForm = document.getElementById('triageForm');
   if (tForm && window.HGTriage) {
+    var sexSel = document.getElementById('f-sex');
+    var pregRow = document.getElementById('f-preg-row');
+    function syncPreg() {
+      if (!pregRow || !sexSel) return;
+      pregRow.hidden = sexSel.value !== '1';
+      if (pregRow.hidden) {
+        var pc = document.getElementById('f-pregnancy');
+        if (pc) pc.checked = false;
+      }
+    }
+    if (sexSel) { sexSel.addEventListener('change', syncPreg); syncPreg(); }
     tForm.addEventListener('submit', function (e) {
       e.preventDefault();
       var sym = cks('sym'), com = cks('com');
       var raw = {
-        age: val('f-age'), sex: val('f-sex'), pregnancy: ck('f-pregnancy') ? 1 : 0,
+        age: val('f-age'), sex: val('f-sex'), pregnancy: (val('f-sex') === '1' && ck('f-pregnancy')) ? 1 : 0,
         hr: val('f-hr'), sbp: val('f-sbp'), dbp: val('f-dbp'), rr: val('f-rr'),
-        temp_c: val('f-temp'), spo2: val('f-spo2'), gcs: val('f-gcs'), pain: val('f-pain'),
+        temp_c: (function (v) { var n = parseFloat(v); return isNaN(n) ? '' : Math.round((n - 32) * 50 / 9) / 10; })(val('f-temp')), spo2: val('f-spo2'), gcs: val('f-gcs'), pain: val('f-pain'),
         onset_hours: val('f-onset'), followup_flag: ck('f-followup') ? 1 : 0
       };
       Object.keys(sym).forEach(function (k) { raw[k] = sym[k]; });
@@ -85,7 +96,6 @@
       '<div><p class="res-k">Reason codes</p><div class="pill-row">' + codes + '</div></div>' +
       '<div><p class="res-k">Risk ratio (urgent vs baseline)</p><p class="res-v">' + res.riskRatio + '× <span class="pill">' + esc(res.riskTier.replace('_', ' ')) + '</span></p></div>' +
       '</div>' +
-      '<p class="res-meta">model ' + esc(res.modelVersion) + ' · rules ' + esc(res.ruleVersion) + '</p>' +
       '<p class="auth-note">' + esc(res.disclaimer) + '</p>' +
       '<div class="triage-actions"><button class="btn btn-primary" id="saveBtn" type="button">Save to my record</button>' +
       '<a class="btn btn-ghost" href="triage.html">New check</a><span class="auth-msg" id="saveMsg" role="status"></span></div>';

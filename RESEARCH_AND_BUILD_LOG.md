@@ -839,3 +839,22 @@ Root causes nailed from the 7 screenshots and shipped as one batch:
    truncate instead of overflowing under neighbours; compact row under 36rem), hero art-caption no
    longer overlaps the chip row on phones (flows below the art), form inputs now theme-matched
    (were dark boxes on cream cards).
+
+### P.6 — Model names hidden (v13.1)
+Per review on the /models screen: raw ML identifiers are not end-user language. (1) The triage
+result card no longer prints `model hg-triage-web-v2-blend_xgb_lgbm · rules …` (the id remains in
+the result payload and saved records — internal provenance kept, UI stays clean). (2) The model
+inventory cards no longer show "Model N — Name" titles; each card states only what the capability
+does. `U.cards()` now renders title-less cards gracefully.
+
+### P.7 — REPAIR (v13.2): snapshot-restore regression + missed handler batch
+Turn-boundary snapshot restore put the local repo on a stale v9-era branch line and left a mixed
+working tree (v13 markup present; `auth.js`/`deck-app.js` reverted). Worse: the original Part P
+patch batch aborted mid-file at `deck-app.js`, so the `app-pages.js` edits (pregnancy sex-gating +
+`°F→°C` conversion) never landed — the triage form has been sending Fahrenheit values as `temp_c`.
+Repaired from the known-good remote base (`origin/main` = v13 `97780e2`) and applied ALL missing
+pieces: app-pages pregnancy gate (`syncPreg`, sex-gated submit), temp conversion
+(`°C = round((°F − 32) × 5/9, 1dp)`), plus the P.6 model-name hides. Marker sweep: gate/profile/
+count/strict/syncPreg/f2c/preg all present; res-meta + Model-N titles gone. Rule added: every patch
+batch asserts ALL files BEFORE any write... (post-mortem: asserts-first + per-file atomic writes,
+plus a full marker sweep that includes JS handlers — markup-only live greps proved insufficient.)

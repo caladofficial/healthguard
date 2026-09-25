@@ -45,7 +45,7 @@ export function cards(items, { cols = 3, tilt = true } = {}) {
   return `<div class="grid-cards cols-${cols}" data-stagger>
     ${items.map((it) => `<article class="card" ${tilt ? 'data-tilt' : ''} data-reveal>
       ${it.icon ? `<div class="card-icon" aria-hidden="true">${it.icon}</div>` : ''}
-      <h3 class="card-t">${esc(it.t)}</h3>
+      ${it.t ? `<h3 class="card-t">${esc(it.t)}</h3>` : ''}
       <p class="card-d">${esc(it.d)}</p>
       ${it.href ? `<a class="card-link" href="${it.href}">${esc(it.linkLabel || 'Explore')} <span aria-hidden="true">→</span></a>` : ''}
     </article>`).join('\n')}
