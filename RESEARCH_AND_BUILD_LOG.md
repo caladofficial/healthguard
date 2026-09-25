@@ -723,3 +723,55 @@ repaint flicker). Light theme = airy cream daylight; dark = soft forest glow.
 `prefers-reduced-motion` → static. Content motion budget now = intentional
 transitions only (drawer, hover glide, conf-fill), reveals become opacity-only
 fades, polling updates render only when content actually changed.
+## PART N — COMPLETE CAMOUFLAGE SELF-CHECK (all pages + all decks), ONE BATCH FIX
+
+**Trigger (client):** "There is still text camouflage… do a complete self check of the complete
+website and all decks, find out all the camouflage and correct them all together."
+Evidence: Screenshot_20260925-150739.png — the triage "Rules first, model second, human always"
+check-cards render dark-panel + dark-text (same family as the footer bug: hardcoded dark surface
+inheriting light-theme ink). Spot-fixing is what let this survive three rounds → this round is a
+**systematic audit**, not another eyeball pass.
+
+**Method (construction starts only after this plan):**
+1. **Static WCAG auditor** (`tools/contrast_audit.py`): parse main.css + app.css → resolve every
+   `var()` chain per theme (root + data-theme overrides + component-local scopes like `.site-footer`)
+   → for every rule with `color` + `background*`, compute WCAG contrast ratios against ALL background
+   stops (gradients checked stop-by-stop). Flag < 4.5:1 normal text / < 3:1 large text. Second flag
+   class: hardcoded dark surfaces WITHOUT explicit light text (inheritance-cameloflage risk).
+2. Cross-map flagged selectors to the built pages that use them (grep 41 HTML files) so the fix list
+   is proven to cover "complete website and all decks".
+3. Fix ALL findings in one batch (main.css + app.css + ui.mjs if a generator emits bad markup):
+   theme-safe surfaces or footer-style local-ink scopes, whichever keeps the VERDANT look.
+4. Rebuild → QA leak regex → deploy → push → re-run auditor to a clean report (the report is the
+   self-check artefact, saved to healthguard-ml/reports/contrast_audit.md).
+
+**Known evidence to verify in the sweep:** the 6 check-cards (dark bg + dark ink), pill-on text
+(brand green on gold — likely under 4.5:1), status pills in decks, footer heading colours,
+select/control chips, `.sPill`/`.chip-emerg`/`.token-no` in app decks.
+
+### N.5 — Results + incident report
+
+**Complete self-check executed and resolved (audit artefact: healthguard-ml/reports/contrast_audit.md):**
+static WCAG sweep of every CSS rule × both themes × all gradient stops (tools/contrast_audit.py v2 —
+cross-file vars, color-mix + alpha compositing, theme-scoped selectors). Final state: **0 FAIL**.
+Camouflage corrected in one batch (all dark-panel families now carry light text; pale variants keep
+dark text; pills have theme-aware inks):
+
+1. `.checks li` (the client screenshot: "Under the hood" cards, 20 pages) → #d7eadf on dark panel.
+2. `.note` (dark panel + dark ink) → #d7eadf; `.note-warn/.note-danger` (pale variants) → var(--ink-0).
+3. `.flow-step` · `.pipe-nodes li` · `.queue-list li` · `.chip` · `.hero-art-cap` · `.btn-ghost` ·
+   `.nav-trigger:hover` · `.float-chip` · `.spec-table thead th` · `.mq-item` · `.code-block` (+hl tokens)
+   · `.theme-toggle` — light text on their dark panels; light-theme overrides verified present.
+4. Pills/badges: theme-aware inks (`--pill-danger-ink` etc: dark shades on light, light shades on dark);
+   app.css solid badges re-based (#c24438/#96590a/#065f46/#0a6b60/#44617f + #fffdf7 text, all ≥ 4.5:1);
+   `.s-cancelled` deepened; `.auth-card/.result-card` dark `--panel` fallbacks → `--surface`; `.skip-link`
+   dark-on-gold; `.flow-accent` pale gold steps keep dark text.
+
+**Incident (important):** the shared workspace was **snapshot-rolled-back at the turn boundary** —
+local repo HEAD + working tree reverted to v9 `4d305d1` (footer swap, engine cmp/ff/w upgrade, blend
+model data and the v10 commit ref all vanished locally) while GitHub (`1ed815c`) and the Vercel
+deployment kept v10. Recovery: `git fetch && git reset --hard origin/main` restored everything
+(engine ✓ blend model ✓ footer ✓), then the Part N batch was re-applied and pushed in the same
+session. Countermeasure adopted: **commit + push immediately after every milestone**, never leave
+work uncommitted across turns. healthguard-ml/ (model, notebook, bake-off, model card) was outside
+the blast radius.

@@ -9,7 +9,7 @@
 .auth-card {
   margin-top: 1.5rem; padding: clamp(1rem, 3vw, 2rem);
   border: 1px solid var(--line, rgba(201, 162, 39, .25)); border-radius: 18px;
-  background: var(--panel, rgba(20, 23, 30, .72)); backdrop-filter: blur(8px);
+  background: var(--surface, #fffdf7); backdrop-filter: blur(8px);
 }
 .auth-tabs { display: flex; gap: .5rem; margin-bottom: 1.2rem; }
 .auth-tab {
@@ -52,7 +52,7 @@
 /* --------------------------------- result --------------------------------- */
 .result-card {
   margin-top: 1rem; padding: clamp(1rem, 3vw, 1.8rem); border-radius: 18px;
-  border: 1px solid var(--line, rgba(201, 162, 39, .3)); background: var(--panel, rgba(20, 23, 30, .78));
+  border: 1px solid var(--line, rgba(201, 162, 39, .3)); background: var(--surface, #fffdf7);
   display: grid; gap: 1.1rem; min-width: 0;
 }
 .res-top { display: flex; gap: 1rem; align-items: center; min-width: 0; }
@@ -60,7 +60,7 @@
   flex: 0 0 auto; min-width: 4.4rem; text-align: center; padding: .55rem .8rem; border-radius: 14px;
   font-weight: 800; font-size: 1.25rem; letter-spacing: .04em; color: #082f27;
 }
-.pill-t0 { background: #d7574c; color: #fff; }
+.pill-t0 { background: #c24438; color: #fffdf7; }
 .pill-t1 { background: #d7574c; }
 .pill-t2 { background: #087255; }
 .pill-t3 { background: #0b8174; }
@@ -134,7 +134,7 @@ a.action-card:hover { transform: translateX(4px); border-color: var(--green, #08
 .s-accepted  { background: #dff6e8; color: #065f46; border-color: #9fd8b8; }
 .s-declined  { background: #fceeec; color: #a6453d; border-color: #e3b3ad; }
 .s-completed { background: #e9eeea; color: #33453d; border-color: #c9d9cf; }
-.s-cancelled { background: #f1f1ef; color: #77807a; border-color: #d8d8d2; }
+.s-cancelled { background: #f1f1ef; color: #5c665f; border-color: #d8d8d2; }
 .s-waiting   { background: #fdf3dc; color: #8a5a00; border-color: #e7c56a; }
 .s-in_consult{ background: #dff6e8; color: #065f46; border-color: #9fd8b8; }
 .s-done      { background: #e9eeea; color: #33453d; border-color: #c9d9cf; }
@@ -223,3 +223,10 @@ a.action-card:hover { transform: translateX(4px); border-color: var(--green, #08
 html[data-theme="dark"] .an-block,
 html[data-theme="dark"] .ticket { color: var(--ink-0); }
 html[data-theme="dark"] .s-pill { color: #10251e; }
+
+/* -------- Part N: badge contrast lock (solid badges on app pages) -------- */
+.pill-t0, .pill-danger { background: #c24438; color: #fffdf7; border-color: #c24438; }
+.pill-t1 { background: #96590a; color: #fffdf7; border-color: #96590a; }
+.pill-t2 { background: #065f46; color: #fffdf7; border-color: #065f46; }
+.pill-t3 { background: #0a6b60; color: #fffdf7; border-color: #0a6b60; }
+.pill-t4 { background: #44617f; color: #fffdf7; border-color: #44617f; }
