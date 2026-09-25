@@ -42,14 +42,18 @@
   /* ---------------- GBDT scorer (mirrors export_web.walk_tree) ------------- */
   function treeOut(acc, x) {
     var i = 0;
-    // internal node ⇔ split[i] >= 0 (leaf values may be negative — never test leaf<0).
-    // XGBoost C++ semantics: float32 compare (Math.fround), strict '<' → yes/left.
+    // internal node ⇔ split[i] >= 0 (leaf values may be negative).
+    // acc.c === 1 → LightGBM/sklearn 'value <= thresh' goes left (float64);
+    // else XGBoost 'f32(value) < f32(thresh)' goes left (acc.ff === 1).
+    var cmpLE = acc.c === 1;
+    var f32 = acc.ff === 1;
     while (acc.split[i] >= 0) {
       var val = x[acc.split[i]];
       if (val !== val) i = acc.miss[i];
       else {
-        var vf = Math.fround(val), tf = Math.fround(acc.thresh[i]);
-        i = vf < tf ? acc.left[i] : acc.right[i];
+        var vf = f32 ? Math.fround(val) : val;
+        var tf = f32 ? Math.fround(acc.thresh[i]) : acc.thresh[i];
+        i = (cmpLE ? vf <= tf : vf < tf) ? acc.left[i] : acc.right[i];
       }
     }
     return acc.leaf[i];
@@ -57,7 +61,10 @@
 
   function margins(rowVec) {
     var m = new Array(M.n_class).fill(0), n = M.trees.length;
-    for (var t = 0; t < n; t++) m[t % M.n_class] += treeOut(M.trees[t], rowVec);
+    for (var t = 0; t < n; t++) {
+      var acc = M.trees[t];
+      m[t % M.n_class] += (acc.w || 1) * treeOut(acc, rowVec);
+    }
     for (var c = 0; c < M.n_class; c++) m[c] += (M.base ? M.base[c] : 0);
     return m;
   }

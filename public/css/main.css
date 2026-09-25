@@ -683,7 +683,7 @@ body.has-cursor .cursor-glow { opacity: 0.55; }
   font-family: var(--font-display); font-size: var(--fs-h3); white-space: nowrap;
   color: var(--ink-2);
 }
-.mq-item:nth-child(2n) { color: var(--champagne); }
+.mq-item:nth-child(2n) { color: var(--gold); }
 @keyframes mq { to { transform: translateX(-50%); } }
 
 .note {
@@ -693,7 +693,7 @@ body.has-cursor .cursor-glow { opacity: 0.55; }
   padding: 0.8rem 0.95rem; border-radius: 0 var(--r-md) var(--r-md) 0;
 }
 .note-warn { border-left-color: var(--gold); background: color-mix(in srgb, var(--gold) 8%, transparent); }
-.note-danger { border-left-color: var(--garnet); background: color-mix(in srgb, var(--garnet) 10%, transparent); }
+.note-danger { border-left-color: var(--emerg); background: color-mix(in srgb, var(--emerg) 10%, transparent); }
 .principle {
   font-family: var(--font-display); font-size: var(--fs-lead); color: var(--ink-0);
   border-left: 3px solid var(--acc-1); padding: 0.4rem 0 0.4rem 1.2rem; max-width: 56ch; text-wrap: pretty;
@@ -724,21 +724,25 @@ body.has-cursor .cursor-glow { opacity: 0.55; }
 
 /* ------------------------------- 7. FOOTER ------------------------------- */
 .site-footer {
+  --ink-0: #fffdf7; --ink-1: #d7eadf; --ink-2: #a8c3b4;
+  --text: #fffdf7; --text-soft: #d7eadf;
+  --acc-1: #56c99b; --acc-2: #d8ef74;
+  --hair: rgba(223, 240, 230, 0.18); --hair-soft: rgba(223, 240, 230, 0.1);
   position: relative; z-index: 1;
-  background: linear-gradient(180deg, rgba(6, 45, 37, 0.7), rgba(4, 30, 24, 0.95));
+  background: #04241d;
   border-top: 1px solid var(--hair);
   color: var(--ink-1); margin-top: var(--sec-y);
-  padding: clamp(2.3rem, 4vw, 3.6rem) 0 calc(env(safe-area-inset-bottom) + 1.2rem);
+  padding: clamp(1.8rem, 3vw, 2.8rem) 0 calc(env(safe-area-inset-bottom) + 1.2rem);
 }
 .footer-grid {
-  display: grid; gap: clamp(1.4rem, 3vw, 2.2rem);
+  display: grid; gap: clamp(1.1rem, 2.5vw, 1.8rem);
   grid-template-columns: minmax(0, 1fr);
 }
 @media (min-width: 44rem) { .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 70rem) { .footer-grid { grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); } }
 .foot-brand { display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
 .foot-brand-row { display: flex; gap: 0.7rem; align-items: flex-start; }
-.foot-brand-row .logo-mark { width: 2.5rem; height: 2.5rem; color: var(--champagne); }
+.foot-brand-row .logo-mark { width: 2.5rem; height: 2.5rem; color: var(--gold); }
 .foot-company {
   font-family: var(--font-display); font-size: var(--fs-h3); font-weight: 700; letter-spacing: 0.02em; overflow-wrap: break-word;
   color: var(--ink-0);
@@ -747,7 +751,7 @@ body.has-cursor .cursor-glow { opacity: 0.55; }
 .foot-addr { font-size: var(--fs-small); color: var(--ink-2); }
 .foot-disclaimer { font-size: var(--fs-tiny); color: var(--ink-2); max-width: 44ch; text-wrap: pretty; opacity: 0.85; }
 .foot-h { font-size: var(--fs-tiny); text-transform: uppercase; letter-spacing: 0.12em; color: var(--acc-1); margin-bottom: 0.7rem; font-weight: 800; }
-.foot-list { display: flex; flex-direction: column; gap: 0.35rem; }
+.foot-list { display: flex; flex-direction: column; gap: 0.25rem; }
 .foot-list a { color: var(--ink-1); font-size: var(--fs-small); display: inline-block; padding: 0.18rem 0; }
 .foot-list a:hover { color: var(--ink-0); }
 .foot-strip {
@@ -792,8 +796,8 @@ body.nav-out { opacity: 0.85; transition: opacity 0.25s var(--ease-out); }
 }
 .theme-toggle:hover { box-shadow: var(--glow-soft); transform: translateY(-1px); }
 .theme-toggle svg { width: 1.15rem; height: 1.15rem; position: absolute; transition: transform 0.45s cubic-bezier(0.3, 1.4, 0.4, 1), opacity 0.3s; }
-.tt-sun { opacity: 1; transform: rotate(0deg) scale(1); color: var(--champagne); }
-.tt-moon { opacity: 0; transform: rotate(-70deg) scale(0.5); color: var(--sapphire); }
+.tt-sun { opacity: 1; transform: rotate(0deg) scale(1); color: var(--gold); }
+.tt-moon { opacity: 0; transform: rotate(-70deg) scale(0.5); color: var(--green-deep); }
 html[data-theme="light"] .tt-sun { opacity: 0; transform: rotate(70deg) scale(0.5); }
 html[data-theme="light"] .tt-moon { opacity: 1; transform: rotate(0deg) scale(1); }
 
@@ -935,3 +939,8 @@ html[data-theme="dark"] .ss-streak { background: linear-gradient(100deg, transpa
 
 /* image frames never flash white while loading */
 img, .hero-art-frame, .video-stage { background: var(--surface); }
+
+/* Part M: standalone note strips sit inside the content measure */
+main > .note { width: min(100% - var(--pad) * 2, var(--max)); margin-inline: auto; }
+.foot-list a { color: var(--ink-1); }
+.foot-strip { color: var(--ink-2); }
