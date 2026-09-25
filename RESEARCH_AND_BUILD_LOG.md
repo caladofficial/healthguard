@@ -858,3 +858,30 @@ pieces: app-pages pregnancy gate (`syncPreg`, sex-gated submit), temp conversion
 count/strict/syncPreg/f2c/preg all present; res-meta + Model-N titles gone. Rule added: every patch
 batch asserts ALL files BEFORE any write... (post-mortem: asserts-first + per-file atomic writes,
 plus a full marker sweep that includes JS handlers — markup-only live greps proved insufficient.)
+
+## PART Q — ACCESS POLICY + CAMOUFLAGE (v14) [2026-09-26]
+From the user's review screenshot:
+1. **Camouflaged disclaimer text** — `.note` fine print was pale in light theme (and `--surface-2`
+   was an UNDEFINED token: inputs resolved to the `#fffdf7` fallback in both themes — white-on-white
+   in dark mode, the auditor's only FAIL at 1.09). Fixed: `.note` light-theme legibility lock
+   (dark ink on soft tint, `font-style: normal`), `.fld-i` retokened to `var(--surface)`/`var(--text)`
+   (real tokens), `.foot-disclaimer` light-theme lock. Contrast audit v2 → **FAIL: 0** (75 RISKs =
+   accepted no-cascade informational class).
+2. **Triage = signed-in patients ONLY** — triage.html had NO deck-app route, so since v13's hidden
+   lock the form never unlocked (the "work on triage system" breakage). Added `initTriage →
+   gate('patient')` + wrapped intake+result in `shell('patient', …)`. Doctors/admins/anonymous see
+   the gate/role notice; the header+drawer "Triage Check" CTA hides for signed-in non-patients
+   (`data-triage-cta` + paint()).
+3. **Deck options separated per role** — home band no longer shows all three role doors to everyone.
+   Signed-in → own deck only ("Patient care deck"/"Clinic desk"/"Live operations"); anonymous →
+   sign-in/create-patient-account only. Decks were already strict-gated (Part P).
+4. **Account policy: patients self-register; admins predefined; doctors registered manually by
+   admin.** Login page: role tabs removed, signup = patient only ("Create patient account"), policy
+   note shown. `signUp` hardcodes role='patient'. DB: `tg_hg_role_guard` blocks any non-patient
+   profile insert unless `hg_is_admin()` (Management API SQL, verified `[]`). Admin deck gets
+   **Register a doctor** form → `hg_register_doctor(email, temp-pass, name, specialty, age, sex)`
+   SECURITY DEFINER RPC (admin-only, creates auth user + confirmed email + doctor profile) and shows
+   the temporary password once for the admin to share.
+5. Snapshot-restore regression struck a 3rd time at the turn boundary (auth.js/deck-app.js reverted to
+   pre-v13 in the workspace). Recovered `git reset --hard origin/main` FIRST — remote is the source of
+   truth; commit+push at every milestone continues to be mandatory.

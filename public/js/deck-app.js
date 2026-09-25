@@ -76,11 +76,9 @@
   function initLogin() {
     var form = el('lgForm');
     if (!form) return;
-    var mode = 'in', role = 'patient';
+    var mode = 'in';
     var msgEl = el('lgMsg');
-    var roleRow = el('lgRoleRow');
     var nameRow = el('lgNameRow');
-    var specRow = el('lgSpecRow');
     var ageRow = el('lgAgeRow');
     var sexRow = el('lgSexRow');
     function setMode(m) {
@@ -89,22 +87,13 @@
         b.classList.toggle('is-on', b.getAttribute('data-lg-mode') === m);
         b.setAttribute('aria-selected', b.getAttribute('data-lg-mode') === m);
       });
-      el('lgSubmit').textContent = m === 'in' ? 'Sign in' : 'Create account';
-      if (roleRow) roleRow.hidden = m !== 'up';
+      el('lgSubmit').textContent = m === 'in' ? 'Sign in' : 'Create patient account';
       if (nameRow) nameRow.hidden = m !== 'up';
       if (ageRow) ageRow.hidden = m !== 'up';
       if (sexRow) sexRow.hidden = m !== 'up';
-      if (specRow) specRow.hidden = !(m === 'up' && role === 'doctor');
     }
     qa('[data-lg-mode]').forEach(function (b) {
       b.addEventListener('click', function () { setMode(b.getAttribute('data-lg-mode')); msgEl.textContent = ''; });
-    });
-    qa('[data-lg-role]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        role = b.getAttribute('data-lg-role');
-        qa('[data-lg-role]').forEach(function (x) { x.classList.toggle('is-on', x === b); });
-        if (specRow) specRow.hidden = !(mode === 'up' && role === 'doctor');
-      });
     });
     var wantRole = new URLSearchParams(location.search).get('role');
     if (wantRole) {
@@ -117,18 +106,17 @@
       var email = el('lgEmail').value.trim(), pass = el('lgPass').value;
       if (!email || pass.length < 8) { msg(msgEl, 'Enter a valid email and a password of at least 8 characters.'); return; }
       var name = el('lgName').value.trim(), age = parseInt(el('lgAge').value, 10);
-      var sex = el('lgSex').value, spec = el('lgSpecialty').value.trim();
+      var sex = el('lgSex').value;
       if (mode === 'up') {
         if (!name) { msg(msgEl, 'Full name is required to create an account.'); return; }
         if (!(age > 0 && age < 130)) { msg(msgEl, 'Enter your age in years — required before you can start.'); return; }
         if (!sex) { msg(msgEl, 'Select your sex — required before you can start.'); return; }
-        if (role === 'doctor' && !spec) { msg(msgEl, 'Specialty is required for doctor accounts.'); return; }
       }
       var btn = el('lgSubmit');
       btn.disabled = true;
       var p = mode === 'in'
         ? A.signIn(email, pass)
-        : A.signUp(email, pass, { role: role, name: name, specialty: spec, age: age, sex: sex });
+        : A.signUp(email, pass, { role: 'patient', name: name, age: age, sex: sex });
       p.then(function (prof) {
         A.paint();
         var r = (prof && prof.role) || role;
@@ -141,32 +129,32 @@
     });
   }
 
+  function initTriage() { gate('patient'); }
+
   /* ------------------------------ HOME BAND ------------------------------ */
   function initHome() {
     var main = el('main') || document.body;
     var sec = document.createElement('section');
     sec.className = 'section';
-    sec.innerHTML = '<div class="wrap"><p class="eyebrow">Choose your door</p>' +
-      '<h2 class="h-sec">Sign in — patients, doctors, admins</h2>' +
-      '<p class="sec-lead">One login, three working decks: care at home, the clinic desk, and live operations.</p>' +
-      '<div class="role-band" id="roleBand"></div></div>';
     var hero = main.querySelector('.hero');
     if (hero && hero.parentNode) hero.parentNode.insertBefore(sec, hero.nextSibling);
     else main.appendChild(sec);
-    var mount = el('roleBand');
+    function band(html) { sec.innerHTML = '<div class="wrap">' + html + '</div>'; }
+    var signin = '<p class="eyebrow">Members only</p>' +
+      '<h2 class="h-sec">Sign in to your deck</h2>' +
+      '<p class="sec-lead">Patients create their own account. Doctors are registered by the clinic admin, and admins are predefined — everyone signs in through the same door.</p>' +
+      '<div class="btn-row"><a class="btn btn-primary" href="login.html">Sign in</a>' +
+      '<a class="btn btn-ghost" href="login.html">Create a patient account</a></div>';
     var s = A.session();
+    if (!s) { band(signin); return; }
     A.me().then(function (p) {
-      var cards = [
-        { role: 'patient', ico: '🩺', t: 'Patient', d: 'Triage check, queue token, appointment booking, prescription analysis, ask a doctor.', href: 'login.html?role=patient' },
-        { role: 'doctor', ico: '👨‍⚕️', t: 'Doctor', d: 'Accept bookings, day token board, chat with patients, review reports, video consults.', href: 'login.html?role=doctor' },
-        { role: 'admin', ico: '📊', t: 'Admin', d: 'Live operations: who is active, bookings lifecycle, queue load, open opinions.', href: 'login.html?role=admin' }
-      ];
-      if (s && p) cards = cards.map(function (c) { if (c.role === p.role) c.href = A.roleHome(p.role); return c; });
-      mount.innerHTML = cards.map(function (c) {
-        return '<a class="role-card" href="' + c.href + '"><span class="role-ico">' + c.ico + '</span><h3>' + c.t + '</h3><p>' + c.d + '</p>' +
-          '<span class="card-link">' + (s && p && c.role === p.role ? 'Open my deck →' : 'Sign in as ' + c.t + ' →') + '</span></a>';
-      }).join('');
-    });
+      if (!p) { band(signin); return; }
+      var label = p.role === 'doctor' ? 'Clinic desk' : p.role === 'admin' ? 'Live operations' : 'Patient care deck';
+      band('<p class="eyebrow">Your deck</p>' +
+        '<h2 class="h-sec">' + label + '</h2>' +
+        '<p class="sec-lead">Signed in as ' + String(p.role) + ' — every role sees only its own deck.</p>' +
+        '<div class="btn-row"><a class="btn btn-primary" href="' + A.roleHome(p.role) + '">Open ' + label + ' &rarr;</a></div>');
+    }).catch(function () { band(signin); });
   }
 
   /* ----------------------------- PATIENT DECK ---------------------------- */
@@ -779,6 +767,25 @@
         }).join('') || '<p class="auth-msg">No users.</p>');
       });
     }
+    var df = el('adDocForm');
+    if (df) df.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var dm = el('adDocMsg');
+      var name = el('adDocName').value.trim(), email = el('adDocEmail').value.trim(), spec = el('adDocSpec').value.trim();
+      var age = el('adDocAge').value === '' ? null : parseInt(el('adDocAge').value, 10);
+      var sex = el('adDocSex').value || null;
+      if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg(dm, "Enter the doctor's full name and a valid email."); return; }
+      var btn = df.querySelector('button[type=submit]');
+      btn.disabled = true;
+      var pass = 'HG-' + Math.random().toString(36).slice(2, 8) + Math.random().toString(36).slice(2, 6).toUpperCase();
+      A.rpc('hg_register_doctor', { p_email: email, p_password: pass, p_full_name: name, p_specialty: spec, p_age: age, p_sex: sex })
+        .then(function () {
+          dm.innerHTML = 'Doctor account created. Temporary password: <b>' + pass + '</b> — share it securely with them.';
+          btn.disabled = false;
+          boards();
+        })
+        .catch(function (err) { msg(dm, String(err.message || err)); btn.disabled = false; });
+    });
     stats(); boards();
     setInterval(function () { stats(); boards(); }, 5000);
   }
@@ -787,6 +794,7 @@
   var routes = {
     'index': initHome,
     'login': initLogin,
+    'triage': initTriage,
     'patient-deck': initPatientDeck,
     'token': initToken,
     'book': initBook,

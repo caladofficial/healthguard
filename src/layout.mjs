@@ -194,7 +194,7 @@ export function header() {
           <path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/>
         </svg>
       </button>
-      <a class="btn btn-primary btn-sm" href="triage.html">Triage Check</a>
+      <a class="btn btn-primary btn-sm" href="triage.html" data-triage-cta>Triage Check</a>
       <a class="auth-chip" href="login.html" data-auth-chip hidden></a>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -212,7 +212,7 @@ export function header() {
     <nav class="drawer-nav" aria-label="Mobile">
       ${drawerMarkup()}
     </nav>
-    <a class="btn btn-primary btn-block" href="triage.html">Triage Check</a>
+    <a class="btn btn-primary btn-block" href="triage.html" data-triage-cta>Triage Check</a>
     <a class="auth-chip auth-chip--block" href="login.html" data-auth-chip hidden></a>
     <p class="drawer-legal">© ${YEAR} ${COMPANY}</p>
   </div>

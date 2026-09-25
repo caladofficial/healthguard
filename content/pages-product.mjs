@@ -74,28 +74,23 @@ export default [
   {
     slug: 'login',
     family: 'product',
-    title: 'Sign In — Patient, Doctor or Admin',
-    desc: 'Sign in to HealthGuard: patients get triage, tokens, bookings and opinions; doctors get bookings, queue, chat and reports; admins get live operations.',
+    title: 'Sign In — HealthGuard Accounts',
+    desc: 'Sign in to HealthGuard: patients self-register for triage, tokens, bookings and opinions; doctors are registered by the clinic admin; admins are predefined.',
     body: () => [
       `<section class="section"><div class="wrap wrap-narrow">
-        <p class="eyebrow" data-reveal>Account · one door, three decks</p>
+        <p class="eyebrow" data-reveal>Account · one door, your deck</p>
         <h1 class="h-sec" data-reveal>Sign in to HealthGuard</h1>
-        <p class="sec-lead" data-reveal>Choose who you are. Patients get the care deck, doctors get the clinic desk, admins get live operations. Accounts keep your record private — row-level security on every table.</p>
+        <p class="sec-lead" data-reveal>Patients create their own account here. Doctors are registered by the clinic admin, and admins are predefined. Accounts keep your record private — row-level security on every table.</p>
         <div class="auth-card" data-reveal>
           <div class="auth-tabs" role="tablist">
             <button class="auth-tab is-on" type="button" data-lg-mode="in" role="tab" aria-selected="true">Sign in</button>
             <button class="auth-tab" type="button" data-lg-mode="up" role="tab" aria-selected="false">Create account</button>
           </div>
           <form id="lgForm" class="auth-form" novalidate>
-            <div class="role-tabs" id="lgRoleRow">
-              <button class="role-tab is-on" type="button" data-lg-role="patient">🩺 Patient</button>
-              <button class="role-tab" type="button" data-lg-role="doctor">👨‍⚕️ Doctor</button>
-              <button class="role-tab" type="button" data-lg-role="admin">📊 Admin</button>
-            </div>
+            <p class="note note-info">Patient self-registration only. Doctors get their accounts from the clinic admin — admins are predefined. Everyone signs in here.</p>
             <div id="lgNameRow">${field('lgName', 'Full name', { type: 'text', hint: 'Shown on tokens, bookings and chat.' })}</div>
             <div id="lgAgeRow">${field('lgAge', 'Age (years)', { type: 'number', hint: 'Required — the triage engine depends on it.' })}</div>
             <div id="lgSexRow">${select('lgSex', 'Sex', [['', 'Select…'], ['male', 'Male'], ['female', 'Female'], ['other', 'Other']])}</div>
-            <div id="lgSpecRow">${field('lgSpecialty', 'Specialty', { type: 'text', required: false, hint: 'e.g. General Medicine, Pediatrics…' })}</div>
             ${field('lgEmail', 'Email', { type: 'email', hint: 'We never show your email to other users.' })}
             ${field('lgPass', 'Password', { type: 'password', hint: 'Minimum 8 characters.' })}
             <button class="btn btn-primary btn-block" id="lgSubmit" type="submit">Sign in</button>
@@ -145,7 +140,7 @@ export default [
       U.hero({
         eyebrow: 'Live product · Triage Engine',
         title: 'Triage Check',
-        lead: 'Enter what you (or the patient) feel and measure. Get a workflow-urgency class in milliseconds — T0 emergency to T4 follow-up — with reason codes you can read.',
+        lead: 'Enter what you feel and measure. Get a workflow-urgency class in milliseconds — T0 emergency to T4 follow-up — with reason codes you can read. For signed-in patients only.',
         art: a,
         chips: ['Runs in your browser', 'Rules + model + review flag', 'T0–T4 urgency', 'Data stays on device'],
         actions: [
@@ -154,7 +149,7 @@ export default [
         ],
       }),
       U.principle('AI triage ≠ emergency diagnosis. This classifies workflow urgency — what to see first — never what the patient has.'),
-      U.section({
+      shell('patient', U.section({
         kicker: 'Intake', title: 'Symptoms & measurements', lead: 'Fields marked * are needed. If you are unsure about a measurement, use your best estimate — the review flag will say when the picture is unclear.',
         inner: `<form id="triageForm" class="triage-form" data-reveal>
           <fieldset class="fs"><legend>Vitals</legend><div class="fld-grid">
@@ -179,11 +174,10 @@ export default [
             <p class="note note-warn">${U.esc('If someone is unconscious, struggling to breathe, has chest pain or heavy bleeding — call your local emergency number NOW. Do not wait for this form.')}</p>
           </div>
         </form>`,
-      }),
-      `<section class="section" id="triageResult" hidden><div class="wrap wrap-narrow">
+      }) + `<section class="section" id="triageResult" hidden><div class="wrap wrap-narrow">
         <p class="eyebrow">Result</p>
         <div class="result-card" id="resultCard"></div>
-      </div></section>`,
+      </div></section>`),
       U.section({
         kicker: 'Under the hood', title: 'Rules first, model second, human always',
         inner: U.checks([
@@ -504,12 +498,23 @@ export default [
             <div class="board" id="adTokens"></div>
           </div>
           <div>
-            <h2 class="h-3">Users & presence</h2>
+            <h2 class="h-3">Register a doctor</h2>
+            <p class="card-d">Doctors cannot self-register. Create their account here and share the temporary password.</p>
+            <form id="adDocForm" class="auth-form sect-gap">
+              ${field('adDocName', 'Full name', { type: 'text' })}
+              ${field('adDocEmail', 'Email', { type: 'email' })}
+              ${field('adDocSpec', 'Specialty', { type: 'text', hint: 'e.g. General Medicine, Pediatrics…' })}
+              ${field('adDocAge', 'Age (years)', { type: 'number', required: false })}
+              ${select('adDocSex', 'Sex', [['', 'Select…'], ['male', 'Male'], ['female', 'Female'], ['other', 'Other']])}
+              <button class="btn btn-primary" type="submit">Create doctor account</button>
+              <p class="auth-msg" id="adDocMsg"></p>
+            </form>
+            <h2 class="h-3 sect-gap">Users & presence</h2>
             <div class="board sect-gap" id="adUsers"></div>
           </div>
         </div>
       `)}</section>`,
-      U.note('Active now = seen in the last 15 minutes. Roles are self-declared in v1; credential verification ships with the doctor-verification workflow before real clinical deployment.', ''),
+      U.note('Active now = seen in the last 15 minutes. Patients self-register; doctor accounts are created by an admin; admins are predefined. Credential verification ships with the doctor-verification workflow before real clinical deployment.', ''),
     ],
   },
 ];

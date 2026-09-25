@@ -300,7 +300,7 @@
           <path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/>
         </svg>
       </button>
-      <a class="btn btn-primary btn-sm" href="triage.html">Triage Check</a>
+      <a class="btn btn-primary btn-sm" href="triage.html" data-triage-cta>Triage Check</a>
       <a class="auth-chip" href="login.html" data-auth-chip hidden></a>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -418,7 +418,7 @@
       </div>
     </details>
     </nav>
-    <a class="btn btn-primary btn-block" href="triage.html">Triage Check</a>
+    <a class="btn btn-primary btn-block" href="triage.html" data-triage-cta>Triage Check</a>
     <a class="auth-chip auth-chip--block" href="login.html" data-auth-chip hidden></a>
     <p class="drawer-legal">© 2026 EVOLVEX IT SOLUTIONS PVT. LTD.</p>
   </div>
@@ -466,13 +466,46 @@
             <div class="board" id="adTokens"></div>
           </div>
           <div>
-            <h2 class="h-3">Users & presence</h2>
+            <h2 class="h-3">Register a doctor</h2>
+            <p class="card-d">Doctors cannot self-register. Create their account here and share the temporary password.</p>
+            <form id="adDocForm" class="auth-form sect-gap">
+              <label class="fld" for="adDocName">
+    <span class="fld-l">Full name <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="adDocName" name="adDocName" type="text"    value="" required inputmode="text">
+    
+  </label>
+              <label class="fld" for="adDocEmail">
+    <span class="fld-l">Email <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="adDocEmail" name="adDocEmail" type="email"    value="" required inputmode="text">
+    
+  </label>
+              <label class="fld" for="adDocSpec">
+    <span class="fld-l">Specialty <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="adDocSpec" name="adDocSpec" type="text"    value="" required inputmode="text">
+    <span class="fld-h">e.g. General Medicine, Pediatrics…</span>
+  </label>
+              <label class="fld" for="adDocAge">
+    <span class="fld-l">Age (years)</span>
+    <input class="fld-i" id="adDocAge" name="adDocAge" type="number"    value=""  inputmode="decimal">
+    
+  </label>
+              <label class="fld" for="adDocSex">
+    <span class="fld-l">Sex <b aria-hidden="true">*</b></span>
+    <select class="fld-i" id="adDocSex" name="adDocSex" required>
+      <option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+    </select>
+    
+  </label>
+              <button class="btn btn-primary" type="submit">Create doctor account</button>
+              <p class="auth-msg" id="adDocMsg"></p>
+            </form>
+            <h2 class="h-3 sect-gap">Users & presence</h2>
             <div class="board sect-gap" id="adUsers"></div>
           </div>
         </div>
       </div>
   </div></section>
-<p class="note note-" data-reveal>Active now = seen in the last 15 minutes. Roles are self-declared in v1; credential verification ships with the doctor-verification workflow before real clinical deployment.</p>
+<p class="note note-" data-reveal>Active now = seen in the last 15 minutes. Patients self-register; doctor accounts are created by an admin; admins are predefined. Credential verification ships with the doctor-verification workflow before real clinical deployment.</p>
 </main>
 <footer class="site-footer" id="footer">
   <div class="wrap footer-grid">

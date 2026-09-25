@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#fffdf7">
-<meta name="description" content="Sign in to HealthGuard: patients get triage, tokens, bookings and opinions; doctors get bookings, queue, chat and reports; admins get live operations.">
-<meta property="og:title" content="Sign In — Patient, Doctor or Admin · HealthGuard">
-<meta property="og:description" content="Sign in to HealthGuard: patients get triage, tokens, bookings and opinions; doctors get bookings, queue, chat and reports; admins get live operations.">
+<meta name="description" content="Sign in to HealthGuard: patients self-register for triage, tokens, bookings and opinions; doctors are registered by the clinic admin; admins are predefined.">
+<meta property="og:title" content="Sign In — HealthGuard Accounts · HealthGuard">
+<meta property="og:description" content="Sign in to HealthGuard: patients self-register for triage, tokens, bookings and opinions; doctors are registered by the clinic admin; admins are predefined.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="HealthGuard — EVOLVEX IT SOLUTIONS PVT. LTD.">
-<title>Sign In — Patient, Doctor or Admin · HealthGuard</title>
+<title>Sign In — HealthGuard Accounts · HealthGuard</title>
 <script>try{var _t=localStorage.getItem('hg-theme');if(!_t)_t='light';document.documentElement.setAttribute('data-theme',_t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z' fill='%23087255'/%3E%3Cpath d='M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9' stroke='%23F7F4EE' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/main.css">
@@ -300,7 +300,7 @@
           <path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/>
         </svg>
       </button>
-      <a class="btn btn-primary btn-sm" href="triage.html">Triage Check</a>
+      <a class="btn btn-primary btn-sm" href="triage.html" data-triage-cta>Triage Check</a>
       <a class="auth-chip" href="login.html" data-auth-chip hidden></a>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -418,27 +418,23 @@
       </div>
     </details>
     </nav>
-    <a class="btn btn-primary btn-block" href="triage.html">Triage Check</a>
+    <a class="btn btn-primary btn-block" href="triage.html" data-triage-cta>Triage Check</a>
     <a class="auth-chip auth-chip--block" href="login.html" data-auth-chip hidden></a>
     <p class="drawer-legal">© 2026 EVOLVEX IT SOLUTIONS PVT. LTD.</p>
   </div>
 </div>
 <main id="main">
 <section class="section"><div class="wrap wrap-narrow">
-        <p class="eyebrow" data-reveal>Account · one door, three decks</p>
+        <p class="eyebrow" data-reveal>Account · one door, your deck</p>
         <h1 class="h-sec" data-reveal>Sign in to HealthGuard</h1>
-        <p class="sec-lead" data-reveal>Choose who you are. Patients get the care deck, doctors get the clinic desk, admins get live operations. Accounts keep your record private — row-level security on every table.</p>
+        <p class="sec-lead" data-reveal>Patients create their own account here. Doctors are registered by the clinic admin, and admins are predefined. Accounts keep your record private — row-level security on every table.</p>
         <div class="auth-card" data-reveal>
           <div class="auth-tabs" role="tablist">
             <button class="auth-tab is-on" type="button" data-lg-mode="in" role="tab" aria-selected="true">Sign in</button>
             <button class="auth-tab" type="button" data-lg-mode="up" role="tab" aria-selected="false">Create account</button>
           </div>
           <form id="lgForm" class="auth-form" novalidate>
-            <div class="role-tabs" id="lgRoleRow">
-              <button class="role-tab is-on" type="button" data-lg-role="patient">🩺 Patient</button>
-              <button class="role-tab" type="button" data-lg-role="doctor">👨‍⚕️ Doctor</button>
-              <button class="role-tab" type="button" data-lg-role="admin">📊 Admin</button>
-            </div>
+            <p class="note note-info">Patient self-registration only. Doctors get their accounts from the clinic admin — admins are predefined. Everyone signs in here.</p>
             <div id="lgNameRow"><label class="fld" for="lgName">
     <span class="fld-l">Full name <b aria-hidden="true">*</b></span>
     <input class="fld-i" id="lgName" name="lgName" type="text"    value="" required inputmode="text">
@@ -455,11 +451,6 @@
       <option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
     </select>
     
-  </label></div>
-            <div id="lgSpecRow"><label class="fld" for="lgSpecialty">
-    <span class="fld-l">Specialty</span>
-    <input class="fld-i" id="lgSpecialty" name="lgSpecialty" type="text"    value=""  inputmode="text">
-    <span class="fld-h">e.g. General Medicine, Pediatrics…</span>
   </label></div>
             <label class="fld" for="lgEmail">
     <span class="fld-l">Email <b aria-hidden="true">*</b></span>

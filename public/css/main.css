@@ -1000,3 +1000,12 @@ body { overflow-x: clip; }
 @media (max-width: 48rem) {
   .hero-art-cap { position: static; display: inline-flex; margin-top: 0.6rem; }
 }
+
+/* -------- Part Q: note legibility lock (no camouflaged fine print) -------- */
+html[data-theme="light"] .note {
+  background: color-mix(in srgb, var(--acc-1, #087255) 8%, var(--surface, #fffdf7));
+  color: var(--ink-0, #10251e); font-style: normal; font-weight: 500;
+}
+html[data-theme="light"] .note-warn { background: color-mix(in srgb, var(--gold) 14%, var(--surface, #fffdf7)); color: var(--ink-0, #10251e); }
+html[data-theme="light"] .note-danger { background: color-mix(in srgb, var(--emerg) 12%, var(--surface, #fffdf7)); color: var(--ink-0, #10251e); }
+html[data-theme="light"] .foot-disclaimer { color: var(--ink-1, #d7eadf); opacity: 1; }

@@ -32,7 +32,7 @@
 .fld-l b { color: var(--gold, #087255); }
 .fld-i {
   width: 100%; min-width: 0; padding: .6rem .75rem; border-radius: 10px; font: inherit;
-  border: 1px solid var(--hair, rgba(8, 114, 85, .25)); background: var(--surface-2, #fffdf7);
+  border: 1px solid var(--hair, rgba(8, 114, 85, .25)); background: var(--surface, #fffdf7);
   color: var(--text, #10251e);
 }
 .fld-i:focus-visible { outline: 2px solid var(--gold, #087255); outline-offset: 1px; }

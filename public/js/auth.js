@@ -73,9 +73,8 @@
         method: 'POST', prefer: 'resolution=merge-duplicates,return=representation',
         body: {
           user_id: session().user.id,
-          role: profile.role || 'patient',
+          role: 'patient',
           full_name: profile.name || '',
-          specialty: profile.specialty || '',
           age: profile.age || null,
           sex: profile.sex || '',
           last_seen_at: new Date().toISOString()
@@ -98,6 +97,10 @@
       if (row) cacheProfile(row);
       return row;
     });
+  }
+
+  function rpc(name, params) {
+    return api('/rest/v1/rpc/' + name, { method: 'POST', body: params || {} }).then(function (r) { return r.body; });
   }
 
   function signOut() {
@@ -193,6 +196,9 @@
     document.querySelectorAll('[data-auth-gateout]').forEach(function (el) {
       el.hidden = !!s;
     });
+    document.querySelectorAll('[data-triage-cta]').forEach(function (el) {
+      el.hidden = !!(s && role !== 'patient');
+    });
     document.querySelectorAll('[data-signout]').forEach(function (el) {
       el.hidden = !s;
       el.onclick = function (e) { e.preventDefault(); signOut(); location.href = 'index.html'; };
@@ -201,7 +207,7 @@
   }
 
   window.HGAuth = {
-    session: session, signIn: signIn, signUp: signUp, signOut: signOut, completeProfile: completeProfile,
+    session: session, signIn: signIn, signUp: signUp, signOut: signOut, completeProfile: completeProfile, rpc: rpc,
     me: me, heartbeat: heartbeat, roleHome: roleHome,
     select: select, insert: insert, update: update, count: count,
     insertTriage: insertTriage, listTriage: listTriage, paint: paint,

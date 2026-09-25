@@ -300,7 +300,7 @@
           <path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/>
         </svg>
       </button>
-      <a class="btn btn-primary btn-sm" href="triage.html">Triage Check</a>
+      <a class="btn btn-primary btn-sm" href="triage.html" data-triage-cta>Triage Check</a>
       <a class="auth-chip" href="login.html" data-auth-chip hidden></a>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -418,7 +418,7 @@
       </div>
     </details>
     </nav>
-    <a class="btn btn-primary btn-block" href="triage.html">Triage Check</a>
+    <a class="btn btn-primary btn-block" href="triage.html" data-triage-cta>Triage Check</a>
     <a class="auth-chip auth-chip--block" href="login.html" data-auth-chip hidden></a>
     <p class="drawer-legal">© 2026 EVOLVEX IT SOLUTIONS PVT. LTD.</p>
   </div>
@@ -430,7 +430,7 @@
       <div class="hero-copy">
         <p class="eyebrow" data-reveal>Live product · Triage Engine</p>
         <h1 class="h-display" data-split>Triage Check</h1>
-        <p class="lead" data-reveal data-reveal-delay="1">Enter what you (or the patient) feel and measure. Get a workflow-urgency class in milliseconds — T0 emergency to T4 follow-up — with reason codes you can read.</p>
+        <p class="lead" data-reveal data-reveal-delay="1">Enter what you feel and measure. Get a workflow-urgency class in milliseconds — T0 emergency to T4 follow-up — with reason codes you can read. For signed-in patients only.</p>
         <div class="chip-row" data-reveal data-reveal-delay="2"><span class="chip">Runs in your browser</span><span class="chip">Rules + model + review flag</span><span class="chip">T0–T4 urgency</span><span class="chip">Data stays on device</span></div>
         <div class="btn-row" data-reveal data-reveal-delay="3"><a class="btn btn-primary" href="#triageForm">Start the check</a><a class="btn btn-ghost" href="login.html">Sign in to save results</a></div>
       </div>
@@ -444,7 +444,38 @@
     </div>
   </section>
 <blockquote class="principle" data-reveal><p>AI triage ≠ emergency diagnosis. This classifies workflow urgency — what to see first — never what the patient has.</p></blockquote>
-<section class="section" >
+
+  <div class="wrap wrap-narrow">
+    <div class="gate-shell" id="gate" hidden>
+      <p class="eyebrow">Members only</p>
+      <h2 class="h-sec">Sign in to open this workspace</h2>
+      <p class="sec-lead">This area is for patients. Your deck unlocks after login.</p>
+      <div class="btn-row"><a class="btn btn-primary" href="login.html?role=patient">Sign in</a>
+      <a class="btn btn-ghost" href="login.html">Create an account</a></div>
+    </div>
+    <div class="gate-shell" id="pcWrap" hidden>
+      <p class="eyebrow">One quick step</p>
+      <h2 class="h-card">Complete your profile</h2>
+      <p class="card-d">Age and sex are required before any deck opens — safe triage depends on them.</p>
+      <form id="pcForm" class="auth-form">
+        <label class="fld" for="pcAge">
+    <span class="fld-l">Age (years) <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="pcAge" name="pcAge" type="number"    value="" required inputmode="decimal">
+    
+  </label>
+        <label class="fld" for="pcSex">
+    <span class="fld-l">Sex <b aria-hidden="true">*</b></span>
+    <select class="fld-i" id="pcSex" name="pcSex" required>
+      <option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+    </select>
+    
+  </label>
+        <button class="btn btn-primary" type="submit">Save and continue</button>
+        <p class="auth-msg" id="pcMsg"></p>
+      </form>
+    </div>
+    <p class="note note-warn" id="roleWarn" hidden></p>
+    <div id="app" hidden><section class="section" >
     <div class="wrap ">
       <p class="eyebrow" data-reveal>Intake</p>
       <h2 class="h-sec" data-reveal>Symptoms &amp; measurements</h2>
@@ -549,11 +580,11 @@
           </div>
         </form>
     </div>
-  </section>
-<section class="section" id="triageResult" hidden><div class="wrap wrap-narrow">
+  </section><section class="section" id="triageResult" hidden><div class="wrap wrap-narrow">
         <p class="eyebrow">Result</p>
         <div class="result-card" id="resultCard"></div>
-      </div></section>
+      </div></section></div>
+  </div>
 <section class="section" >
     <div class="wrap ">
       <p class="eyebrow" data-reveal>Under the hood</p>
