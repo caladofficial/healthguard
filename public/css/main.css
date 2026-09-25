@@ -728,34 +728,48 @@ body.has-cursor .cursor-glow { opacity: 0.55; }
   --text: #fffdf7; --text-soft: #d7eadf;
   --acc-1: #56c99b; --acc-2: #d8ef74;
   --hair: rgba(223, 240, 230, 0.18); --hair-soft: rgba(223, 240, 230, 0.1);
-  position: relative; z-index: 1;
+  position: relative; z-index: 2;
   background: #04241d;
   border-top: 1px solid var(--hair);
   color: var(--ink-1); margin-top: var(--sec-y);
-  padding: clamp(1.8rem, 3vw, 2.8rem) 0 calc(env(safe-area-inset-bottom) + 1.2rem);
+  padding: clamp(1.8rem, 3vw, 2.8rem) 0 max(1.75rem, calc(env(safe-area-inset-bottom) + 1.25rem));
+  overflow: clip; isolation: isolate;
 }
 .footer-grid {
   display: grid; gap: clamp(1.1rem, 2.5vw, 1.8rem);
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr); align-items: start;
 }
+.footer-grid > * { min-width: 0; }
+.foot-brand { grid-column: 1 / -1; }
 @media (min-width: 44rem) { .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 70rem) { .footer-grid { grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 70rem) {
+  .footer-grid { grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); }
+  .foot-brand { grid-column: auto; }
+}
 .foot-brand { display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
 .foot-brand-row { display: flex; gap: 0.7rem; align-items: flex-start; }
+.foot-brand-row > div { min-width: 0; }
+.foot-col { min-width: 0; }
 .foot-brand-row .logo-mark { width: 2.5rem; height: 2.5rem; color: var(--gold); }
 .foot-company {
-  font-family: var(--font-display); font-size: var(--fs-h3); font-weight: 700; letter-spacing: 0.02em; overflow-wrap: break-word;
+  font-family: var(--font-display); font-size: var(--fs-h3); font-weight: 700; letter-spacing: 0.02em; overflow-wrap: anywhere;
   color: var(--ink-0);
 }
-.foot-tag { font-size: var(--fs-small); color: var(--ink-2); }
+.foot-tag { font-size: var(--fs-small); color: var(--ink-2); overflow-wrap: anywhere; }
 .foot-addr { font-size: var(--fs-small); color: var(--ink-2); }
 .foot-disclaimer { font-size: var(--fs-tiny); color: var(--ink-2); max-width: 44ch; text-wrap: pretty; opacity: 0.85; }
-.foot-h { font-size: var(--fs-tiny); text-transform: uppercase; letter-spacing: 0.12em; color: var(--acc-1); margin-bottom: 0.7rem; font-weight: 800; }
+.foot-h { font-size: var(--fs-tiny); text-transform: uppercase; letter-spacing: 0.12em; color: var(--acc-1); margin-bottom: 0.7rem; font-weight: 800; overflow-wrap: anywhere; }
 .foot-list { display: flex; flex-direction: column; gap: 0.25rem; }
-.foot-list a { color: var(--ink-1); font-size: var(--fs-small); display: inline-block; padding: 0.18rem 0; }
+.foot-list a { color: var(--ink-1); font-size: var(--fs-small); display: inline-block; padding: 0.18rem 0; overflow-wrap: anywhere; }
+.foot-list li { min-width: 0; }
 .foot-list a:hover { color: var(--ink-0); }
 .foot-strip {
   display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; justify-content: space-between; align-items: center;
+  min-width: 0;
+}
+@media (max-width: 40rem) { .foot-strip { flex-direction: column; align-items: flex-start; } }
+.foot-strip p { min-width: 0; overflow-wrap: anywhere; }
+.foot-strip {
   border-top: 1px solid var(--hair-soft); margin-top: clamp(1.4rem, 3vw, 2.2rem); padding-top: 1rem;
   font-size: var(--fs-tiny); color: var(--ink-2);
 }
@@ -965,3 +979,7 @@ html[data-theme="light"] .nav-family.open .nav-trigger { background: rgba(16, 37
 html[data-theme="dark"] {
   --pill-danger-ink: #ff9c94; --pill-ok-ink: #56c99b; --pill-t1-ink: #f0c14b;
 }
+
+/* -------- Part O: footer region — overlap-proof ------------------------- */
+main { position: relative; z-index: 1; }
+body { overflow-x: clip; }

@@ -775,3 +775,17 @@ deployment kept v10. Recovery: `git fetch && git reset --hard origin/main` resto
 session. Countermeasure adopted: **commit + push immediately after every milestone**, never leave
 work uncommitted across turns. healthguard-ml/ (model, notebook, bake-off, model card) was outside
 the blast radius.
+
+### O.5 — Fix shipped (v12)
+
+Overlap-proof footer region (all bands):
+1. `.foot-brand` gets its **own full-width row** below the 4-col desktop band (`grid-column: 1 / -1`;
+   `auto` from 70rem) — link columns can never share a row with / collide into the brand block.
+2. `min-width: 0` chain (`footer-grid > *`, `foot-brand-row > div`, `foot-col`, `foot-list li`,
+   `foot-strip p`) + `overflow-wrap: anywhere` on company/tag/heading/link texts — no text escapes
+   its cell into a neighbour.
+3. `.foot-strip` stacks to a single column below 40rem (no side-by-side squeeze on phones).
+4. Stacking: `main { position: relative; z-index: 1 }`, footer `z-index: 2` + `overflow: clip;
+   isolation: isolate` — the footer can never paint over main content and nothing escapes the region.
+5. Android bottom-bar safety: `padding-bottom: max(1.75rem, calc(env(safe-area-inset-bottom) + 1.25rem))`
+   (Android often reports 0 insets) + `body { overflow-x: clip }`.
