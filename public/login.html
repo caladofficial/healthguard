@@ -439,11 +439,23 @@
               <button class="role-tab" type="button" data-lg-role="doctor">👨‍⚕️ Doctor</button>
               <button class="role-tab" type="button" data-lg-role="admin">📊 Admin</button>
             </div>
-            <label class="fld" for="lgName">
+            <div id="lgNameRow"><label class="fld" for="lgName">
     <span class="fld-l">Full name <b aria-hidden="true">*</b></span>
     <input class="fld-i" id="lgName" name="lgName" type="text"    value="" required inputmode="text">
     <span class="fld-h">Shown on tokens, bookings and chat.</span>
-  </label>
+  </label></div>
+            <div id="lgAgeRow"><label class="fld" for="lgAge">
+    <span class="fld-l">Age (years) <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="lgAge" name="lgAge" type="number"    value="" required inputmode="decimal">
+    <span class="fld-h">Required — the triage engine depends on it.</span>
+  </label></div>
+            <div id="lgSexRow"><label class="fld" for="lgSex">
+    <span class="fld-l">Sex <b aria-hidden="true">*</b></span>
+    <select class="fld-i" id="lgSex" name="lgSex" required>
+      <option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+    </select>
+    
+  </label></div>
             <div id="lgSpecRow"><label class="fld" for="lgSpecialty">
     <span class="fld-l">Specialty</span>
     <input class="fld-i" id="lgSpecialty" name="lgSpecialty" type="text"    value=""  inputmode="text">

@@ -21,25 +21,55 @@
   function msg(node, text, ok) { if (node) { node.textContent = text; node.className = 'auth-msg ' + (ok ? 'is-ok' : 'is-err'); } }
   function setHTML(node, html) { if (node && node.innerHTML !== html) node.innerHTML = html; }
 
-  /* gate: signed out → prompt; wrong role → notice */
+  /* gate: content LOCKED until session + complete profile + correct role all pass */
   function gate(needRole) {
     var s = A.session();
     var g = el('gate');
     var app = el('app');
+    var warn = el('roleWarn');
+    if (app) app.hidden = true;
+    if (warn) warn.hidden = true;
     if (!s) {
       if (g) g.hidden = false;
-      if (app) app.hidden = true;
       return false;
     }
-    A.me().then(function (p) {
-      if (needRole && p && p.role !== needRole && !(needRole === 'doctor' && p.role === 'admin')) {
-        var warn = el('roleWarn');
-        if (warn) { warn.hidden = false; warn.textContent = 'This workspace is for ' + needRole + 's. You are signed in as ' + p.role + '. Your own deck: ' + A.roleHome(p.role) + '.'; }
-      }
-    });
     if (g) g.hidden = true;
-    if (app) app.hidden = false;
+    A.me().then(function (p) {
+      if (!p) { if (g) g.hidden = false; return; }
+      if (!p.age || !p.sex) { showProfileComplete(); return; }
+      var wrong = needRole && p.role !== needRole && !(needRole === 'doctor' && p.role === 'admin');
+      if (wrong) {
+        if (warn) {
+          warn.hidden = false;
+          warn.innerHTML = 'This workspace is for ' + needRole + 's. You are signed in as ' + p.role +
+            '. <a href="' + A.roleHome(p.role) + '">Open your own deck &rarr;</a>';
+        }
+        return;
+      }
+      if (warn) warn.hidden = true;
+      if (app) app.hidden = false;
+    }).catch(function () { if (g) g.hidden = false; });
     return true;
+  }
+
+  function showProfileComplete() {
+    var w = el('pcWrap');
+    if (w) w.hidden = false;
+  }
+
+  function initProfileComplete() {
+    var form = el('pcForm');
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var age = parseInt((el('pcAge') || {}).value, 10);
+      var sex = (el('pcSex') || {}).value;
+      if (!(age > 0 && age < 130) || !sex) { msg(el('pcMsg'), 'Enter your age and select your sex to continue.'); return; }
+      A.completeProfile({ age: age, sex: sex }).then(function () {
+        A.paint();
+        location.reload();
+      }).catch(function (err) { msg(el('pcMsg'), String(err.message || err)); });
+    });
   }
 
   /* ------------------------------- LOGIN -------------------------------- */
@@ -51,6 +81,8 @@
     var roleRow = el('lgRoleRow');
     var nameRow = el('lgNameRow');
     var specRow = el('lgSpecRow');
+    var ageRow = el('lgAgeRow');
+    var sexRow = el('lgSexRow');
     function setMode(m) {
       mode = m;
       qa('[data-lg-mode]').forEach(function (b) {
@@ -60,6 +92,8 @@
       el('lgSubmit').textContent = m === 'in' ? 'Sign in' : 'Create account';
       if (roleRow) roleRow.hidden = m !== 'up';
       if (nameRow) nameRow.hidden = m !== 'up';
+      if (ageRow) ageRow.hidden = m !== 'up';
+      if (sexRow) sexRow.hidden = m !== 'up';
       if (specRow) specRow.hidden = !(m === 'up' && role === 'doctor');
     }
     qa('[data-lg-mode]').forEach(function (b) {
@@ -82,11 +116,19 @@
       e.preventDefault();
       var email = el('lgEmail').value.trim(), pass = el('lgPass').value;
       if (!email || pass.length < 8) { msg(msgEl, 'Enter a valid email and a password of at least 8 characters.'); return; }
+      var name = el('lgName').value.trim(), age = parseInt(el('lgAge').value, 10);
+      var sex = el('lgSex').value, spec = el('lgSpecialty').value.trim();
+      if (mode === 'up') {
+        if (!name) { msg(msgEl, 'Full name is required to create an account.'); return; }
+        if (!(age > 0 && age < 130)) { msg(msgEl, 'Enter your age in years — required before you can start.'); return; }
+        if (!sex) { msg(msgEl, 'Select your sex — required before you can start.'); return; }
+        if (role === 'doctor' && !spec) { msg(msgEl, 'Specialty is required for doctor accounts.'); return; }
+      }
       var btn = el('lgSubmit');
       btn.disabled = true;
       var p = mode === 'in'
         ? A.signIn(email, pass)
-        : A.signUp(email, pass, { role: role, name: el('lgName').value.trim(), specialty: el('lgSpecialty').value.trim() });
+        : A.signUp(email, pass, { role: role, name: name, specialty: spec, age: age, sex: sex });
       p.then(function (prof) {
         A.paint();
         var r = (prof && prof.role) || role;
@@ -759,5 +801,6 @@
     'doctor-reports': initDoctorReports,
     'admin-deck': initAdminDeck
   };
+  initProfileComplete();
   if (routes[slug]) routes[slug]();
 })();

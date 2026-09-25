@@ -76,9 +76,23 @@
           role: profile.role || 'patient',
           full_name: profile.name || '',
           specialty: profile.specialty || '',
+          age: profile.age || null,
+          sex: profile.sex || '',
           last_seen_at: new Date().toISOString()
         }
       });
+    }).then(function (r) {
+      var row = (r.body && r.body[0]) || null;
+      if (row) cacheProfile(row);
+      return row;
+    });
+  }
+
+  function completeProfile(patch) {
+    var s = session();
+    if (!s) return Promise.reject(new Error('Not signed in.'));
+    return api('/rest/v1/profiles' + qs({ user_id: 'eq.' + s.user.id }), {
+      method: 'PATCH', prefer: 'return=representation', body: patch
     }).then(function (r) {
       var row = (r.body && r.body[0]) || null;
       if (row) cacheProfile(row);
@@ -134,7 +148,7 @@
       .then(function (r) { return r.body || []; });
   }
   function count(table, params) {
-    var p = Object.assign({}, params || {}, { select: 'id' });
+    var p = Object.assign({}, params || {}, { select: '*' });
     p.limit = 0;
     return api('/rest/v1/' + table + qs(p), { prefer: 'count=exact' }).then(function (r) {
       var m = (r.range || '').split('/');
@@ -187,7 +201,7 @@
   }
 
   window.HGAuth = {
-    session: session, signIn: signIn, signUp: signUp, signOut: signOut,
+    session: session, signIn: signIn, signUp: signUp, signOut: signOut, completeProfile: completeProfile,
     me: me, heartbeat: heartbeat, roleHome: roleHome,
     select: select, insert: insert, update: update, count: count,
     insertTriage: insertTriage, listTriage: listTriage, paint: paint,

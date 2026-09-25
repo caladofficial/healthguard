@@ -433,6 +433,27 @@
       <div class="btn-row"><a class="btn btn-primary" href="login.html?role=doctor">Sign in</a>
       <a class="btn btn-ghost" href="login.html">Create an account</a></div>
     </div>
+    <div class="gate-shell" id="pcWrap" hidden>
+      <p class="eyebrow">One quick step</p>
+      <h2 class="h-card">Complete your profile</h2>
+      <p class="card-d">Age and sex are required before any deck opens — safe triage depends on them.</p>
+      <form id="pcForm" class="auth-form">
+        <label class="fld" for="pcAge">
+    <span class="fld-l">Age (years) <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="pcAge" name="pcAge" type="number"    value="" required inputmode="decimal">
+    
+  </label>
+        <label class="fld" for="pcSex">
+    <span class="fld-l">Sex <b aria-hidden="true">*</b></span>
+    <select class="fld-i" id="pcSex" name="pcSex" required>
+      <option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+    </select>
+    
+  </label>
+        <button class="btn btn-primary" type="submit">Save and continue</button>
+        <p class="auth-msg" id="pcMsg"></p>
+      </form>
+    </div>
     <p class="note note-warn" id="roleWarn" hidden></p>
     <div id="app" hidden>
         <div class="deck-head"><div><p class="eyebrow">Live workspace</p><h1 class="deck-title">Patient Chat</h1><p class="deck-sub">Threads unlock per accepted booking.</p></div></div>

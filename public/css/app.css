@@ -32,11 +32,11 @@
 .fld-l b { color: var(--gold, #087255); }
 .fld-i {
   width: 100%; min-width: 0; padding: .6rem .75rem; border-radius: 10px; font: inherit;
-  border: 1px solid var(--line, rgba(201, 162, 39, .28)); background: var(--panel-2, rgba(26, 30, 38, .8));
-  color: var(--ink, #eef5f0);
+  border: 1px solid var(--hair, rgba(8, 114, 85, .25)); background: var(--surface-2, #fffdf7);
+  color: var(--text, #10251e);
 }
 .fld-i:focus-visible { outline: 2px solid var(--gold, #087255); outline-offset: 1px; }
-.fld-h { font-size: .74rem; color: var(--ink-3, #9db3a8); }
+.fld-h { font-size: .74rem; color: var(--ink-2, #5f7268); }
 .fs { border: 1px solid var(--line, rgba(8, 114, 85, .18)); border-radius: 16px; padding: 1rem 1.1rem 1.2rem; margin: 0 0 1.1rem; min-width: 0; }
 .fs legend { padding: 0 .5rem; font-weight: 700; color: var(--champagne, #087255); }
 .check-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr)); gap: .45rem .9rem; }

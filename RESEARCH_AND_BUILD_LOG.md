@@ -789,3 +789,53 @@ Overlap-proof footer region (all bands):
    isolation: isolate` — the footer can never paint over main content and nothing escapes the region.
 5. Android bottom-bar safety: `padding-bottom: max(1.75rem, calc(env(safe-area-inset-bottom) + 1.25rem))`
    (Android often reports 0 insets) + `body { overflow-x: clip }`.
+
+## PART P — AUTH GATE + DECK LOCK + SIGNUP DETAILS + TRIAGE FORM (7 screenshots 11:24–11:29)
+
+**P.1 Diagnosis (before construction):**
+1. **Gate never clears after login (client: "showing to sign in … after logging in"):** decks render
+   `#gate` + `#roleWarn` + full `#app` content simultaneously, even for a signed-in DOCTOR. Root cause
+   chain: `column profiles.id does not exist` (visible in admin screenshot) → profile queries touch a
+   non-existent `profiles.id` (default `.order('id')` and/or `.eq('id')`) → `A.me()` rejects → deck-app
+   treats user as signed-out → gate stays. Fix: query `user_id` (and `token_no`/safe orders), plus
+   defence-in-depth: `#app` starts `hidden` in HTML (deck content must never leak pre-auth).
+2. **Deck separation/lock (client: "separate the decks … only accessible by logging in"):** role decks
+   become strictly per-role: no session → gate only; session + wrong role → roleWarn + auto-redirect
+   offer to own deck, NO deck content; session + right role + complete profile → app. Admin error fixed.
+3. **Signup must collect important details (client: "not asking age … only after filling some important
+   details they can logging in not without that"):** sign-up adds **required Age + Sex** (name/role/
+   specialty already required). Existing sessions with missing age/sex hit a **profile-completion gate**
+   before any deck opens. Stored in `profiles.age`, `profiles.sex` (schema migration).
+4. **"see pregnant option in male too":** pregnancy field must hide unless Sex = female (triage + any
+   profile forms).
+5. **Temperature °C → °F (client ask):** form becomes Fahrenheit (95–110 °F); engine/rules keep °C
+   internally via documented conversion `°C = (°F − 32) × 5/9` at the input boundary (model trained in °C).
+6. Visible layout breakage fixed in same batch: header items overlap the logo on phones (brand/chip/CTA
+   row overflow), hero chip row + art-caption overlap on phones, dark form inputs sitting on cream cards
+   (theme-match inputs).
+
+### P.5 — Results (v13)
+
+Root causes nailed from the 7 screenshots and shipped as one batch:
+1. **"Sign in" gate after login** — `.gate-shell { display:flex }` in app.css overrode the `hidden`
+   attribute (author CSS beats the UA `[hidden]` rule), so `#gate` painted even with `hidden` set;
+   plus `gate()` un-hid `#app` before its async role check. Fixed with a global
+   `[hidden] { display:none !important }` lock + strict gate (content stays locked until session +
+   complete profile + correct role all pass; wrong role → notice with a link to the right deck, no
+   content; `me()` failure → gate, never content).
+2. **"column profiles.id does not exist"** — `auth.count()` forced `select:'id'`; profiles PK is
+   `user_id`. Now `select:'*'` (admin counts work).
+3. **Decks separated & login-locked** — per-role gate above; deck content never renders pre-auth
+   (markup already `hidden`, now honoured).
+4. **Signup now requires Full name + Age + Sex (+ Specialty for doctors)** — validated client-side,
+   stored in `profiles.age`/`profiles.sex` (schema migrated via Management API). Existing signed-in
+   users without age/sex get a **Complete your profile** gate before any deck opens (the client's
+   "only after filling some important details they can logging in, not without that").
+5. **Pregnancy shown for males** — `#f-preg-row` now hides unless Sex = Female (and unchecks when
+   hidden; engine also ignores it unless sex=1).
+6. **Temperature °C → °F** — form label/input now Fahrenheit ("Body temperature (°F)"); conversion
+   at the boundary `°C = (°F − 32) × 5/9` (model/rules stay °C internally, documented).
+7. Layout damage from the screenshots: header items no longer overlap the logo (brand-name/chip-name
+   truncate instead of overflowing under neighbours; compact row under 36rem), hero art-caption no
+   longer overlaps the chip row on phones (flows below the art), form inputs now theme-matched
+   (were dark boxes on cream cards).

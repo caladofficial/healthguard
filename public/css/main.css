@@ -983,3 +983,20 @@ html[data-theme="dark"] {
 /* -------- Part O: footer region — overlap-proof ------------------------- */
 main { position: relative; z-index: 1; }
 body { overflow-x: clip; }
+
+/* -------- Part P: hidden-attr lock, header fit, hero caption, inputs ------- */
+[hidden] { display: none !important; }
+.brand-text { overflow: hidden; }
+.brand-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+[data-auth-chip] { min-width: 0; max-width: 42vw; overflow: hidden; text-decoration: none; }
+.chip-name { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip-role { flex: 0 0 auto; }
+@media (max-width: 36rem) {
+  .brand-sub { display: none; }
+  .chip-role { display: none; }
+  [data-auth-chip] { max-width: 34vw; }
+  .header-actions { gap: 0.3rem; }
+}
+@media (max-width: 48rem) {
+  .hero-art-cap { position: static; display: inline-flex; margin-top: 0.6rem; }
+}

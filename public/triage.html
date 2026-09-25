@@ -463,7 +463,7 @@
     </select>
     
   </label>
-            <label class="ck ck-fld" for="f-pregnancy"><input type="checkbox" id="f-pregnancy"><span>Pregnant</span></label>
+            <label class="ck ck-fld" id="f-preg-row" for="f-pregnancy"><input type="checkbox" id="f-pregnancy"><span>Pregnant</span></label>
             <label class="fld" for="f-hr">
     <span class="fld-l">Heart rate (bpm) <b aria-hidden="true">*</b></span>
     <input class="fld-i" id="f-hr" name="f-hr" type="number" min="20" max="250"  value="" required inputmode="decimal">
@@ -485,9 +485,9 @@
     
   </label>
             <label class="fld" for="f-temp">
-    <span class="fld-l">Temperature (°C) <b aria-hidden="true">*</b></span>
+    <span class="fld-l">Body temperature (°F) <b aria-hidden="true">*</b></span>
     <input class="fld-i" id="f-temp" name="f-temp" type="number"   step="0.1" value="" required inputmode="decimal">
-    
+    <span class="fld-h">Fahrenheit — e.g. 98.6</span>
   </label>
             <label class="fld" for="f-spo2">
     <span class="fld-l">SpO₂ (%) <b aria-hidden="true">*</b></span>

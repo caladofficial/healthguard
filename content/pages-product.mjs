@@ -53,6 +53,17 @@ function shell(role, inner) {
       <div class="btn-row"><a class="btn btn-primary" href="login.html${role ? `?role=${role}` : ''}">Sign in</a>
       <a class="btn btn-ghost" href="login.html">Create an account</a></div>
     </div>
+    <div class="gate-shell" id="pcWrap" hidden>
+      <p class="eyebrow">One quick step</p>
+      <h2 class="h-card">Complete your profile</h2>
+      <p class="card-d">Age and sex are required before any deck opens — safe triage depends on them.</p>
+      <form id="pcForm" class="auth-form">
+        ${field('pcAge', 'Age (years)', { type: 'number' })}
+        ${select('pcSex', 'Sex', [['', 'Select…'], ['male', 'Male'], ['female', 'Female'], ['other', 'Other']])}
+        <button class="btn btn-primary" type="submit">Save and continue</button>
+        <p class="auth-msg" id="pcMsg"></p>
+      </form>
+    </div>
     <p class="note note-warn" id="roleWarn" hidden></p>
     <div id="app" hidden>${inner}</div>
   </div>`;
@@ -81,7 +92,9 @@ export default [
               <button class="role-tab" type="button" data-lg-role="doctor">👨‍⚕️ Doctor</button>
               <button class="role-tab" type="button" data-lg-role="admin">📊 Admin</button>
             </div>
-            ${field('lgName', 'Full name', { type: 'text', hint: 'Shown on tokens, bookings and chat.' })}
+            <div id="lgNameRow">${field('lgName', 'Full name', { type: 'text', hint: 'Shown on tokens, bookings and chat.' })}</div>
+            <div id="lgAgeRow">${field('lgAge', 'Age (years)', { type: 'number', hint: 'Required — the triage engine depends on it.' })}</div>
+            <div id="lgSexRow">${select('lgSex', 'Sex', [['', 'Select…'], ['male', 'Male'], ['female', 'Female'], ['other', 'Other']])}</div>
             <div id="lgSpecRow">${field('lgSpecialty', 'Specialty', { type: 'text', required: false, hint: 'e.g. General Medicine, Pediatrics…' })}</div>
             ${field('lgEmail', 'Email', { type: 'email', hint: 'We never show your email to other users.' })}
             ${field('lgPass', 'Password', { type: 'password', hint: 'Minimum 8 characters.' })}
@@ -147,12 +160,12 @@ export default [
           <fieldset class="fs"><legend>Vitals</legend><div class="fld-grid">
             ${field('f-age', 'Age (years)', { min: 1, max: 120 })}
             ${select('f-sex', 'Sex', [['0', 'Male'], ['1', 'Female']])}
-            <label class="ck ck-fld" for="f-pregnancy"><input type="checkbox" id="f-pregnancy"><span>Pregnant</span></label>
+            <label class="ck ck-fld" id="f-preg-row" for="f-pregnancy"><input type="checkbox" id="f-pregnancy"><span>Pregnant</span></label>
             ${field('f-hr', 'Heart rate (bpm)', { min: 20, max: 250 })}
             ${field('f-sbp', 'Systolic BP (mmHg)', { min: 50, max: 260 })}
             ${field('f-dbp', 'Diastolic BP (mmHg)', { min: 20, max: 160 })}
             ${field('f-rr', 'Breaths / min', { min: 4, max: 60 })}
-            ${field('f-temp', 'Temperature (°C)', { step: 0.1 })}
+            ${field('f-temp', 'Body temperature (°F)', { step: 0.1, hint: 'Fahrenheit — e.g. 98.6' })}
             ${field('f-spo2', 'SpO₂ (%)', { min: 50, max: 100 })}
             ${select('f-gcs', 'Consciousness (GCS)', [['15', '15 — fully alert'], ['14', '14'], ['13', '13'], ['12', '12'], ['11', '11'], ['10', '10'], ['9', '9'], ['8', '8 or less — barely responsive']])}
             ${select('f-pain', 'Pain (0–10)', Array.from({ length: 11 }, (_, i) => [String(i), i + (i === 0 ? ' — none' : i >= 8 ? ' — severe' : '')]))}
