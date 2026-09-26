@@ -87,7 +87,6 @@ export default [
             <button class="auth-tab" type="button" data-lg-mode="up" role="tab" aria-selected="false">Create account</button>
           </div>
           <form id="lgForm" class="auth-form" novalidate>
-            <p class="note note-info">Patient self-registration only. Doctors get their accounts from the clinic admin — admins are predefined. Everyone signs in here.</p>
             <div id="lgNameRow">${field('lgName', 'Full name', { type: 'text', hint: 'Shown on tokens, bookings and chat.' })}</div>
             <div id="lgAgeRow">${field('lgAge', 'Age (years)', { type: 'number', hint: 'Required — the triage engine depends on it.' })}</div>
             <div id="lgSexRow">${select('lgSex', 'Sex', [['', 'Select…'], ['male', 'Male'], ['female', 'Female'], ['other', 'Other']])}</div>
@@ -96,10 +95,9 @@ export default [
             <button class="btn btn-primary btn-block" id="lgSubmit" type="submit">Sign in</button>
             <p class="auth-msg" id="lgMsg" role="status" aria-live="polite"></p>
           </form>
-          <p class="auth-note">${U.esc(DISCLAIMER)} Demo note: roles are self-declared in v1 — production verifies clinician credentials before launch.</p>
+          <p class="auth-note">${U.esc(DISCLAIMER)}</p>
         </div>
       </div></section>`,
-      U.related(['patient-deck', 'doctor-deck', 'admin-deck'], ['Patient Deck', 'Doctor Deck', 'Admin Deck']),
     ],
   },
 

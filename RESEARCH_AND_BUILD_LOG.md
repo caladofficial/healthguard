@@ -899,3 +899,9 @@ see only theirs; anonymous visitors see no deck menu at all). Workspace menus ar
 ('Your Care' = patients, 'Doctor Desk' = doctors; other signed-in roles no longer see them via
 paint() [data-role]). Public pages lost the deck-selection buttons/links (home hero actions; deck
 hrefs on the platform/feature-map cards — descriptions kept as documentation).
+
+### Q.4 — Login form polish (v14.3)
+User review (circled): removed the redundant policy note inside the sign-in card (the same policy
+already sits in the page lead). Also removed the stale 'roles are self-declared in v1' demo sentence
+(contradicts the enforced account policy) and a leftover Related-decks selection block at the bottom
+of the login page (deck selection is gone per Q.3).
