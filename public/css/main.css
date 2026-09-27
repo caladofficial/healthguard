@@ -511,7 +511,7 @@ body.has-cursor .cursor-glow { opacity: 0.55; }
 @media (min-width: 62rem) { .bento-big { grid-column: span 2; grid-row: span 2; } }
 .bento-t { font-family: var(--font-display); font-size: var(--fs-h3); color: var(--ink-0); }
 .bento-d { color: var(--text-soft); font-size: var(--fs-small); }
-.bento-go { position: absolute; left: 1.2rem; bottom: 0.8rem; color: var(--cell, var(--acc-1)); transition: transform 0.25s; font-weight: 800; }
+.bento-go { position: absolute; left: 1.2rem; bottom: 0.8rem; color: var(--cell, var(--acc-ink)); transition: transform 0.25s; font-weight: 800; }
 .bento-cell:hover .bento-go { transform: translateX(5px); }
 
 .flow { display: flex; flex-wrap: wrap; gap: 0.55rem; }

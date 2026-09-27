@@ -10,4 +10,4 @@ FAIL: 0 · RISK (dark surface, no text colour set): 56 · unresolved: 2
 ## Skipped (could not resolve)
 
 - `.bento-go` → var(--cell, #087255)
-- `.bento-go` → var(--cell, #087255)
+- `.bento-go` → var(--cell, #56c99b)
