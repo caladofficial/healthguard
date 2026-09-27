@@ -905,3 +905,53 @@ User review (circled): removed the redundant policy note inside the sign-in card
 already sits in the page lead). Also removed the stale 'roles are self-declared in v1' demo sentence
 (contradicts the enforced account policy) and a leftover Related-decks selection block at the bottom
 of the login page (deck selection is gone per Q.3).
+
+### R — Data pipeline refactor, UI restructure & full-site QA (v15)
+Brief assumed Next.js/React; the app is a plain-Node static generator (42 pages) that
+called Supabase directly from the browser. Delivered the intent of each requirement on
+the architecture that exists rather than rebuilding a working product.
+
+DATA PIPELINE
+- Schema map pulled from the live catalogue; docs/SCHEMA.md is now GENERATED from the DB
+  (tools/gen_schema_doc.py) so it cannot drift.
+- Migration 0002 (CRITICAL): profiles SELECT was USING(true) - any signed-in user could
+  read every patient's name/age/sex/last_seen from the browser. Now: own row OR doctor
+  rows (booking directory) OR caller is doctor/admin. Tested by impersonating sessions:
+  a patient now sees 0 other patients (was all 6).
+- Migration 0003: 12 indexes. The DB had only PKs + bookings_slot_uniq, so every deck
+  query was a seq scan. Indexes chosen from the real WHERE/JOIN/ORDER BY columns.
+- Migration 0004: server-side reads as SECURITY DEFINER functions - hg_doctor_directory()
+  (safe public doctor list) and hg_admin_stats() (admin-only, replaces 12 count round
+  trips with 1). Chosen over Edge Functions because no service-role key reaches the
+  browser. Verified: patient calling hg_admin_stats() is denied; admin gets all 12 keys.
+- Client: 20s TTL cache + single-flight dedupe + invalidate-on-write in auth.js (the
+  doctor directory was fetched 3x per render, the patient's rows twice across pages).
+  Chat keeps noCache:true so the 4s poll stays live.
+- Schema changes are now versioned files, not dashboard edits.
+
+ACCESSIBILITY
+- The old contrast auditor could not see the cascade and reported 24 FALSE failures
+  while missing real ones. Rewrote as v3: file-order cascade, theme-scoped rules,
+  multi-selector splitting, element-scoped custom properties (.site-footer re-declares
+  --ink-0 for its dark band), container inheritance (.foot-*/..mq-item/.code-block),
+  and hidden elements skipped (opacity:0 theme icon). Each fix removed a false-positive
+  class; the 38 that remained were all real.
+- Real bugs fixed: light theme repainted .flow-step/.queue-list li/.checks li to cream
+  but kept dark-theme text (cream on cream = 1.0:1, invisible); --acc-1 as text read
+  2.27:1 on dark across ~22 selectors -> new per-theme --acc-ink; v8-era literals
+  (#9db3a8, #082f27, gold labels/errors) retokened to --ink-2/--text/--ok-ink/--err-ink.
+- Result: contrast FAIL 38 -> 0. The three new dark values are tints of existing palette
+  colours (mint #56c99b, mint #dff6e8, #ff9c94 = tint of --emerg), no new hues.
+- Status pills render text labels, so nothing relies on colour alone.
+
+UI RESTRUCTURE (same palette, no new content)
+- Admin deck stacked 5 sections; split into admin-deck (live ops) + new
+  admin-verification route (register doctor + users & presence), mirroring how the
+  doctor deck is already split. Content MOVED, not invented.
+- Removed 13 dead CSS rules (old role-chooser, .res-meta, never-emitted code-highlight
+  spans, unused pill aliases). Placeholder/TODO scan: 0 matches.
+- Crawl: 5,369 internal links over 42 pages -> 0 broken, 0 missing assets.
+
+NOT DONE (needs user call): AI-monitoring / security-events admin pages would be NEW
+content (the brief says add none); moving remaining own-row reads behind functions;
+a Next.js rewrite if ISR/SWR is genuinely wanted. See docs/AUDIT_REPORT.md §7.
