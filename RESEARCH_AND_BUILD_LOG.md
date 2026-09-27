@@ -1172,3 +1172,39 @@ MEASURED: per-site hold-out (section 10 item 3) - a null result that is itself t
 - Conclusion recorded honestly: cross-hospital deployment readiness is STILL unmeasured and
   needs real multi-hospital data (credentialed MIMIC-IV-ED). Reported as a null result with
   the reason rather than dressed up as a passing check.
+
+
+### R - GitHub sync: Q.6 pipeline published, local tree resynced with live v15 (v20)
+
+Two repos now, both under github.com/caladofficial:
+- healthguard      - the platform (site, docs, build log). 10.1 MB, public.
+- healthguard-ml   - the Q.6 data pipeline. NEW, 77 files, 13.9 MB, public.
+
+RESYNC - a near-miss worth recording. The local repo had silently diverged from the remote
+at v9. A snapshot eviction had dropped the v10-v15 work LOCALLY: the CSS/JS files in the
+workspace were still v9-era, while GitHub and the Vercel deployment held the live-verified
+v15 (legibility lock, cascade-aware contrast auditor, a11y ink tokens, admin deck split,
+three Supabase migrations). My v17-v19 commits had been made on top of that stale v9 base,
+so a push was correctly rejected as non-fast-forward.
+- Recovery: local v19 preserved first on branch backup-local-v19 + tag pre-remote-sync,
+  then remote v15 adopted as the base (git reset --hard origin/main).
+- The research log was checked before resetting and is a STRICT SUPERSET locally: the
+  remote's 957 lines are fully contained in the local 1174. Restoring the local log
+  therefore lost nothing and kept the v16-v19 Q.6 entries.
+- Net effect: site files restored to the live-verified v15, all log history retained.
+- Also removed tools/__pycache__/contrast_audit.cpython-313.pyc, which had been committed
+  by mistake on the remote, and gitignored *.pyc to stop it recurring.
+
+WHAT IS AND IS NOT IN THE ML REPO - deliberate, documented in .gitignore
+- IN: pipeline code, every stage report, GPU run logs, LGBM checkpoints, distilled
+  student, and the 7.4 MB LoRA adapter that took 27 min of Kaggle GPU to train.
+- OUT: ~79 MB of regenerable intermediates (parquets, raw UCI CSVs) and the 35.8 MB
+  deck-checkpoint tarball. Recreated by restore_pipeline.sh; their numbers live on in
+  reports/ and PIPELINE_REPORT.md, which are tracked.
+- Gotcha recorded: pipeline/01_collect.py reads data/*.csv from disk and does NOT
+  re-download, so uci_296.csv (19.5 MB) must be kept or manually refetched. An earlier
+  .gitignore comment claimed the script refetched it; corrected.
+
+Ops note: the sandbox excludes .git/config from snapshots, so git remotes vanish between
+turns. /home/user/push_github.sh re-adds them from uploads/github_token.txt (the token is
+never written into any tracked file) and pushes both repos - run it after any commit.

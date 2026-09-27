@@ -7,3 +7,7 @@ node_modules/
 # OS noise
 .DS_Store
 Thumbs.db
+
+# Python bytecode (was accidentally committed once)
+__pycache__/
+*.pyc
