@@ -143,7 +143,7 @@ export default [
         chips: ['Runs in your browser', 'Rules + model + review flag', 'T0–T4 urgency', 'Data stays on device'],
         actions: [
           { href: '#triageForm', label: 'Start the check' },
-          { href: 'login.html', label: 'Sign in to save results' },
+          { href: 'login.html', label: 'Sign in to save results', gateout: true },
         ],
       }),
       U.principle('AI triage ≠ emergency diagnosis. This classifies workflow urgency — what to see first — never what the patient has.'),

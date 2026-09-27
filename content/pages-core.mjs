@@ -18,7 +18,13 @@ export default [
         lead: 'A clinician-connected health record intelligence platform that turns messy medical documents into structured, traceable information and connects patients with verified healthcare professionals.',
         art: a,
         chips: ['Patient Deck', 'Doctor Deck', 'Admin Deck', 'AI Document Intelligence', 'FHIR-ready'],
-        actions: [{ href: 'login.html', label: 'Sign in' }, { href: 'platform.html', label: 'Explore the platform' }],
+        /* Both buttons are in the markup; auth.js shows the one that matches
+           the session, so a signed-in visitor is never invited to sign in. */
+        actions: [
+          { href: 'login.html', label: 'Sign in', gateout: true },
+          { href: 'dashboard.html', label: 'Go to dashboard', gate: true, variant: 'btn-primary' },
+          { href: 'platform.html', label: 'Explore the platform' },
+        ],
       }),
       U.marquee(['HL7 FHIR R4', 'LOINC', 'UCUM', 'ICD-10 / ICD-11', 'SNOMED CT', 'DICOM', 'WebRTC', 'OWASP ASVS']),
       U.section({

@@ -14,7 +14,13 @@ export function hero({ eyebrow, title, lead, art, chips = [], actions = [] }) {
         <h1 class="h-display" data-split>${esc(title)}</h1>
         ${lead ? `<p class="lead" data-reveal data-reveal-delay="1">${esc(lead)}</p>` : ''}
         ${chips.length ? `<div class="chip-row" data-reveal data-reveal-delay="2">${chips.map((c) => `<span class="chip">${esc(c)}</span>`).join('')}</div>` : ''}
-        ${actions.length ? `<div class="btn-row" data-reveal data-reveal-delay="3">${actions.map((a, i) => `<a class="btn ${i === 0 ? 'btn-primary' : 'btn-ghost'}" href="${a.href}">${esc(a.label)}</a>`).join('')}</div>` : ''}
+        ${actions.length ? `<div class="btn-row" data-reveal data-reveal-delay="3">${actions.map((a, i) => {
+          /* variant lets a later button take the primary slot when an earlier
+             one is hidden by auth state, so the row is never left without one.
+             gateout = signed-out only, gate = signed-in only (auth.js paint()). */
+          const variant = a.variant || (i === 0 ? 'btn-primary' : 'btn-ghost');
+          return `<a class="btn ${variant}" href="${a.href}"${a.gateout ? ' data-auth-gateout' : ''}${a.gate ? ' data-auth-gate' : ''}>${esc(a.label)}</a>`;
+        }).join('')}</div>` : ''}
       </div>
       ${art ? `<figure class="hero-art" data-reveal data-reveal-delay="1">
         <div class="hero-art-frame"><img src="images/${art}" alt="" loading="eager" decoding="async"></div>
