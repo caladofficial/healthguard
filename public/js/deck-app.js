@@ -84,6 +84,30 @@
   function initLogin() {
     var form = el('lgForm');
     if (!form) return;
+    /* Already signed in: re-offering the sign-in form is exactly the confusion
+       this flow exists to prevent. Show the way onward, plus a route out for
+       anyone who genuinely wants to change account. */
+    var s0 = A.session();
+    if (s0) {
+      var already = el('lgAlready');
+      if (already) {
+        already.hidden = false;
+        form.hidden = true;
+        var tabs0 = q('.auth-tabs');
+        if (tabs0) tabs0.hidden = true;
+        A.me().then(function (p) {
+          var who = el('lgAlreadyWho');
+          if (!who) return;
+          var nm = (p && p.full_name) || (s0.user && s0.user.email) || 'your account';
+          who.textContent = 'Signed in as ' + nm + ' (' + ((p && p.role) || 'member') + ').';
+        }).catch(function () {});
+        var sw = el('lgSwitch');
+        if (sw) sw.onclick = function () {
+          A.signOut().then(function () { location.href = 'login.html'; });
+        };
+      }
+      return;
+    }
     var mode = 'in';
     var msgEl = el('lgMsg');
     var nameRow = el('lgNameRow');

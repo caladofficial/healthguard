@@ -1321,3 +1321,40 @@ VERIFIED LIVE (not just locally)
 
 NOTE: jsdom is installed under /home/user/.testtools, and node_modules is excluded from
 workspace snapshots, so it must be reinstalled each session before running the tests.
+
+
+### R - v23: closing the last sign-in leak, and an audit that makes the class impossible
+
+"Continue" from v22. Rather than assume the v22 sweep was complete, I wrote a check that
+tests the CLASS of bug instead of the instances I happened to think of.
+
+THE NEW AUDIT - /home/user/audit_signin.js
+Boots all 43 pages as a signed-in patient and searches every <a>, <button>, heading,
+<label> and <summary> for sign-in language (sign in / sign up / log in / create account /
+register / join), excluding sign-out language, and reports anything still VISIBLE.
+This is the check that would have caught the v22 hero button: my v21 tests asserted only
+on elements I had personally wired, so 38/38 passed while a sign-in button sat in the hero.
+Run it after any change to nav, hero content or auth gating.
+
+TWO MORE LEAKS IT FOUND (v22 had missed both)
+1. login.html showed the full sign-in form to someone already signed in. initLogin() had
+   no session check at all. Now: the form and the Sign in / Create account tabs are hidden
+   and an "You're already signed in" panel takes their place, naming the account and role,
+   with "Go to dashboard" plus "Sign out & switch account" - the switch route matters,
+   because silently redirecting away would trap anyone who genuinely wants a second account.
+2. Even with the form hidden, the page H1 still read "Sign in to HealthGuard" and the lead
+   still explained how to register. The heading and lead are now state-aware: signed-in
+   visitors get "You're already signed in" and a line pointing at the dashboard.
+
+RESULT: 43 pages audited, zero sign-in prompts visible to a signed-in user.
+
+Also deployed (v22 shipped the fix but the login-page gaps came after that deploy).
+
+STATE NOW
+- test_dashboard.js: 50/50 (added section 8 covering the login page in both states)
+- smoke.js: 43/43 pages clean
+- audit_signin.js: 0 leaks
+- Live at https://healthguard-evolvex1.vercel.app, verified: /login serves the
+  already-signed-in panel, / hero Sign in is gated with a "Go to dashboard" counterpart,
+  5 sign-out controls per page, /dashboard serves all six sections.
+- Deploy via /home/user/deploy_vercel.sh (stages outside git; see v22 for why).

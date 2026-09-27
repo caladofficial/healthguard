@@ -442,9 +442,22 @@
 <main id="main">
 <section class="section"><div class="wrap wrap-narrow">
         <p class="eyebrow" data-reveal>Account · one door, your deck</p>
-        <h1 class="h-sec" data-reveal>Sign in to HealthGuard</h1>
-        <p class="sec-lead" data-reveal>Patients create their own account here. Doctors are registered by the clinic admin, and admins are predefined. Accounts keep your record private — row-level security on every table.</p>
+        <div data-auth-gateout>
+          <h1 class="h-sec" data-reveal>Sign in to HealthGuard</h1>
+          <p class="sec-lead" data-reveal>Patients create their own account here. Doctors are registered by the clinic admin, and admins are predefined. Accounts keep your record private — row-level security on every table.</p>
+        </div>
+        <div data-auth-gate hidden>
+          <h1 class="h-sec" data-reveal>You're already signed in</h1>
+          <p class="sec-lead" data-reveal>Your dashboard is the way in — it holds your deck, your data and everything else available to your role.</p>
+        </div>
         <div class="auth-card" data-reveal>
+          <div id="lgAlready" hidden>
+            <p class="eyebrow">Already signed in</p>
+            <h2 class="h-card">You're already signed in</h2>
+            <p class="card-d" id="lgAlreadyWho"></p>
+            <div class="btn-row"><a class="btn btn-primary" href="dashboard.html">Go to dashboard</a>
+            <button class="btn btn-ghost" type="button" id="lgSwitch">Sign out &amp; switch account</button></div>
+          </div>
           <div class="auth-tabs" role="tablist">
             <button class="auth-tab is-on" type="button" data-lg-mode="in" role="tab" aria-selected="true">Sign in</button>
             <button class="auth-tab" type="button" data-lg-mode="up" role="tab" aria-selected="false">Create account</button>
