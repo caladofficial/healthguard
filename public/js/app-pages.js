@@ -36,7 +36,7 @@
       p.then(function () {
         window.HGAuth.paint();
         msg.textContent = 'Welcome. Opening your record…'; msg.classList.add('is-ok');
-        location.href = 'my-health.html';
+        location.href = window.HGAuth.roleHome();
       }).catch(function (err) {
         msg.textContent = String(err.message || err); msg.classList.add('is-err');
         submit.disabled = false; setMode(mode);

@@ -1208,3 +1208,61 @@ WHAT IS AND IS NOT IN THE ML REPO - deliberate, documented in .gitignore
 Ops note: the sandbox excludes .git/config from snapshots, so git remotes vanish between
 turns. /home/user/push_github.sh re-adds them from uploads/github_token.txt (the token is
 never written into any tracked file) and pushes both repos - run it after any commit.
+
+
+### R - v21: sign-in/sign-out state, and a dashboard that is the post-login home
+
+The three asks: sign-in must disappear once signed in and sign-out must appear; logging in
+must land on a dashboard; from that dashboard the user reaches their decks, their data and
+everything else.
+
+WHAT WAS ACTUALLY BROKEN (measured, not assumed)
+- "Sign In" was a permanent nav entry. It lived in the "Your Care" family, which carries
+  data-role="patient" - so a signed-in PATIENT still saw "Sign In" in the menu. Doctors and
+  admins only escaped it because the whole family was hidden from them.
+- There was NO sign-out control anywhere in the product. auth.js already implemented a
+  [data-signout] hook (hidden when signed out, click handler wired), but grep found 0 of
+  41 pages using it. The plumbing existed; the UI did not.
+- Latent bug: HGAuth.signOut() was synchronous and returned undefined, yet my-health.html
+  already called signOut().then(...) - which throws. Signing out from that page was broken.
+
+FIXES
+- layout.mjs: the Sign In nav entry is now data-auth-gateout; sign-out added to the nav
+  family, the header, the mobile drawer and the footer. The "My Deck" family became
+  "My Dashboard" and now leads with Dashboard.
+- auth.js: signOut() returns a promise (fixes the .then() crash). roleHome() is split from
+  roleDeck(): roleHome() = dashboard.html (post-login landing), roleDeck() = the actual
+  deck. Without that split, repointing roleHome would have broken "Open your own deck" on
+  the wrong-role notice and on the home band - both would have led to the hub, not the deck.
+- paint() hides the parent <li> as well, so footer links do not leave an empty bullet.
+- 43 pages rebuilt; every page now carries the sign-out control.
+
+THE DASHBOARD (new page dashboard.html)
+- One hub for every role; what it shows is decided by the profile, not the URL. gate() is
+  called with no role, so any signed-in user lands there and role filters the content.
+- Four tabs: Overview (next up), My data (what the user generated), Activity, and
+  Everything else (every surface their role may use - 9 patient tools, 6 doctor, 5 admin).
+- Live stat tiles per role: patient = token / appointments / opinion / last triage;
+  doctor = queue / pending / opinions / consultations; admin = the server-side
+  hg_admin_stats function.
+- Reuses the existing deck shell, so the age+sex completion gate and the wrong-role notice
+  behave exactly as they do on the decks.
+
+PALETTE LOCK HONOURED: .dash-tab deliberately mirrors .auth-tab (same tokens), and every
+new CSS rule is either spacing or a reuse of --gold/--line/--ink-2/--acc-ink. No new hues.
+
+DEFECT FOUND AND FIXED WHILE TESTING
+- when() in deck-app.js rendered the literal string "Invalid Date" whenever a row had no
+  timestamp. Now returns '' for absent or unparseable dates so callers show their fallback.
+
+VERIFICATION (real DOM, not eyeballing)
+- test_dashboard.js (jsdom) loads the generated HTML and runs the real auth.js +
+  deck-app.js, asserting visibility after paint(). 38/38 pass across signed-out and
+  signed-in as patient / doctor / admin, plus tab switching and a real sign-out click that
+  clears localStorage. Confirms a signed-in patient sees Sign out and Patient Deck but NOT
+  the Doctor or Admin deck - the deck-selection rule still holds.
+- smoke.js loads all 43 pages: zero uncaught JS errors, and doctor/admin pages correctly
+  stay locked (app=false) under a patient session - proving the gate(needRole, onReady)
+  signature change did not weaken any role gate.
+
+NOT DONE: not deployed to Vercel. The live preview is the local build.

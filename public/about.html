@@ -79,7 +79,7 @@
             <span class="nav-card-t">My Health</span>
             <span class="nav-card-d">Your complete record</span>
           </a>
-<a class="nav-card" href="login.html">
+<a class="nav-card" href="login.html" data-auth-gateout>
             <span class="nav-card-t">Sign In</span>
             <span class="nav-card-d">Patient · Doctor · Admin</span>
           </a>
@@ -105,11 +105,15 @@
     </div>
 <div class="nav-family" data-nav-family  data-auth-gate>
       <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="navp-2">
-        My Deck<span class="nav-caret" aria-hidden="true"></span>
+        My Dashboard<span class="nav-caret" aria-hidden="true"></span>
       </button>
-      <div id="navp-2" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="My Deck">
+      <div id="navp-2" class="nav-panel-wrap"><div class="nav-panel" role="group" aria-label="My Dashboard">
       <div class="nav-panel-grid">
-        <a class="nav-card" href="patient-deck.html" data-role="patient">
+        <a class="nav-card" href="dashboard.html">
+            <span class="nav-card-t">Dashboard</span>
+            <span class="nav-card-d">Your home — deck, data & activity</span>
+          </a>
+<a class="nav-card" href="patient-deck.html" data-role="patient">
             <span class="nav-card-t">Patient Deck</span>
             <span class="nav-card-d">Your care workspace</span>
           </a>
@@ -124,6 +128,10 @@
 <a class="nav-card" href="admin-verification.html" data-role="admin">
             <span class="nav-card-t">Accounts & Verification</span>
             <span class="nav-card-d">Doctor accounts, users</span>
+          </a>
+<a class="nav-card" href="index.html" data-signout>
+            <span class="nav-card-t">Sign out</span>
+            <span class="nav-card-d">Clear this device</span>
           </a>
       </div>
     </div></div>
@@ -305,6 +313,7 @@
         </svg>
       </button>
       <a class="auth-chip" href="login.html" data-auth-chip hidden></a>
+      <button class="btn btn-ghost btn-sm signout-btn" type="button" data-signout hidden>Sign out</button>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
@@ -347,7 +356,7 @@
 <a href="ask-doctor.html">Ask a Doctor</a>
 <a href="video.html">Video Consult</a>
 <a href="my-health.html">My Health</a>
-<a href="login.html">Sign In</a>
+<a href="login.html" data-auth-gateout>Sign In</a>
       </div>
     </details>
 <details class="drawer-group" id="dg-1">
@@ -358,12 +367,14 @@
       </div>
     </details>
 <details class="drawer-group" id="dg-2" data-auth-gate>
-      <summary>My Deck<span class="drawer-caret" aria-hidden="true"></span></summary>
+      <summary>My Dashboard<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
-        <a href="patient-deck.html" data-role="patient">Patient Deck</a>
+        <a href="dashboard.html">Dashboard</a>
+<a href="patient-deck.html" data-role="patient">Patient Deck</a>
 <a href="doctor-deck.html" data-role="doctor">Doctor Deck</a>
 <a href="admin-deck.html" data-role="admin">Admin Deck</a>
 <a href="admin-verification.html" data-role="admin">Accounts & Verification</a>
+<a href="index.html" data-signout>Sign out</a>
       </div>
     </details>
 <details class="drawer-group" id="dg-3" data-role="doctor">
@@ -424,6 +435,7 @@
     </nav>
     <a class="btn btn-primary btn-block" href="triage.html" data-triage-cta>Triage Check</a>
     <a class="auth-chip auth-chip--block" href="login.html" data-auth-chip hidden></a>
+    <button class="btn btn-ghost btn-block signout-btn" type="button" data-signout hidden>Sign out</button>
     <p class="drawer-legal">© 2026 EVOLVEX IT SOLUTIONS PVT. LTD.</p>
   </div>
 </div>
@@ -545,7 +557,9 @@
     <ul class="foot-list">
       <li><a href="triage.html">Triage Check (Live)</a></li>
 <li><a href="my-health.html">My Health</a></li>
-<li><a href="login.html">Sign In / Account</a></li>
+<li><a href="dashboard.html"data-auth-gate>Dashboard</a></li>
+<li><a href="login.html"data-auth-gateout>Sign In / Account</a></li>
+<li><a href="index.html"data-signout>Sign out</a></li>
 <li><a href="ai-triage.html">How Triage Works</a></li>
     </ul>
   </div>

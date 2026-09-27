@@ -12,7 +12,14 @@
   function q(sel, root) { return (root || document).querySelector(sel); }
   function qa(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
   function today() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
-  function when(ts) { try { return new Date(ts).toLocaleString(); } catch (e) { return String(ts || ''); } }
+  /* Never leak "Invalid Date" into the UI: an absent or unparseable timestamp
+     renders as an empty string, and callers show their own fallback. */
+  function when(ts) {
+    if (!ts) return '';
+    var d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
+    try { return d.toLocaleString(); } catch (e) { return ''; }
+  }
   function sPill(status) { return '<span class="s-pill s-' + esc(status) + '">' + esc(String(status).replace('_', ' ')) + '</span>'; }
   function tPill(u) {
     var names = ['T0 emergency', 'T1 very urgent', 'T2 priority', 'T3 routine', 'T4 follow-up'];
@@ -22,7 +29,7 @@
   function setHTML(node, html) { if (node && node.innerHTML !== html) node.innerHTML = html; }
 
   /* gate: content LOCKED until session + complete profile + correct role all pass */
-  function gate(needRole) {
+  function gate(needRole, onReady) {
     var s = A.session();
     var g = el('gate');
     var app = el('app');
@@ -42,12 +49,13 @@
         if (warn) {
           warn.hidden = false;
           warn.innerHTML = 'This workspace is for ' + needRole + 's. You are signed in as ' + p.role +
-            '. <a href="' + A.roleHome(p.role) + '">Open your own deck &rarr;</a>';
+            '. <a href="' + A.roleDeck(p.role) + '">Open your own deck &rarr;</a>';
         }
         return;
       }
       if (warn) warn.hidden = true;
       if (app) app.hidden = false;
+      if (onReady) onReady(p);
     }).catch(function () { if (g) g.hidden = false; });
     return true;
   }
@@ -153,7 +161,7 @@
       band('<p class="eyebrow">Your deck</p>' +
         '<h2 class="h-sec">' + label + '</h2>' +
         '<p class="sec-lead">Signed in as ' + String(p.role) + ' — every role sees only its own deck.</p>' +
-        '<div class="btn-row"><a class="btn btn-primary" href="' + A.roleHome(p.role) + '">Open ' + label + ' &rarr;</a></div>');
+        '<div class="btn-row"><a class="btn btn-primary" href="' + A.roleDeck(p.role) + '">Open ' + label + ' &rarr;</a></div>');
     }).catch(function () { band(signin); });
   }
 
@@ -801,10 +809,224 @@
     setInterval(users, 15000);
   }
 
+
+  /* ----------------------------- DASHBOARD ------------------------------- */
+  /* Landing page after sign-in for every role: your deck, your data, your
+     activity and the rest of the product - all filtered by role, so nobody is
+     ever offered another role's surface. */
+  var ROLE_TOOLS = {
+    patient: [
+      ['triage.html', '🩺', 'Triage Check', 'How urgent is this, right now'],
+      ['token.html', '🎫', 'Token Making', "Today's queue number"],
+      ['book.html', '📅', 'Book Appointment', 'Doctor, day and slot'],
+      ['prescription.html', '💊', 'Prescription Analysis', 'Understand the slip'],
+      ['ask-doctor.html', '📤', 'Ask a Doctor', 'Reports & second opinions'],
+      ['video.html', '🎥', 'Video Consult', 'Join your booked room'],
+      ['report-upload.html', '📄', 'Upload a Report', 'Into your document vault'],
+      ['health-timeline.html', '🕓', 'Health Timeline', 'Your longitudinal record'],
+      ['consent-sharing.html', '🔒', 'Consent & Sharing', 'Who can see what'],
+    ],
+    doctor: [
+      ['doctor-bookings.html', '📥', 'Bookings', 'Accept, decline, complete'],
+      ['doctor-tokens.html', '🎫', 'Token Board', "Today's queue"],
+      ['doctor-chat.html', '💬', 'Patient Chat', 'Talk to booked patients'],
+      ['doctor-reports.html', '📝', 'Reports & Opinions', 'Review and answer'],
+      ['video.html', '🎥', 'Video Consults', 'Join booked rooms'],
+      ['report-intelligence.html', '🧠', 'Report Intelligence', 'Summaries & uncertainty'],
+    ],
+    admin: [
+      ['admin-deck.html', '📊', 'Live Operations', 'Counters and boards'],
+      ['admin-verification.html', '✅', 'Accounts & Verification', 'Doctor accounts, users'],
+      ['analytics.html', '📈', 'Analytics', 'Patient, doctor, platform'],
+      ['audit-security.html', '🛡', 'Audit & Security', 'Threat model & audit log'],
+      ['human-review.html', '👁', 'Human Review Queue', 'Human-in-the-loop'],
+    ],
+  };
+
+  var ROLE_LABEL = { patient: 'Care workspace', doctor: 'Clinic desk', admin: 'Operations' };
+
+  function initDashboard() {
+    /* No role argument: every signed-in role has a dashboard; what it shows is
+       decided by the profile, not by the URL. */
+    if (!gate(null, boot)) return;
+
+    function boot(p) {
+      var role = (p && p.role) || 'patient';
+      A.heartbeat();
+      paintHead(p, role);
+      wireTabs();
+      renderTools(role);
+      load(role);
+      A.paint();   /* wires any data-signout node we just injected */
+    }
+  }
+
+  function paintHead(p, role) {
+    var s = A.session() || {};
+    var name = p.full_name || (s.user && s.user.email) || 'there';
+    setHTML(el('dbHead'),
+      '<div><p class="eyebrow">Your dashboard</p>' +
+      '<h1 class="deck-title">Hello, ' + esc(String(name).split('@')[0]) + '</h1>' +
+      '<p class="deck-sub">Signed in as ' + esc(role) + ' · ' + esc(ROLE_LABEL[role] || '') + '</p></div>' +
+      '<div class="deck-head-act">' +
+      '<a class="btn btn-primary" href="' + A.roleDeck(role) + '">Open your deck</a>' +
+      '<button class="btn btn-ghost" type="button" data-signout>Sign out</button>' +
+      '</div>');
+  }
+
+  function wireTabs() {
+    var tabs = qa('[data-db-tab]');
+    function show(key) {
+      tabs.forEach(function (o) {
+        var on = o.getAttribute('data-db-tab') === key;
+        o.classList.toggle('is-on', on);
+        o.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      qa('[data-db-panel]').forEach(function (pn) {
+        pn.hidden = pn.getAttribute('data-db-panel') !== key;
+      });
+    }
+    tabs.forEach(function (b) {
+      b.addEventListener('click', function () { show(b.getAttribute('data-db-tab')); });
+    });
+    if (tabs.length) show(tabs[0].getAttribute('data-db-tab'));
+  }
+
+  function renderTools(role) {
+    var tools = ROLE_TOOLS[role] || ROLE_TOOLS.patient;
+    setHTML(el('dbTools'), tools.map(function (t) {
+      return '<a class="action-card" href="' + t[0] + '"><span class="ac-ico">' + t[1] +
+        '</span><span><b>' + esc(t[2]) + '</b><span>' + esc(t[3]) + '</span></span></a>';
+    }).join(''));
+  }
+
+  function load(role) {
+    var s = A.session();
+    if (!s) return;
+    var uid = s.user.id;
+    if (role === 'admin') return loadAdmin();
+    if (role === 'doctor') return loadDoctor(uid);
+    loadPatient(uid);
+  }
+
+  function loadPatient(uid) {
+    Promise.all([
+      A.select('tokens', { user_id: 'eq.' + uid, day: 'eq.' + today(), order: 'created_at.desc' }),
+      A.select('bookings', { patient_id: 'eq.' + uid, order: 'slot_date.desc,slot_time.desc', limit: 8 }),
+      A.select('opinion_requests', { patient_id: 'eq.' + uid, order: 'created_at.desc', limit: 8 }),
+      A.select('triage_events', { select: 'payload,created_at', order: 'created_at.desc', limit: 10 })
+    ]).then(function (r) {
+      var tokens = r[0], bookings = r[1], opins = r[2], tri = r[3];
+      var next = bookings.filter(function (b) { return b.status === 'accepted' || b.status === 'pending'; })[0];
+      setHTML(el('dbStats'),
+        kv(todayTokens(tokens), 'Token today', tokens.length ? ('latest T' + tokens[0].token_no + ' · ' + tokens[0].status) : 'none yet') +
+        kv(bookings.filter(function (b) { return b.status === 'pending' || b.status === 'accepted'; }).length, 'Active bookings', next ? (next.slot_date + ' ' + next.slot_time) : 'none') +
+        kv(opins.filter(function (o) { return o.status === 'open'; }).length, 'Awaiting opinion', opins.length ? opins[0].kind : 'none') +
+        kv(tri.length ? ('T' + tri[0].payload.triageClass) : '—', 'Last triage', tri.length ? when(tri[0].created_at) : 'run your first check'));
+
+      setHTML(el('dbNext'), next
+        ? boardRow({
+            t: esc(next.doctor_name) + ' · ' + esc(next.slot_date) + ' at ' + esc(next.slot_time),
+            s: esc(next.reason || '') + ' · ' + esc(next.mode),
+            acts: (next.status === 'accepted' ? '<a class="btn btn-primary btn-sm" href="video.html">Join video</a>' : '') +
+                  '<a class="btn btn-ghost btn-sm" href="book.html">My bookings</a>' + sPill(next.status)
+          })
+        : '<p class="auth-msg">No upcoming booking — <a href="book.html">book an appointment</a>.</p>');
+
+      /* "My data": the patient's own record - triage history is the part they
+         generate themselves, so it leads this panel. */
+      setHTML(el('dbData'), tri.length
+        ? tri.map(function (ev) {
+            var pl = ev.payload || {};
+            var codes = (pl.reasonCodes || []).slice(0, 3).map(function (c) {
+              return '<span class="pill pill-code">' + esc(String(c).replace(/_/g, ' ').toLowerCase()) + '</span>';
+            }).join('');
+            return boardRow({ t: esc(pl.label || ('T' + pl.triageClass)) + ' · ' + esc(pl.meaning || ''),
+                              s: when(ev.created_at) + ' · risk ' + esc(String(pl.riskRatio)) + '× ' + codes,
+                              acts: '<a class="btn btn-ghost btn-sm" href="my-health.html">Full record</a>' });
+          }).join('')
+        : '<p class="auth-msg">No saved checks yet — <a href="triage.html">run your first triage check</a>.</p>');
+
+      setHTML(el('dbActivity'), (bookings.length || opins.length)
+        ? bookings.slice(0, 4).map(function (b) {
+            return boardRow({ t: 'Booking · ' + esc(b.doctor_name), s: esc(b.slot_date) + ' ' + esc(b.slot_time) + ' · ' + esc(b.reason || ''), acts: sPill(b.status) });
+          }).join('') + opins.slice(0, 3).map(function (o) {
+            return boardRow({ t: esc(o.kind) + ' · ' + esc(o.title || ''), s: 'to ' + esc(o.doctor_name) + ' · ' + when(o.created_at), acts: sPill(o.status) });
+          }).join('')
+        : '<p class="auth-msg">Nothing yet — your activity will appear here.</p>');
+    }).catch(function (e) {
+      setHTML(el('dbStats'), '<p class="auth-msg is-err">' + esc(e.message || e) + '</p>');
+    });
+  }
+
+  function loadDoctor(uid) {
+    Promise.all([
+      A.select('bookings', { doctor_id: 'eq.' + uid, status: 'eq.pending', order: 'created_at.asc' }),
+      A.select('tokens', { day: 'eq.' + today(), status: 'in.(waiting,in_consult)', order: 'urgency.asc,token_no.asc' }),
+      A.select('opinion_requests', { doctor_id: 'eq.' + uid, status: 'eq.open', order: 'created_at.asc' }),
+      A.select('bookings', { doctor_id: 'eq.' + uid, status: 'in.(accepted,completed)', order: 'slot_date.desc', limit: 8 })
+    ]).then(function (r) {
+      setHTML(el('dbStats'),
+        kv(r[0].length, 'Bookings to accept', r[0].length ? r[0][0].patient_name : 'inbox zero') +
+        kv(r[1].length, 'Queue today', r[1].length ? 'next #' + r[1][0].token_no : 'queue empty') +
+        kv(r[2].length, 'Opinions to write', r[2].length ? r[2][0].kind : 'none waiting') +
+        kv(r[3].length, 'My consultations', 'accepted + completed'));
+
+      setHTML(el('dbNext'), r[0].slice(0, 4).map(function (b) {
+        return boardRow({ t: esc(b.patient_name) + ' · ' + esc(b.slot_date) + ' ' + esc(b.slot_time),
+                          s: esc(b.reason || ''),
+                          acts: sPill(b.status) + ' <a class="btn btn-primary btn-sm" href="doctor-bookings.html">Open</a>' });
+      }).join('') || '<p class="auth-msg">No pending requests. 🎉</p>');
+
+      setHTML(el('dbData'), r[3].length
+        ? r[3].map(function (b) {
+            return boardRow({ t: esc(b.patient_name) + ' · ' + esc(b.slot_date) + ' ' + esc(b.slot_time),
+                              s: esc(b.mode) + ' · ' + esc(b.reason || ''), acts: sPill(b.status) });
+          }).join('')
+        : '<p class="auth-msg">No consultations yet.</p>');
+
+      setHTML(el('dbActivity'), r[1].slice(0, 6).map(function (t) {
+        return boardRow({ no: '#' + t.token_no, t: esc(t.patient_name), s: 'T' + t.urgency + ' · ' + esc(t.note || ''), urgent: t.urgency <= 1, acts: sPill(t.status) });
+      }).join('') || '<p class="auth-msg">Queue is empty.</p>');
+    }).catch(function (e) {
+      setHTML(el('dbStats'), '<p class="auth-msg is-err">' + esc(e.message || e) + '</p>');
+    });
+  }
+
+  function loadAdmin() {
+    A.adminStats().then(function (c) {
+      setHTML(el('dbStats'),
+        kv(c.patients, 'Patients registered', c.activePatients + ' active (7 days)') +
+        kv(c.doctors, 'Doctors registered', c.activeDoctors + ' active (7 days)') +
+        kv(c.pending, 'Bookings pending', 'waiting for a doctor') +
+        kv(c.tokensToday, 'Tokens today', c.urgent + ' high-urgency · ' + c.inConsult + ' in consult'));
+    }).catch(function (e) {
+      setHTML(el('dbStats'), '<p class="auth-msg is-err">' + esc(e.message || e) + '</p>');
+    });
+    A.select('bookings', { order: 'created_at.desc', limit: 8 }).then(function (rows) {
+      setHTML(el('dbNext'), rows.map(function (b) {
+        return boardRow({ t: esc(b.patient_name) + ' → ' + esc(b.doctor_name),
+                          s: esc(b.slot_date) + ' ' + esc(b.slot_time) + ' · ' + esc(b.mode), acts: sPill(b.status) });
+      }).join('') || '<p class="auth-msg">No bookings.</p>');
+    });
+    A.select('profiles', { order: 'last_seen_at.desc', limit: 8 }).then(function (rows) {
+      setHTML(el('dbData'), rows.map(function (p) {
+        return boardRow({ t: esc(p.full_name || p.user_id) + ' · ' + esc(p.role),
+                          s: esc(p.specialty || '') + ' · seen ' + when(p.last_seen_at), acts: '' });
+      }).join('') || '<p class="auth-msg">No users.</p>');
+    });
+    A.select('opinion_requests', { status: 'eq.open', order: 'created_at.desc', limit: 8 }).then(function (rows) {
+      setHTML(el('dbActivity'), rows.map(function (o) {
+        return boardRow({ t: esc(o.kind) + ' · ' + esc(o.patient_name), s: esc(o.title || '') + ' · ' + when(o.created_at), acts: sPill(o.status) });
+      }).join('') || '<p class="auth-msg">No open opinions.</p>');
+    });
+  }
+
   /* ------------------------------- router -------------------------------- */
   var routes = {
     'index': initHome,
     'login': initLogin,
+    'dashboard': initDashboard,
     'triage': initTriage,
     'patient-deck': initPatientDeck,
     'token': initToken,

@@ -21,7 +21,7 @@ export const NAV = [
       { href: 'ask-doctor.html', label: 'Ask a Doctor', desc: 'Reports, opinions & chat' },
       { href: 'video.html', label: 'Video Consult', desc: 'Join your booked room' },
       { href: 'my-health.html', label: 'My Health', desc: 'Your complete record' },
-      { href: 'login.html', label: 'Sign In', desc: 'Patient · Doctor · Admin' },
+      { href: 'login.html', label: 'Sign In', desc: 'Patient · Doctor · Admin', gateout: true },
     ],
   },
   {
@@ -32,13 +32,15 @@ export const NAV = [
     ],
   },
   {
-    label: 'My Deck',
+    label: 'My Dashboard',
     authOnly: true,
     items: [
+      { href: 'dashboard.html', label: 'Dashboard', desc: 'Your home — deck, data & activity' },
       { href: 'patient-deck.html', label: 'Patient Deck', desc: 'Your care workspace', role: 'patient' },
       { href: 'doctor-deck.html', label: 'Doctor Deck', desc: 'Your clinic desk', role: 'doctor' },
       { href: 'admin-deck.html', label: 'Admin Deck', desc: 'Live operations', role: 'admin' },
       { href: 'admin-verification.html', label: 'Accounts & Verification', desc: 'Doctor accounts, users', role: 'admin' },
+      { href: 'index.html', label: 'Sign out', desc: 'Clear this device', signout: true },
     ],
   },
   {
@@ -156,7 +158,7 @@ function navMarkup() {
   return NAV.map((f, i) => {
     const panel = `<div class="nav-panel" role="group" aria-label="${f.label}">
       <div class="nav-panel-grid">
-        ${f.items.map((it) => `<a class="nav-card" href="${it.href}"${it.role ? ` data-role="${it.role}"` : ''}>
+        ${f.items.map((it) => `<a class="nav-card" href="${it.href}"${it.role ? ` data-role="${it.role}"` : ''}${it.gateout ? ' data-auth-gateout' : ''}${it.signout ? ' data-signout' : ''}>
             <span class="nav-card-t">${it.label}</span>
             <span class="nav-card-d">${it.desc}</span>
           </a>`).join('\n')}
@@ -175,7 +177,7 @@ function drawerMarkup() {
   return NAV.map((f, i) => `<details class="drawer-group" id="dg-${i}"${f.role ? ` data-role="${f.role}"` : ''}${f.authOnly ? ' data-auth-gate' : ''}>
       <summary>${f.label}<span class="drawer-caret" aria-hidden="true"></span></summary>
       <div class="drawer-links">
-        ${f.items.map((it) => `<a href="${it.href}"${it.role ? ` data-role="${it.role}"` : ''}>${it.label}</a>`).join('\n')}
+        ${f.items.map((it) => `<a href="${it.href}"${it.role ? ` data-role="${it.role}"` : ''}${it.gateout ? ' data-auth-gateout' : ''}${it.signout ? ' data-signout' : ''}>${it.label}</a>`).join('\n')}
       </div>
     </details>`).join('\n');
 }
@@ -199,6 +201,7 @@ export function header() {
         </svg>
       </button>
       <a class="auth-chip" href="login.html" data-auth-chip hidden></a>
+      <button class="btn btn-ghost btn-sm signout-btn" type="button" data-signout hidden>Sign out</button>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
@@ -217,6 +220,7 @@ export function header() {
     </nav>
     <a class="btn btn-primary btn-block" href="triage.html" data-triage-cta>Triage Check</a>
     <a class="auth-chip auth-chip--block" href="login.html" data-auth-chip hidden></a>
+    <button class="btn btn-ghost btn-block signout-btn" type="button" data-signout hidden>Sign out</button>
     <p class="drawer-legal">© ${YEAR} ${COMPANY}</p>
   </div>
 </div>`;
@@ -227,7 +231,7 @@ function footCol(title, links) {
   return `<div class="foot-col">
     <h3 class="foot-h">${title}</h3>
     <ul class="foot-list">
-      ${links.map(([href, label]) => `<li><a href="${href}">${label}</a></li>`).join('\n')}
+      ${links.map(([href, label, attrs]) => `<li><a href="${href}"${attrs || ''}>${label}</a></li>`).join('\n')}
     </ul>
   </div>`;
 }
@@ -247,7 +251,8 @@ export function footer() {
     </div>
     ${footCol('Your Care', [
       ['triage.html', 'Triage Check (Live)'], ['my-health.html', 'My Health'],
-      ['login.html', 'Sign In / Account'], ['ai-triage.html', 'How Triage Works'],
+      ['dashboard.html', 'Dashboard', 'data-auth-gate'], ['login.html', 'Sign In / Account', 'data-auth-gateout'],
+      ['index.html', 'Sign out', 'data-signout'], ['ai-triage.html', 'How Triage Works'],
     ])}
     ${footCol('Document AI', [
       ['report-upload.html', 'Report Upload'], ['ocr-engine.html', 'Difficult Photo OCR'],

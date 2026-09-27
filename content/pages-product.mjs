@@ -540,4 +540,42 @@ export default [
       `)}</section>`,
     ],
   },
+
+  {
+    slug: 'dashboard',
+    family: 'product',
+    title: 'Dashboard — Your HealthGuard Home',
+    desc: 'Your HealthGuard dashboard: your deck, your data, your activity and every tool available to your role, in one place.',
+    body: () => [
+      `<section class="section">${shell('', `
+        <div class="deck-head" id="dbHead"></div>
+        <div class="dash-grid cols-4 sect-gap" id="dbStats"></div>
+        <div class="dash-tabs sect-gap" role="tablist" aria-label="Dashboard sections">
+          <button class="dash-tab is-on" type="button" data-db-tab="overview" role="tab" aria-selected="true">Overview</button>
+          <button class="dash-tab" type="button" data-db-tab="data" role="tab" aria-selected="false">My data</button>
+          <button class="dash-tab" type="button" data-db-tab="activity" role="tab" aria-selected="false">Activity</button>
+          <button class="dash-tab" type="button" data-db-tab="tools" role="tab" aria-selected="false">Everything else</button>
+        </div>
+        <div class="dash-panel sect-gap" data-db-panel="overview">
+          <h2 class="h-3">Next up</h2>
+          <div class="board sect-gap" id="dbNext"></div>
+        </div>
+        <div class="dash-panel sect-gap" data-db-panel="data" hidden>
+          <h2 class="h-3">My data</h2>
+          <p class="sec-lead">Everything you have generated here. Row-level private — only your account can read it.</p>
+          <div class="board sect-gap" id="dbData"></div>
+        </div>
+        <div class="dash-panel sect-gap" data-db-panel="activity" hidden>
+          <h2 class="h-3">Recent activity</h2>
+          <div class="board sect-gap" id="dbActivity"></div>
+        </div>
+        <div class="dash-panel sect-gap" data-db-panel="tools" hidden>
+          <h2 class="h-3">Everything else</h2>
+          <p class="sec-lead">Every surface available to your role.</p>
+          <div class="dash-grid sect-gap" id="dbTools"></div>
+        </div>
+      `)}</section>`,
+      U.note(DISCLAIMER, 'warn'),
+    ],
+  },
 ];

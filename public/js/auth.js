@@ -124,11 +124,22 @@
 
   function signOut() {
     var s = session();
-    if (s) api('/auth/v1/logout', { method: 'POST' }).catch(function () {});
+    // Returns a promise: my-health.html chains .then() on this call. The server
+    // logout is best-effort — the local session is cleared either way.
+    var p = s ? api('/auth/v1/logout', { method: 'POST' }).catch(function () {}) : Promise.resolve();
     clear();
+    return p;
   }
 
-  function roleHome(role) {
+  /* roleHome(): where you land after signing in - the dashboard, one hub that
+     links to your deck, your data and the rest of the product. Same for every
+     role, because the dashboard decides what to show from the profile.
+     roleDeck(): the working deck itself. Kept separate so "Open your deck"
+     still opens the deck, not the hub. */
+  function roleHome() {
+    return 'dashboard.html';
+  }
+  function roleDeck(role) {
     return role === 'doctor' ? 'doctor-deck.html' : role === 'admin' ? 'admin-deck.html' : 'patient-deck.html';
   }
 
@@ -241,6 +252,14 @@
   }
 
   /* ------------------------- UI painting -------------------------------- */
+  /* Hide the element and, when it is the only child of a <li>, the list item
+     too - footer links would otherwise leave an empty bullet behind. */
+  function setHidden(el, hidden) {
+    el.hidden = hidden;
+    var li = el.parentElement;
+    if (li && li.tagName === 'LI' && li.children.length === 1) li.hidden = hidden;
+  }
+
   function paint() {
     var s = session();
     var p = cachedProfile();
@@ -261,19 +280,19 @@
       }
     });
     document.querySelectorAll('[data-auth-gate]').forEach(function (el) {
-      el.hidden = !s;
+      setHidden(el, !s);
     });
     document.querySelectorAll('[data-role]').forEach(function (el) {
       el.hidden = !!(s && role !== el.getAttribute('data-role'));
     });
     document.querySelectorAll('[data-auth-gateout]').forEach(function (el) {
-      el.hidden = !!s;
+      setHidden(el, !!s);
     });
     document.querySelectorAll('[data-triage-cta]').forEach(function (el) {
       el.hidden = !!(s && role !== 'patient');
     });
     document.querySelectorAll('[data-signout]').forEach(function (el) {
-      el.hidden = !s;
+      setHidden(el, !s);
       el.onclick = function (e) { e.preventDefault(); signOut(); location.href = 'index.html'; };
     });
     if (s) heartbeat();
@@ -281,7 +300,7 @@
 
   window.HGAuth = {
     session: session, signIn: signIn, signUp: signUp, signOut: signOut, completeProfile: completeProfile, rpc: rpc,
-    me: me, heartbeat: heartbeat, roleHome: roleHome,
+    me: me, heartbeat: heartbeat, roleHome: roleHome, roleDeck: roleDeck,
     select: select, insert: insert, update: update, count: count,
     doctors: doctors, adminStats: adminStats, invalidate: cacheInvalidate,
     insertTriage: insertTriage, listTriage: listTriage, paint: paint,

@@ -209,3 +209,29 @@ html[data-theme="dark"] .s-pill { color: #10251e; }
 .pill-t2 { background: #065f46; color: #fffdf7; border-color: #065f46; }
 .pill-t3 { background: #0a6b60; color: #fffdf7; border-color: #0a6b60; }
 .pill-t4 { background: #44617f; color: #fffdf7; border-color: #44617f; }
+
+/* ---------------------------------------------------------------------------
+   Dashboard — the post-sign-in hub, and the sign-out control.
+   Palette lock: every rule below reuses existing tokens or is spacing only.
+   No new hues.
+   --------------------------------------------------------------------------- */
+.deck-head-act { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+
+/* Tabs deliberately mirror .auth-tab: same tokens, same active treatment. */
+.dash-tabs { display: flex; flex-wrap: wrap; gap: .5rem; }
+.dash-tab {
+  flex: 1 1 auto; min-width: 0; padding: .6rem 1rem; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--line, rgba(201, 162, 39, .25)); background: transparent;
+  color: var(--ink-2, #cfe0d7); font: inherit; font-weight: 600;
+  transition: background .25s var(--ease-out, ease), color .25s var(--ease-out, ease);
+}
+.dash-tab.is-on { background: var(--gold, #087255); color: #082f27; border-color: transparent; }
+.dash-tab:focus-visible { outline: 2px solid var(--acc-ink, #56c99b); outline-offset: 2px; }
+.dash-panel { min-width: 0; }
+
+/* Header sign-out. Below 40rem the header already carries the theme toggle,
+   the account chip and the burger, so the button would crowd them; sign-out
+   stays reachable in the drawer and in the "My Dashboard" menu. It is never
+   removed - only moved. */
+.signout-btn { white-space: nowrap; }
+@media (max-width: 40rem) { .header-actions .signout-btn { display: none; } }
