@@ -121,6 +121,10 @@
             <span class="nav-card-t">Admin Deck</span>
             <span class="nav-card-d">Live operations</span>
           </a>
+<a class="nav-card" href="admin-verification.html" data-role="admin">
+            <span class="nav-card-t">Accounts & Verification</span>
+            <span class="nav-card-d">Doctor accounts, users</span>
+          </a>
       </div>
     </div></div>
     </div>
@@ -359,6 +363,7 @@
         <a href="patient-deck.html" data-role="patient">Patient Deck</a>
 <a href="doctor-deck.html" data-role="doctor">Doctor Deck</a>
 <a href="admin-deck.html" data-role="admin">Admin Deck</a>
+<a href="admin-verification.html" data-role="admin">Accounts & Verification</a>
       </div>
     </details>
 <details class="drawer-group" id="dg-3" data-role="doctor">
@@ -455,7 +460,7 @@
     </div>
     <p class="note note-warn" id="roleWarn" hidden></p>
     <div id="app" hidden>
-        <div class="deck-head"><div><p class="eyebrow">Live workspace</p><h1 class="deck-title">Admin Deck — Live Operations</h1><p class="deck-sub">Everything that is happening, refreshed every 5 seconds.</p></div></div>
+        <div class="deck-head"><div><p class="eyebrow">Live workspace</p><h1 class="deck-title">Admin Deck — Live Operations</h1><p class="deck-sub">What is happening right now, refreshed every 5 seconds.</p></div></div>
         <div class="dash-grid cols-4" id="adStats"></div>
         <div class="work has-side sect-gap">
           <div>
@@ -465,44 +470,12 @@
             <div class="board" id="adTokens"></div>
           </div>
           <div>
-            <h2 class="h-3">Register a doctor</h2>
-            <p class="card-d">Doctors cannot self-register. Create their account here and share the temporary password.</p>
-            <form id="adDocForm" class="auth-form sect-gap">
-              <label class="fld" for="adDocName">
-    <span class="fld-l">Full name <b aria-hidden="true">*</b></span>
-    <input class="fld-i" id="adDocName" name="adDocName" type="text"    value="" required inputmode="text">
-    
-  </label>
-              <label class="fld" for="adDocEmail">
-    <span class="fld-l">Email <b aria-hidden="true">*</b></span>
-    <input class="fld-i" id="adDocEmail" name="adDocEmail" type="email"    value="" required inputmode="text">
-    
-  </label>
-              <label class="fld" for="adDocSpec">
-    <span class="fld-l">Specialty <b aria-hidden="true">*</b></span>
-    <input class="fld-i" id="adDocSpec" name="adDocSpec" type="text"    value="" required inputmode="text">
-    <span class="fld-h">e.g. General Medicine, Pediatrics…</span>
-  </label>
-              <label class="fld" for="adDocAge">
-    <span class="fld-l">Age (years)</span>
-    <input class="fld-i" id="adDocAge" name="adDocAge" type="number"    value=""  inputmode="decimal">
-    
-  </label>
-              <label class="fld" for="adDocSex">
-    <span class="fld-l">Sex <b aria-hidden="true">*</b></span>
-    <select class="fld-i" id="adDocSex" name="adDocSex" required>
-      <option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
-    </select>
-    
-  </label>
-              <button class="btn btn-primary" type="submit">Create doctor account</button>
-              <p class="auth-msg" id="adDocMsg"></p>
-            </form>
-            <h2 class="h-3 sect-gap">Users & presence</h2>
-            <div class="board sect-gap" id="adUsers"></div>
+            <h2 class="h-3">Accounts &amp; verification</h2>
+            <p class="card-d">Doctor accounts are created and reviewed on their own page, so this deck stays focused on live operations.</p>
+            <a class="btn btn-primary btn-block sect-gap" href="admin-verification.html">Open accounts &amp; verification</a>
           </div>
         </div>
-      </div>
+              </div>
   </div></section>
 <p class="note note-" data-reveal>Active now = seen in the last 15 minutes. Patients self-register; doctor accounts are created by an admin; admins are predefined. Credential verification ships with the doctor-verification workflow before real clinical deployment.</p>
 </main>

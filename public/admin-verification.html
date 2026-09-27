@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#fffdf7">
-<meta name="description" content="HealthGuard controlled RAG: patient data plus approved medical knowledge and clinical guidelines, with provenance on every claim and a safety model catching hallucinations, contradictions and dangerous recommendations.">
-<meta property="og:title" content="RAG & AI Safety — Grounded, Provenance-Checked · HealthGuard">
-<meta property="og:description" content="HealthGuard controlled RAG: patient data plus approved medical knowledge and clinical guidelines, with provenance on every claim and a safety model catching hallucinations, contradictions and dangerous recommendations.">
+<meta name="description" content="Create doctor accounts, review who is registered and their presence, and manage credential verification.">
+<meta property="og:title" content="Admin — Accounts & Verification · HealthGuard">
+<meta property="og:description" content="Create doctor accounts, review who is registered and their presence, and manage credential verification.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="HealthGuard — EVOLVEX IT SOLUTIONS PVT. LTD.">
-<title>RAG & AI Safety — Grounded, Provenance-Checked · HealthGuard</title>
+<title>Admin — Accounts & Verification · HealthGuard</title>
 <script>try{var _t=localStorage.getItem('hg-theme');if(!_t)_t='light';document.documentElement.setAttribute('data-theme',_t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z' fill='%23087255'/%3E%3Cpath d='M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9' stroke='%23F7F4EE' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/app.css">
 </head>
-<body data-family="trust" data-slug="rag-safety">
+<body data-family="product" data-slug="admin-verification">
 <div class="screensaver" aria-hidden="true"><i class="ss-b ss-1"></i><i class="ss-b ss-2"></i><i class="ss-b ss-3"></i><i class="ss-b ss-4"></i><i class="ss-streak"></i></div>
 <canvas id="livingCanvas" width="1" height="1" hidden aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
@@ -28,15 +28,15 @@
     <a class="brand" href="index.html" aria-label="HealthGuard — by EVOLVEX IT SOLUTIONS PVT. LTD.">
     <svg class="logo-mark logo-draw" viewBox="0 0 48 48" role="img" aria-label="HealthGuard logo" fill="none">
     <defs>
-      <linearGradient id="hg-70" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <linearGradient id="hg-124" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
         <stop stop-color="#087255"/><stop offset="0.55" stop-color="#0b8174"/><stop offset="1" stop-color="#56c99b"/>
       </linearGradient>
-      <linearGradient id="hp-70" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
+      <linearGradient id="hp-124" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
         <stop stop-color="#d8ef74"/><stop offset="1" stop-color="#087255"/>
       </linearGradient>
     </defs>
-    <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#hg-70)" stroke-width="2.2" stroke-linejoin="round"/>
-    <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#hp-70)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#hg-124)" stroke-width="2.2" stroke-linejoin="round"/>
+    <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#hp-124)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     <path class="ld ld-3" d="M30.2 12.6c2.9-.5 5.2.4 6.5 2.5-2.7 1.2-5 .8-6.5-2.5Z" fill="#f5b914" stroke="none" opacity=".95"/>
   </svg>
     <span class="brand-text">
@@ -318,15 +318,15 @@
       <a class="brand" href="index.html" aria-label="HealthGuard — by EVOLVEX IT SOLUTIONS PVT. LTD.">
     <svg class="logo-mark logo-draw" viewBox="0 0 48 48" role="img" aria-label="HealthGuard logo" fill="none">
     <defs>
-      <linearGradient id="hg-71" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <linearGradient id="hg-125" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
         <stop stop-color="#087255"/><stop offset="0.55" stop-color="#0b8174"/><stop offset="1" stop-color="#56c99b"/>
       </linearGradient>
-      <linearGradient id="hp-71" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
+      <linearGradient id="hp-125" x1="8" y1="24" x2="40" y2="24" gradientUnits="userSpaceOnUse">
         <stop stop-color="#d8ef74"/><stop offset="1" stop-color="#087255"/>
       </linearGradient>
     </defs>
-    <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#hg-71)" stroke-width="2.2" stroke-linejoin="round"/>
-    <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#hp-71)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-1" d="M24 4.6 8.5 10.8v11.4c0 10.2 6.6 17.9 15.5 21.2 8.9-3.3 15.5-11 15.5-21.2V10.8L24 4.6Z" stroke="url(#hg-125)" stroke-width="2.2" stroke-linejoin="round"/>
+    <path class="ld ld-2" d="M13.2 24.2h5.4l2.6-5.9 4 11.6 2.7-6.3h6.9" stroke="url(#hp-125)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     <path class="ld ld-3" d="M30.2 12.6c2.9-.5 5.2.4 6.5 2.5-2.7 1.2-5 .8-6.5-2.5Z" fill="#f5b914" stroke="none" opacity=".95"/>
   </svg>
     <span class="brand-text">
@@ -428,121 +428,98 @@
   </div>
 </div>
 <main id="main">
-<section class="hero" data-spotlight>
-    <div class="hero-spot" aria-hidden="true"></div>
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow" data-reveal>Trust & Safety · 4</p>
-        <h1 class="h-display" data-split>RAG &amp; AI Safety</h1>
-        <p class="lead" data-reveal data-reveal-delay="1">No free-form medical hallucination. Retrieval over approved knowledge, provenance on every claim, and a safety validator in front of every output.</p>
-        <div class="chip-row" data-reveal data-reveal-delay="2"><span class="chip">Controlled retrieval</span><span class="chip">Provenance chain</span><span class="chip">Safety validator</span><span class="chip">Prompt-injection defense</span></div>
-        
-      </div>
-      <figure class="hero-art" data-reveal data-reveal-delay="1">
-        <div class="hero-art-frame"><img src="images/art-trust.jpg" alt="" loading="eager" decoding="async"></div>
-        <div class="float-chip fc-1"><span class="fc-dot"></span>AI extraction ✓</div>
-        <div class="float-chip fc-2"><svg class="mini-ecg" viewBox="0 0 36 16" aria-hidden="true"><path d="M0 8 H6 L8 4 L10 13 L12 8 H18 L20 3 L22 13 L24 8 H36"/></svg>72 bpm</div>
-        <div class="float-chip fc-3"><span class="fc-dot"></span>94% confidence</div>
-        <figcaption class="hero-art-cap">Trust &amp; Safety · 4</figcaption>
-      </figure>
+<section class="section">
+  <div class="wrap wrap-narrow">
+    <div class="gate-shell" id="gate" hidden>
+      <p class="eyebrow">Members only</p>
+      <h2 class="h-sec">Sign in to open this workspace</h2>
+      <p class="sec-lead">This area is for admins. Your deck unlocks after login.</p>
+      <div class="btn-row"><a class="btn btn-primary" href="login.html?role=admin">Sign in</a>
+      <a class="btn btn-ghost" href="login.html">Create an account</a></div>
     </div>
-  </section>
-<section class="section" >
-    <div class="wrap ">
-      <p class="eyebrow" data-reveal>RAG</p>
-      <h2 class="h-sec" data-reveal>Grounded generation only</h2>
-      
-      <ol class="flow " data-stagger>
-    <li class="flow-step" data-reveal>
-      <span class="flow-n">01</span>
-      <span class="flow-label">Patient data</span>
-    </li>
-<li class="flow-step" data-reveal>
-      <span class="flow-n">02</span>
-      <span class="flow-label">Approved medical knowledge</span>
-    </li>
-<li class="flow-step" data-reveal>
-      <span class="flow-n">03</span>
-      <span class="flow-label">Clinical guidelines</span>
-    </li>
-<li class="flow-step" data-reveal>
-      <span class="flow-n">04</span>
-      <span class="flow-label">Doctor-approved knowledge base</span>
-    </li>
-<li class="flow-step" data-reveal>
-      <span class="flow-n">05</span>
-      <span class="flow-label">RAG</span>
-    </li>
-<li class="flow-step" data-reveal>
-      <span class="flow-n">06</span>
-      <span class="flow-label">Response</span>
-    </li>
-  </ol><div class="split ">
-    <div class="split-copy">
-      <h3 class="h-sub" data-reveal>Provenance on every clinical explanation</h3>
-      <p data-reveal>Each clinically meaningful claim keeps its chain: where it came from and who reviewed it.</p>
-      <ul class="ticks" data-reveal><li>Finding</li><li>Source document</li><li>Extracted observation</li><li>Knowledge source</li><li>AI reasoning</li><li>Human review</li></ul>
-    </div>
+    <div class="gate-shell" id="pcWrap" hidden>
+      <p class="eyebrow">One quick step</p>
+      <h2 class="h-card">Complete your profile</h2>
+      <p class="card-d">Age and sex are required before any deck opens — safe triage depends on them.</p>
+      <form id="pcForm" class="auth-form">
+        <label class="fld" for="pcAge">
+    <span class="fld-l">Age (years) <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="pcAge" name="pcAge" type="number"    value="" required inputmode="decimal">
     
-  </div>
+  </label>
+        <label class="fld" for="pcSex">
+    <span class="fld-l">Sex <b aria-hidden="true">*</b></span>
+    <select class="fld-i" id="pcSex" name="pcSex" required>
+      <option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+    </select>
+    
+  </label>
+        <button class="btn btn-primary" type="submit">Save and continue</button>
+        <p class="auth-msg" id="pcMsg"></p>
+      </form>
     </div>
-  </section>
-<section class="section" >
-    <div class="wrap ">
-      <p class="eyebrow" data-reveal>Safety model</p>
-      <h2 class="h-sec" data-reveal>What it catches</h2>
-      
-      <ul class="checks cols-2" data-stagger>
-    <li data-reveal>Unsupported conclusions</li>
-<li data-reveal>Contradictions with the source document</li>
-<li data-reveal>Hallucinations</li>
-<li data-reveal>Dangerous recommendations</li>
-<li data-reveal>Missing context</li>
-<li data-reveal>Uncertainty that must be surfaced</li>
-<li data-reveal>Cross-patient context leakage attempts</li>
-<li data-reveal>Malicious OCR content / adversarial documents</li>
-  </ul>
-    </div>
-  </section>
-<section class="section" >
-    <div class="wrap ">
-      <p class="eyebrow" data-reveal>AI security</p>
-      <h2 class="h-sec" data-reveal>Documents are untrusted input</h2>
-      
-      <p class="note note-danger" data-reveal>Defend against: prompt injection · hidden instructions in PDFs · malicious files · document-based prompt attacks · RAG poisoning · data exfiltration · cross-patient context leakage · unauthorized tool execution · malicious OCR content · adversarial documents · model manipulation. Uploaded medical documents may never directly control system tools.</p>
-    </div>
-  </section>
-<section class="section section-rail">
-    <div class="wrap">
-      <p class="eyebrow" data-reveal>Related components</p>
-      <div class="rail" data-stagger>
-        <a class="rail-card" href="ai-pipeline.html" data-reveal>
-          <span class="rail-t">AI Pipeline</span><span class="rail-go" aria-hidden="true">→</span>
-        </a>
-<a class="rail-card" href="audit-security.html" data-reveal>
-          <span class="rail-t">Audit &amp; Security</span><span class="rail-go" aria-hidden="true">→</span>
-        </a>
-<a class="rail-card" href="ai-models.html" data-reveal>
-          <span class="rail-t">Model Suite</span><span class="rail-go" aria-hidden="true">→</span>
-        </a>
+    <p class="note note-warn" id="roleWarn" hidden></p>
+    <div id="app" hidden>
+        <div class="deck-head"><div><p class="eyebrow">Live workspace</p><h1 class="deck-title">Accounts &amp;amp; Verification</h1><p class="deck-sub">Doctor accounts are created here — they cannot self-register.</p></div></div>
+        <div class="work has-side">
+          <div>
+            <h2 class="h-3">Register a doctor</h2>
+            <p class="card-d">Doctors cannot self-register. Create their account here and share the temporary password.</p>
+            <form id="adDocForm" class="auth-form sect-gap">
+              <label class="fld" for="adDocName">
+    <span class="fld-l">Full name <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="adDocName" name="adDocName" type="text"    value="" required inputmode="text">
+    
+  </label>
+              <label class="fld" for="adDocEmail">
+    <span class="fld-l">Email <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="adDocEmail" name="adDocEmail" type="email"    value="" required inputmode="text">
+    
+  </label>
+              <label class="fld" for="adDocSpec">
+    <span class="fld-l">Specialty <b aria-hidden="true">*</b></span>
+    <input class="fld-i" id="adDocSpec" name="adDocSpec" type="text"    value="" required inputmode="text">
+    <span class="fld-h">e.g. General Medicine, Pediatrics…</span>
+  </label>
+              <label class="fld" for="adDocAge">
+    <span class="fld-l">Age (years)</span>
+    <input class="fld-i" id="adDocAge" name="adDocAge" type="number"    value=""  inputmode="decimal">
+    
+  </label>
+              <label class="fld" for="adDocSex">
+    <span class="fld-l">Sex <b aria-hidden="true">*</b></span>
+    <select class="fld-i" id="adDocSex" name="adDocSex" required>
+      <option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option>
+    </select>
+    
+  </label>
+              <button class="btn btn-primary" type="submit">Create doctor account</button>
+              <p class="auth-msg" id="adDocMsg"></p>
+            </form>
+          </div>
+          <div>
+            <h2 class="h-3">Users &amp; presence</h2>
+            <div class="board sect-gap" id="adUsers"></div>
+            <a class="btn btn-ghost btn-block" href="admin-deck.html">&larr; Back to live operations</a>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+  </div></section>
 </main>
 <footer class="site-footer" id="footer">
   <div class="wrap footer-grid">
     <div class="foot-brand">
       <div class="foot-brand-row"><svg class="logo-mark logo-mark--evx logo-draw" viewBox="0 0 48 48" role="img" aria-label="EVOLVEX logo" fill="none">
     <defs>
-      <linearGradient id="evx-72" x1="8" y1="38" x2="28" y2="10" gradientUnits="userSpaceOnUse">
+      <linearGradient id="evx-126" x1="8" y1="38" x2="28" y2="10" gradientUnits="userSpaceOnUse">
         <stop stop-color="#087255"/><stop offset="1" stop-color="#0b8174"/>
       </linearGradient>
-      <linearGradient id="evy-72" x1="40" y1="38" x2="20" y2="10" gradientUnits="userSpaceOnUse">
+      <linearGradient id="evy-126" x1="40" y1="38" x2="20" y2="10" gradientUnits="userSpaceOnUse">
         <stop stop-color="#56c99b"/><stop offset="1" stop-color="#56c99b"/>
       </linearGradient>
     </defs>
-    <path class="ld ld-1" d="M8 38 20 10l8 18" stroke="url(#evx-72)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path class="ld ld-2" d="M40 38 28 10l-8 18" stroke="url(#evy-72)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-1" d="M8 38 20 10l8 18" stroke="url(#evx-126)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="ld ld-2" d="M40 38 28 10l-8 18" stroke="url(#evy-126)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
     <path class="ld ld-3" d="M14 31h20" stroke="#d8ef74" stroke-width="2.2" stroke-linecap="round"/>
     <circle class="ld ld-4" cx="24" cy="7" r="2.4" fill="#f5b914"/>
   </svg>

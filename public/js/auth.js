@@ -103,6 +103,25 @@
     return api('/rest/v1/rpc/' + name, { method: 'POST', body: params || {} }).then(function (r) { return r.body; });
   }
 
+  /* Server-side reads: the directory a patient books from, and the admin
+     dashboard counters. Both live in Postgres as SECURITY DEFINER functions
+     (hg_doctor_directory / hg_admin_stats) so the browser never touches the
+     sensitive table directly and never holds a service-role key. */
+  function doctors() {
+    if (cacheGet('rpc:doctors')) return Promise.resolve(cacheGet('rpc:doctors'));
+    return rpc('hg_doctor_directory').then(function (rows) {
+      var v = rows || [];
+      cache['rpc:doctors'] = { t: Date.now(), v: v };
+      return v;
+    });
+  }
+  function adminStats() {
+    return rpc('hg_admin_stats').then(function (v) {
+      var o = (Array.isArray(v) ? v[0] : v) || {};
+      return o.hg_admin_stats || o;   // PostgREST may wrap the jsonb in a column
+    });
+  }
+
   function signOut() {
     var s = session();
     if (s) api('/auth/v1/logout', { method: 'POST' }).catch(function () {});
@@ -139,14 +158,65 @@
   }
 
   /* generic table ops (RLS decides the rest) */
+  /* ---------- Part R: read cache + in-flight de-duplication ----------
+     The same rows were being re-fetched on every render (the doctor directory
+     three times per page, the patient's tokens/bookings/opinions twice - once
+     on the deck and again on My Health). A short TTL cache plus single-flight
+     de-duplication makes identical concurrent/successive reads hit the network
+     once. Writes invalidate the affected table, and the 4s chat poll passes
+     {noCache:true} so messages stay live. */
+  var CACHE_TTL = 20000;
+  var cache = Object.create(null);      // key -> { t: timestamp, v: resolved value }
+  var inflight = Object.create(null);   // key -> promise
+
+  function cacheKey(table, params) {
+    return table + '?' + JSON.stringify(params || {});
+  }
+  function cacheGet(key) {
+    var hit = cache[key];
+    if (hit && Date.now() - hit.t < CACHE_TTL) return hit.v;
+    if (hit) delete cache[key];
+    return null;
+  }
+  function cacheInvalidate(table) {
+    Object.keys(cache).forEach(function (k) {
+      if (k === table || k.indexOf(table + '?') === 0) delete cache[k];
+    });
+  }
+
   function select(table, params) {
-    return api('/rest/v1/' + table + qs(params)).then(function (r) { return r.body || []; });
+    var fresh = params && params.noCache;
+    var p = params ? Object.assign({}, params) : {};
+    delete p.noCache;
+    var key = cacheKey(table, p);
+    if (!fresh) {
+      var hit = cacheGet(key);
+      if (hit) return Promise.resolve(hit);          // served from cache
+      if (inflight[key]) return inflight[key];       // identical read already running
+    }
+    var req = api('/rest/v1/' + table + qs(p)).then(function (r) {
+      var v = r.body || [];
+      cache[key] = { t: Date.now(), v: v };
+      return v;
+    }).catch(function (err) {
+      return Promise.reject(err);
+    }).then(function (v) {
+      delete inflight[key];
+      return v;
+    }, function (err) {
+      delete inflight[key];
+      throw err;
+    });
+    if (!fresh) inflight[key] = req;
+    return req;
   }
   function insert(table, row) {
+    cacheInvalidate(table);
     return api('/rest/v1/' + table, { method: 'POST', prefer: 'return=representation', body: row })
       .then(function (r) { return (r.body && r.body[0]) || row; });
   }
   function update(table, params, patch) {
+    cacheInvalidate(table);
     return api('/rest/v1/' + table + qs(params), { method: 'PATCH', prefer: 'return=representation', body: patch })
       .then(function (r) { return r.body || []; });
   }
@@ -213,6 +283,7 @@
     session: session, signIn: signIn, signUp: signUp, signOut: signOut, completeProfile: completeProfile, rpc: rpc,
     me: me, heartbeat: heartbeat, roleHome: roleHome,
     select: select, insert: insert, update: update, count: count,
+    doctors: doctors, adminStats: adminStats, invalidate: cacheInvalidate,
     insertTriage: insertTriage, listTriage: listTriage, paint: paint,
     api: api
   };

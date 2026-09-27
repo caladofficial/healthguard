@@ -249,7 +249,7 @@
     var chosen = '';
     var form = el('bkForm');
     A.me().then(function (p) { if (p && el('bkName')) el('bkName').value = p.full_name || ''; });
-    A.select('profiles', { role: 'eq.doctor', order: 'full_name.asc' }).then(function (docs) {
+    A.doctors().then(function (docs) {
       el('bkDoctor').innerHTML = docs.map(function (d) {
         return '<option value="' + esc(d.user_id) + '">' + esc(d.full_name || 'Doctor') + (d.specialty ? ' — ' + esc(d.specialty) : '') + '</option>';
       }).join('') || '<option value="">No doctors registered yet</option>';
@@ -380,7 +380,7 @@
       el('rxSend').addEventListener('click', function () { el('rxSendBox').hidden = false; el('rxSendBox').scrollIntoView({ behavior: 'smooth' }); });
       el('rxSendBox').hidden = true;
     });
-    A.select('profiles', { role: 'eq.doctor', order: 'full_name.asc' }).then(function (docs) {
+    A.doctors().then(function (docs) {
       var sel = el('rxDoctor');
       if (sel) sel.innerHTML = docs.map(function (d) {
         return '<option value="' + esc(d.user_id) + '">' + esc(d.full_name || 'Doctor') + (d.specialty ? ' — ' + esc(d.specialty) : '') + '</option>';
@@ -438,7 +438,7 @@
         if (pv) { pv.src = d; pv.hidden = !d; }
       });
     });
-    A.select('profiles', { role: 'eq.doctor', order: 'full_name.asc' }).then(function (docs) {
+    A.doctors().then(function (docs) {
       el('adDoctor').innerHTML = docs.map(function (d) {
         return '<option value="' + esc(d.user_id) + '">' + esc(d.full_name || 'Doctor') + (d.specialty ? ' — ' + esc(d.specialty) : '') + '</option>';
       }).join('') || '<option value="">No doctors registered yet</option>';
@@ -513,7 +513,7 @@
     }
     function pull() {
       if (!cur) return;
-      A.select('chat_messages', { booking_id: 'eq.' + cur, order: 'created_at.asc', limit: 200 }).then(function (rows) {
+      A.select('chat_messages', { booking_id: 'eq.' + cur, order: 'created_at.asc', limit: 200, noCache: true }).then(function (rows) {
         var atBottom = log.scrollTop + log.clientHeight > log.scrollHeight - 40;
         var html = rows.map(function (r) {
           var mine = r.sender_id === s.user.id;
@@ -723,30 +723,20 @@
     if (!gate('admin')) return;
     A.heartbeat();
     var since = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+    /* Part R: was 12 separate count(*) round trips on every render.
+       Now one call to the server-side hg_admin_stats() function, which also
+       refuses to answer for anybody but an admin. */
     function stats() {
-      Promise.all([
-        A.count('profiles', { role: 'eq.patient' }),
-        A.count('profiles', { role: 'eq.doctor' }),
-        A.count('profiles', { role: 'eq.patient', last_seen_at: 'gte.' + since }),
-        A.count('profiles', { role: 'eq.doctor', last_seen_at: 'gte.' + since }),
-        A.count('bookings', { status: 'eq.pending' }),
-        A.count('bookings', { status: 'eq.accepted' }),
-        A.count('bookings', { status: 'eq.completed' }),
-        A.count('bookings', { status: 'in.(declined,cancelled)' }),
-        A.count('tokens', { day: 'eq.' + today(), status: 'neq.cancelled' }),
-        A.count('tokens', { day: 'eq.' + today(), status: 'eq.in_consult' }),
-        A.count('tokens', { day: 'eq.' + today(), urgency: 'lte.1', status: 'neq.cancelled' }),
-        A.count('opinion_requests', { status: 'eq.open' })
-      ]).then(function (c) {
+      A.adminStats().then(function (c) {
         var statsHtml =
-          kv(c[0], 'Patients registered', c[2] + ' active now (15 min)') +
-          kv(c[1], 'Doctors registered', c[3] + ' active now (15 min)') +
-          kv(c[4], 'Bookings pending', 'waiting for doctor') +
-          kv(c[5], 'Bookings ongoing', 'accepted (in progress)') +
-          kv(c[6], 'Bookings completed', 'all time') +
-          kv(c[7], 'Declined / cancelled', 'all time') +
-          kv(c[8], 'Tokens today', c[10] + ' high-urgency · ' + c[9] + ' in consult') +
-          kv(c[11], 'Open opinions', 'awaiting doctor reply');
+          kv(c.patients, 'Patients registered', c.activePatients + ' active (7 days)') +
+          kv(c.doctors, 'Doctors registered', c.activeDoctors + ' active (7 days)') +
+          kv(c.pending, 'Bookings pending', 'waiting for doctor') +
+          kv(c.accepted, 'Bookings ongoing', 'accepted (in progress)') +
+          kv(c.completed, 'Bookings completed', 'all time') +
+          kv(c.declined, 'Declined / cancelled', 'all time') +
+          kv(c.tokensToday, 'Tokens today', c.urgent + ' high-urgency · ' + c.inConsult + ' in consult') +
+          kv(c.openOpinions, 'Open opinions', 'awaiting doctor reply');
         setHTML(el('adStats'), statsHtml);
       }).catch(function (e) { el('adStats').innerHTML = '<p class="auth-msg is-err">' + esc(e.message || e) + '</p>'; });
     }
@@ -761,6 +751,26 @@
           return boardRow({ no: '#' + t.token_no, t: esc(t.patient_name), s: 'T' + t.urgency + ' · ' + esc(t.status), urgent: t.urgency <= 1, acts: sPill(t.status) });
         }).join('') || '<p class="auth-msg">No tokens today.</p>');
       });
+    }
+    function users() {
+      A.select('profiles', { order: 'last_seen_at.desc', limit: 12 }).then(function (rows) {
+        setHTML(el('adUsers'), rows.map(function (p) {
+          return boardRow({ t: esc(p.full_name || p.user_id) + ' · ' + esc(p.role), s: esc(p.specialty || '') + ' · seen ' + when(p.last_seen_at), acts: sPill(p.last_seen_at > since ? 'accepted' : 'completed').replace('accepted', 'active').replace('completed', 'idle') });
+        }).join('') || '<p class="auth-msg">No users.</p>');
+      });
+    }
+    stats(); boards();
+    setInterval(function () { stats(); boards(); }, 5000);
+  }
+
+  /* --------------------- ADMIN · ACCOUNTS & VERIFICATION ------------------ */
+  /* Part R: registration + user list moved off the live-ops deck onto their
+     own route, mirroring how the doctor deck is split into sub-pages. */
+  function initAdminVerification() {
+    if (!gate('admin')) return;
+    A.heartbeat();
+    var since = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+    function users() {
       A.select('profiles', { order: 'last_seen_at.desc', limit: 12 }).then(function (rows) {
         setHTML(el('adUsers'), rows.map(function (p) {
           return boardRow({ t: esc(p.full_name || p.user_id) + ' · ' + esc(p.role), s: esc(p.specialty || '') + ' · seen ' + when(p.last_seen_at), acts: sPill(p.last_seen_at > since ? 'accepted' : 'completed').replace('accepted', 'active').replace('completed', 'idle') });
@@ -782,12 +792,13 @@
         .then(function () {
           dm.innerHTML = 'Doctor account created. Temporary password: <b>' + pass + '</b> — share it securely with them.';
           btn.disabled = false;
-          boards();
+          A.invalidate('profiles');
+          users();
         })
         .catch(function (err) { msg(dm, String(err.message || err)); btn.disabled = false; });
     });
-    stats(); boards();
-    setInterval(function () { stats(); boards(); }, 5000);
+    users();
+    setInterval(users, 15000);
   }
 
   /* ------------------------------- router -------------------------------- */
@@ -807,7 +818,8 @@
     'doctor-tokens': initDoctorTokens,
     'doctor-chat': initDoctorChat,
     'doctor-reports': initDoctorReports,
-    'admin-deck': initAdminDeck
+    'admin-deck': initAdminDeck,
+    'admin-verification': initAdminVerification
   };
   initProfileComplete();
   if (routes[slug]) routes[slug]();

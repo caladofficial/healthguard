@@ -486,7 +486,7 @@ export default [
     desc: 'Platform operations in real time: doctors and patients registered and active, bookings pending/ongoing/completed, queue load, open opinions.',
     body: () => [
       `<section class="section">${shell('admin', `
-        ${deckHead('Admin Deck — Live Operations', 'Everything that is happening, refreshed every 5 seconds.')}
+        ${deckHead('Admin Deck — Live Operations', 'What is happening right now, refreshed every 5 seconds.')}
         <div class="dash-grid cols-4" id="adStats"></div>
         <div class="work has-side sect-gap">
           <div>
@@ -495,6 +495,29 @@ export default [
             <h2 class="h-3 sect-gap">Today's queue</h2>
             <div class="board" id="adTokens"></div>
           </div>
+          <div>
+            <h2 class="h-3">Accounts &amp; verification</h2>
+            <p class="card-d">Doctor accounts are created and reviewed on their own page, so this deck stays focused on live operations.</p>
+            <a class="btn btn-primary btn-block sect-gap" href="admin-verification.html">Open accounts &amp; verification</a>
+          </div>
+        </div>
+              `)}</section>`,
+      U.note('Active now = seen in the last 15 minutes. Patients self-register; doctor accounts are created by an admin; admins are predefined. Credential verification ships with the doctor-verification workflow before real clinical deployment.', ''),
+    ],
+  },
+
+  /* Part R: the admin deck used to stack live operations, doctor registration
+     and the user list on one long page. Registration + users now live on their
+     own route, the same way the doctor deck is split. No new content. */
+  {
+    slug: 'admin-verification',
+    family: 'product',
+    title: 'Admin — Accounts & Verification',
+    desc: 'Create doctor accounts, review who is registered and their presence, and manage credential verification.',
+    body: () => [
+      `<section class="section">${shell('admin', `
+        ${deckHead('Accounts &amp; Verification', 'Doctor accounts are created here — they cannot self-register.')}
+        <div class="work has-side">
           <div>
             <h2 class="h-3">Register a doctor</h2>
             <p class="card-d">Doctors cannot self-register. Create their account here and share the temporary password.</p>
@@ -507,12 +530,14 @@ export default [
               <button class="btn btn-primary" type="submit">Create doctor account</button>
               <p class="auth-msg" id="adDocMsg"></p>
             </form>
-            <h2 class="h-3 sect-gap">Users & presence</h2>
+          </div>
+          <div>
+            <h2 class="h-3">Users &amp; presence</h2>
             <div class="board sect-gap" id="adUsers"></div>
+            <a class="btn btn-ghost btn-block" href="admin-deck.html">&larr; Back to live operations</a>
           </div>
         </div>
       `)}</section>`,
-      U.note('Active now = seen in the last 15 minutes. Patients self-register; doctor accounts are created by an admin; admins are predefined. Credential verification ships with the doctor-verification workflow before real clinical deployment.', ''),
     ],
   },
 ];

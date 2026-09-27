@@ -38,6 +38,7 @@ export const NAV = [
       { href: 'patient-deck.html', label: 'Patient Deck', desc: 'Your care workspace', role: 'patient' },
       { href: 'doctor-deck.html', label: 'Doctor Deck', desc: 'Your clinic desk', role: 'doctor' },
       { href: 'admin-deck.html', label: 'Admin Deck', desc: 'Live operations', role: 'admin' },
+      { href: 'admin-verification.html', label: 'Accounts & Verification', desc: 'Doctor accounts, users', role: 'admin' },
     ],
   },
   {
