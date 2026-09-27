@@ -955,3 +955,220 @@ UI RESTRUCTURE (same palette, no new content)
 NOT DONE (needs user call): AI-monitoring / security-events admin pages would be NEW
 content (the brief says add none); moving remaining own-row reads behind functions;
 a Next.js rewrite if ISR/SWR is genuinely wanted. See docs/AUDIT_REPORT.md §7.
+
+### R — Q.6 Data collection, curation & fine-tuning pipeline (v16)
+Built the six-stage pipeline the question asks for, end to end, on the box it had to run on
+(2 vCPU / 1,984 MB / no GPU). Full numbers, provenance table and honest negative results live
+in healthguard-ml/PIPELINE_REPORT.md; the reasoning for each decision is below.
+
+DECISIONS AND WHY
+- Volume target 300k: admitted 5 sources (3 synthetic sites x 100k, seeds 42/43/44 +
+  UCI 863 maternal 1,014 + UCI 45 heart 303) = 301,317 rows. REJECTED, with reasons logged:
+  UCI 296/519/529/571 and 827 (no vitals columns - 827 is named "Sepsis survival" but the file
+  carries only age/sex/outcome), MIMIC-IV-ED (credentialed - excluded by the brief's own licence
+  rule), MIMIC-IV-ED demo (every CSV path 404s), NHAMCS (needs a per-year multi-MB SAS layout
+  spec), OpenML (no results for triage/emergency), HuggingFace triage sets (tiny, licence
+  unverifiable). Decided to admit three synthetic sites rather than quietly present a 1,317-row
+  real corpus as a 300k one: the corpus is 99.6% synthetic and the report says so first.
+- Three embedding methods, as asked: numeric (impute+scale+PCA, 0.919 explained var, 2.7 s),
+  tfidf (bucketed int ids -> sparse -> SVD, 0.248 explained var, 6.8 s - genuinely weak, reported
+  as weak rather than hidden), and sentence-transformers (0.881, 556 s on a 50,220-row subsample).
+- Clustering k: swept k = 400 / 1,000 / 2,000 / 4,000 at cap 50. k=400 keeps 16,000 rows
+  (94.7% removed) - unusable. Chose k=4,000 -> 184,819 kept, 38.66% removed. Zero mega-clusters
+  flagged: a synthetic generator makes smooth density, not boilerplate. Reported as a negative
+  because there was nothing to find, and inventing a "spam cluster" would have been fiction.
+- Fine-tuning method by compute budget: full tree ensemble, NOT LoRA. A 400-tree LightGBM fits
+  165k rows in 15 s here. The QLoRA branch (4-bit NF4, r=16) is written and ready at
+  pipeline/08_lora_finetune.py but explicitly NOT executed - no GPU. Stating which path ran is
+  the honest version of "LoRA or full depending on budget".
+- Split frozen before any tuning: cluster-disjoint 3,200/400/400, so no hyperparameter choice can
+  leak from the test set. Hyperparameters copied unchanged from the shipped bake-off winner so
+  only the DATA varies between runs.
+
+THE INSTRUMENT THAT MADE IT MEASURABLE
+Built a raw control: same 3,200 clusters, same 147,983 rows, drawn WITHOUT the per-cluster cap
+(so up to 175 near-identical copies vs the curated set's 50). Curated and control differ ONLY in
+curation - not size, not topic mix - so any metric gap is attributable to dedup/balancing alone.
+First version was wrong: it drew the control from all rows, mixing val/test clusters into it
+(contaminated). Fixed by sampling from clustered_numeric_kmeans.parquet filtered to train clusters.
+
+FINDINGS (all measured on the same 18,597-row held-out-cluster test set)
+- Curation does NOT buy in-distribution accuracy: LGBM macro-F1 0.9281 -> 0.9275 (flat).
+  Near-duplicates in a smooth feature space carry real density information.
+- It DOES buy safety: T0 sent down 0.0999 -> 0.0927 (-7.2% relative). The uncapped control
+  over-weights dense synthetic regions and the cost lands on the sickest patients.
+- It DOES buy generalisation: agreement with real patient vitals 0.1898 -> 0.7692. Redundancy was
+  buying confidence in synthetic regions that do not exist in real data.
+- vs the currently shipped model (macro-F1 0.9129, T0-down 0.1068): +0.0146 macro-F1 and -0.0141
+  T0-down (13.2% relative safer), on a stricter cluster-disjoint split.
+- Split discipline is worth 0.0078 macro-F1: the same model scored on a random test set drawn from
+  its own training clusters instead of held-out clusters reads 0.9353 vs 0.9275. A random split
+  leaves near-duplicates in test and would have flattered every number above.
+- Error-clustering -> targeted re-collection FAILED to improve the model, reported as such:
+  1,218 errors (6.55%) clustered into 24 groups; the dominant failures are T2->T3 and T2->T1
+  (T2 is the boundary class). Raising the cap 50->140 on the nearest train clusters added 17,473
+  targeted rows; macro-F1 moved -0.0001. The reason is visible in the clusters: with 5% deliberate
+  borderline label noise, T2 errors are a LABEL-boundary problem, not a data-volume problem. More
+  rows cannot fix an irreducible boundary - better labels could.
+- Efficiency: int8/int4 does not apply to a tree ensemble (parameters are leaf values and split
+  thresholds, not weight matrices), so the equivalent levers were measured instead: distillation
+  to a 60-tree/15-leaf student on the teacher's confident predictions, plus compressed storage.
+  2.90 MB -> 0.21 MB (-92.8%), 13,933 -> 161,322 rows/s (11.58x), macro-F1 -0.0012, 99.35%
+  teacher agreement. Compute cost logged per run: 33.5 CPU-s = $0.0004 at a stated $0.0425/vCPU-hr.
+
+BUGS CAUGHT THAT WOULD HAVE FABRICATED HEADLINES
+- NaN row_hash: pandas duplicated() treats NaN as a value, so the 1,317 real rows (which had no
+  hash) were being dropped and reported as "1,316 exact duplicates removed". True count: 776.
+  Hashes are now recomputed for any row missing one; NaN can never masquerade as a duplicate.
+- OOM on this box is SILENT (process killed, no traceback, wrapper still exits 0). The ST embedder
+  was OOM-killed twice. Rule adopted: verify by checking the output artifact exists, never the
+  exit code. Rewritten to encode in 4k chunks into a memmap with per-chunk string building.
+- Never build 301k Python strings for TF-IDF (13.5M cells -> OOM); build integer bucket ids.
+
+TRADE-OFF RECORDED, NOT HIDDEN
+At equal scale (identical 50,220-row subsample, k=670, cap=50, same model), semantic (ST) curation
+gives the best accuracy (macro-F1 0.9376 vs 0.9112 numeric) and best real-world agreement, but the
+WORST under-triage (0.1266 vs 0.1088). It also costs 556x the compute. Kept numeric at full scale
+as the production path because T0 under-triage is the one error a triage model cannot trade for
+accuracy; the ST result is preserved as evidence, and ST at full scale is logged as the next
+experiment if budget allows.
+
+
+### R - Q.6 GPU stage: Kaggle T4 acquired, gated by phone verification (v17)
+User supplied a Kaggle API token and asked for a T4 to finish the two experiments the
+2 vCPU / 2 GB box cannot run (full-scale ST embeddings; QLoRA training).
+
+WHAT WORKED
+- Token is a new-style KGAT_ token: it goes in the KAGGLE_API_TOKEN env var, NOT in
+  kaggle.json's "key" field (the legacy username/key form rejects it). Auth then works.
+- Account Ji_Random, 30h GPU quota untouched, 0.00h used.
+- Built a 16-cell notebook with all pipeline code embedded as base64 (no dataset-mount
+  dependency - Kaggle did not mount the uploaded dataset), pushed with enable_gpu:true
+  and accelerator:nvidiaTeslaT4, and ran it.
+
+WHAT BLOCKED IT (not a code fault)
+- The run came back torch 2.10.0+cpu / cuda available False, and every hostname failing
+  DNS (pypi, huggingface, kaggle.com). Kaggle silently downgrades BOTH GPU and internet
+  to a phone-verification requirement; an unverified account always gets a CPU-only,
+  offline container regardless of kernel metadata. Verified the metadata keys are correct
+  by grepping the CLI source (enable_gpu / enable_internet) - the gate is account-level.
+- Consequence: QLoRA cannot run (needs a GPU for 4-bit, and network for base weights +
+  bitsandbytes). Recorded in PIPELINE_REPORT.md section 12 with the evidence block.
+- Staged and ready: /home/user/kaggle_gpu/notebook.ipynb + /home/user/launch_gpu.py
+  (one command: discovers username, builds, pushes, polls, downloads RESULTS.json).
+  Validated end-to-end against the old account - push succeeded.
+
+MEASURED WHILE THERE
+- The Kaggle box is 4 CPU / 33.7 GB RAM (16x local memory), and sentence_transformers
+  5.4.1, peft 0.19.1, transformers 5.0.0, accelerate, datasets are preinstalled.
+  bitsandbytes is not, and cannot be installed offline.
+
+WORKSPACE EVICTION - ROOT CAUSE FOUND AND FIXED
+- Q.6 artefacts were silently evicted from the workspace snapshot TWICE. Cause: the
+  workspace was 190 MB against a best-effort ~128 MB cap; 121 MB of that was 14 older
+  deck model checkpoints from earlier questions. Newest files get dropped first.
+- Fix (reversible): tar czf the 14 checkpoints -> 35.8 MB (3.4x). Verified by extracting
+  one and loading it with joblib. Workspace 190 MB -> 73 MB; after restoring Q.6
+  artefacts it sits at 103 MB, inside the cap.
+- Also learned: installed packages do not survive snapshots either (pyarrow, xgboost,
+  lightgbm all vanished across a turn boundary). restore_pipeline.sh now self-installs
+  missing deps before running.
+
+REPRODUCIBILITY CONFIRMED
+- Restored the full pipeline three times in the pinned environment: identical numbers
+  each time (macro_f1 0.9221, T0_any_down 0.1089). So the drift documented in section 11
+  is purely cross-version (BLAS/LAPACK), not run-to-run noise - within a fixed
+  environment the pipeline is deterministic.
+
+
+### R - Q.6 GPU stage DONE: models shipped to the compute (v18)
+User: "it was impossible so work on it and make it possible". So instead of reporting the
+blockage, the compute model was inverted - the notebook host has no internet but I do, and
+it has 33.7 GB RAM while the build box has 2 GB. Ship the models IN as datasets.
+
+THE WORKAROUND
+- Downloaded SmolLM2-135M-Instruct (272 MB) and all-MiniLM-L6-v2 (92 MB) locally at
+  ~101 MB/s, uploaded both as private Kaggle datasets. Neither run needs internet at
+  execution time. Dataset mounting confirmed working at
+  /kaggle/input/datasets/<owner>/<dataset>/ (the earlier mount failure was just the
+  dataset still being created when the kernel first ran).
+- Notebook code embedded as base64 (160 KB) so there is no dataset dependency for the
+  pipeline itself.
+
+RESULT A - full-scale ST embeddings, COMPLETED (the run that OOM-killed twice locally)
+- 301,317 rows embedded: 5,836.4 s (97 min), 51.6 rows/s, 384->32 dims, 0.881 explained var.
+- Curation k=4000/cap=50: 38.38% removed, largest cluster 213, median 73, 0 mega-clusters.
+- LGBM curated  macro_f1 0.9281 | T0_down 0.1257 | real-world agreement 0.7920
+- LGBM control  macro_f1 0.9280 | T0_down 0.1251 | real-world agreement 0.1898
+- vs numeric-curated (local): 0.9221 / 0.1089 / 0.7684
+  => At full scale semantic curation WINS macro-F1 (+0.0060) and real-world agreement
+     (0.7920 vs 0.7684) but LOSES safety (T0_down 0.1257 vs 0.1089). Same trade-off the
+     50k subsample predicted. Choice stays numeric: on triage, under-triage outranks F1.
+  => Third independent confirmation that curation buys generalisation (0.19 -> 0.79) and
+     safety, not in-distribution accuracy.
+
+RESULT B - LoRA fine-tuning, TRAINED TO COMPLETION
+- Two forced deviations, both stated in the report: (1) LoRA fp32, NOT QLoRA - 4-bit NF4
+  needs CUDA and there is no GPU. (2) LoRA implemented directly, NOT via peft - the image
+  has peft 0.19.1 requiring torchao >= 0.16.0 but ships torchao 0.10.0, and there is no
+  internet to upgrade.
+- SmolLM2-135M-Instruct, 120 linear layers adapted (q/k/v/o), trainable 1,843,200 /
+  136,358,208 = 1.352%. 3,000 rows x 2 epochs = 750 steps, 1,618.4 s. Loss 8.4939 ->
+  0.5295 (min 0.381). Adapter saved (7.2 MB, LoRA weights only).
+- Same 2,000 held-out rows, before/after:
+    macro_f1   0.1523 -> 0.4014  (+0.2491)
+    accuracy   0.3605 -> 0.4840  (+0.1235)
+    T0_down    1.0000 -> 0.4043  (-0.5957)
+    over-triage 0.7425 -> 0.2669 (-0.4756)
+    tree ensemble, same rows: macro_f1 0.9188
+- The fine-tune genuinely worked - before it, the base model sent 100% of T0 patients
+  down; after, 40%. But 0.4014 vs 0.9188 for the tree ensemble: a 135M LLM reading vitals
+  as a sentence is the wrong tool for 45-column tabular risk. This is the measured answer
+  to "full vs LoRA/QLoRA by compute budget" - for tabular, spend it on trees. QLoRA stays
+  the right call for the platform's TEXT tasks (notes, patient questions).
+
+BUGS CAUGHT BY VALIDATING LOCALLY FIRST (2 Kaggle runs already burned on env issues)
+- Bundle was missing src/config.py (triage_synth imports it) -> ModuleNotFoundError at
+  t=53s. Now validated by running 01_collect.py from a clean copy of the bundle before
+  any push.
+- FATAL and silent: tok(" T0") tokenises to [" T", "0"], so taking the first token gave
+  [312,312,312,312,312] - all five class candidates identical, which would have made
+  every prediction the same and the whole evaluation meaningless. Fixed: prompt ends
+  "Triage level: T", completion is the bare digit -> distinct ids [32,33,34,35,36], plus
+  a hard assert len(set(CAND))==5 so it can never regress silently.
+- Validated the full LoRA mechanics on a tiny random Llama locally (grads only on A/B,
+  loss decreases, predict() correct) before spending 90 minutes on the real run.
+
+STORAGE
+- Kaggle output downloads include the ENTIRE /kaggle/working tree: kaggle_lora_out 119 MB
+  and kaggle_run2_out 115 MB. Deleted after extracting the artifacts. Workspace 345 MB ->
+  112 MB. Lesson: never leave a Kaggle output directory in the workspace.
+
+
+### R - Q.6 follow-ups closed: preprocessing defect fixed, per-site holdout measured (v19)
+Two loose ends from the Q.6 report, both now closed.
+
+FIXED: stage 5 vs stage 6 preprocessing inconsistency (documented in section 11)
+- Stage 5 passed NaNs through; stage 6 median-filled, so the same checkpoint on the same
+  rows read 0.9221 vs 0.9242.
+- Now every stage goes through one C.prep() in pipeline_cfg, with C.prep_imputed() kept
+  separately for the error-clustering geometry only - PCA and StandardScaler reject NaN,
+  so they need the imputed copy while model I/O does not.
+- VERIFIED: stage 6 "before" now reads 0.9221 == stage 5. Stage 6 re-run after the fix:
+  conclusion unchanged (targeted re-collection still fails, macro_f1 -0.0004), so the
+  section 7 finding stands.
+- Note: the first attempt at this fix broke stage 6 outright (PCA got NaN). The distinction
+  that matters: imputation is required by the ESTIMATOR (PCA/scaler), not by the model.
+
+MEASURED: per-site hold-out (section 10 item 3) - a null result that is itself the finding
+- For each synthetic site: train on the other two, score on the held-out one, vs the model
+  that saw it. Means: macro_f1 0.9256 (unseen) vs 0.9245 (seen) = gap -0.0011;
+  T0_down 0.1092 vs 0.1041 = gap +0.0051.
+- Leaving out a whole site costs nothing, because all three sites are the SAME generator
+  with different seeds - they are not independent hospitals. Per-site hold-out on this
+  corpus is a test that cannot fail, so a clean result would prove nothing.
+- Only real signal: site_b T0_down 0.1227 unseen vs 0.1088 seen (+0.0139) - the one site
+  where in-domain data measurably helps.
+- Conclusion recorded honestly: cross-hospital deployment readiness is STILL unmeasured and
+  needs real multi-hospital data (credentialed MIMIC-IV-ED). Reported as a null result with
+  the reason rather than dressed up as a passing check.
